@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { useMyUpcomingBookings } from "@/lib/hooks";
 import { cancelBooking } from "@/lib/bookings/actions";
+import { getPieceStageSignedUrl } from "@/lib/storage/actions";
 import { Download, Music } from "lucide-react";
 
 export function ChangeBookingTab() {
@@ -43,6 +44,24 @@ export function ChangeBookingTab() {
 
     setShowCancelDialog(false);
     setCancelingId(null);
+  };
+
+  const handleDownloadScore = async (pieceStageId: string) => {
+    const result = await getPieceStageSignedUrl(pieceStageId, "score");
+    if ("error" in result && result.error) {
+      toast.error(result.error);
+    } else if (result.signedUrl) {
+      window.open(result.signedUrl, "_blank");
+    }
+  };
+
+  const handlePlayAudio = async (pieceStageId: string) => {
+    const result = await getPieceStageSignedUrl(pieceStageId, "audio");
+    if ("error" in result && result.error) {
+      toast.error(result.error);
+    } else if (result.signedUrl) {
+      window.open(result.signedUrl, "_blank");
+    }
   };
 
   if (loading) {
@@ -127,19 +146,23 @@ export function ChangeBookingTab() {
 
             <div className="flex gap-2 flex-wrap">
               {stage?.score_url && (
-                <Button variant="outline" size="sm" asChild>
-                  <a href={stage.score_url} target="_blank" rel="noopener noreferrer">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Sheet Music
-                  </a>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownloadScore(booking.piece_stage_id)}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Sheet Music
                 </Button>
               )}
               {stage?.audio_url && (
-                <Button variant="outline" size="sm" asChild>
-                  <a href={stage.audio_url} target="_blank" rel="noopener noreferrer">
-                    <Music className="w-4 h-4 mr-2" />
-                    Listen to Song
-                  </a>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePlayAudio(booking.piece_stage_id)}
+                >
+                  <Music className="w-4 h-4 mr-2" />
+                  Listen to Song
                 </Button>
               )}
               <div className="flex-1" />
