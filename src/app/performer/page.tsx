@@ -1,7 +1,10 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { withRole } from "@/lib/auth/withRole";
 
-export default function PerformerPage() {
+function PerformerPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -49,3 +52,5 @@ export default function PerformerPage() {
     </div>
   );
 }
+
+export default withRole(PerformerPage, ["performer", "admin", "super_admin"]);

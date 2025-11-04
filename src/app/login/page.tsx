@@ -2,21 +2,55 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { signIn } from "@/lib/auth/actions";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    // TODO: Implement authentication logic
-    setTimeout(() => setLoading(false), 1000);
+
+    try {
+      const { user } = await signIn({ email, password });
+
+      // Fetch user profile to determine redirect
+      const supabase = createClient();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      toast.success("Logged in successfully!");
+
+      // Redirect based on role
+      if (profile?.role === "super_admin") {
+        router.push("/super");
+      } else if (profile?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/performer");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to sign in");
+      toast.error("Failed to sign in");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +65,11 @@ export default function LoginPage() {
           <CardDescription>Enter your credentials to sign in</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">

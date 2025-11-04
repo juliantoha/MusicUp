@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
   title: "MusicUp - Oclef",
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Toaster />
+        <AuthProvider>
+          <Navbar />
+          <main className="min-h-screen">{children}</main>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

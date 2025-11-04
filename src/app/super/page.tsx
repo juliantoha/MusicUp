@@ -1,9 +1,12 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Users, Database, Settings } from "lucide-react";
+import { withRole } from "@/lib/auth/withRole";
 
-export default function SuperAdminPage() {
+function SuperAdminPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -106,3 +109,5 @@ export default function SuperAdminPage() {
     </div>
   );
 }
+
+export default withRole(SuperAdminPage, ["super_admin"]);
