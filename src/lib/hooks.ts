@@ -427,6 +427,135 @@ export function useMyPastConcerts(): UseListResult<ConcertWithDetails> {
 // ============================================================================
 
 /**
+ * Fetch venues managed by current admin
+ */
+export function useMyManagedVenues(): UseListResult<Venue> {
+  const { user } = useAuth();
+  const [data, setData] = useState<Venue[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchManagedVenues = useCallback(async () => {
+    if (!user) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { data: adminVenues, error: fetchError } = await supabase
+        .from("admins_venues")
+        .select(`
+          venue:venue_id (*)
+        `)
+        .eq("admin_id", user.id);
+
+      if (fetchError) throw fetchError;
+
+      // Extract venues from the join
+      const venues = adminVenues?.map((av: any) => av.venue).filter(Boolean) || [];
+      setData(venues);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch managed venues"));
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchManagedVenues();
+  }, [fetchManagedVenues]);
+
+  return { data, loading, error, refetch: fetchManagedVenues };
+}
+
+/**
+ * Fetch upcoming concerts for venues managed by current admin
+ */
+export function useMyManagedConcerts(): UseListResult<ConcertWithDetails> {
+  const { user } = useAuth();
+  const [data, setData] = useState<ConcertWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchManagedConcerts = useCallback(async () => {
+    if (!user) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const today = new Date().toISOString().split("T")[0];
+
+      // First get the venue IDs the admin manages
+      const { data: adminVenues, error: venuesError } = await supabase
+        .from("admins_venues")
+        .select("venue_id")
+        .eq("admin_id", user.id);
+
+      if (venuesError) throw venuesError;
+
+      const venueIds = adminVenues?.map((av) => av.venue_id) || [];
+
+      if (venueIds.length === 0) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch concerts for those venues
+      const { data: concerts, error: fetchError } = await supabase
+        .from("concerts")
+        .select(`
+          *,
+          venue:venue_id (*),
+          series:series_id (*),
+          bookings (
+            *,
+            performer:performer_id (*),
+            piece_stage:piece_stage_id (
+              *,
+              piece:piece_id (
+                *,
+                collection:collection_id (
+                  *,
+                  series:series_id (*)
+                )
+              )
+            )
+          )
+        `)
+        .in("venue_id", venueIds)
+        .eq("status", "scheduled")
+        .gte("scheduled_date", today)
+        .order("scheduled_date", { ascending: true });
+
+      if (fetchError) throw fetchError;
+      setData(concerts || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch managed concerts"));
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchManagedConcerts();
+  }, [fetchManagedConcerts]);
+
+  return { data, loading, error, refetch: fetchManagedConcerts };
+}
+
+/**
  * Fetch concerts for a specific venue (admin only)
  */
 export function useVenueConcerts(venueId?: string): UseListResult<ConcertWithDetails> {
