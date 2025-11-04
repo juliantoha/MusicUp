@@ -485,3 +485,122 @@ export function useVenueConcerts(venueId?: string): UseListResult<ConcertWithDet
 
   return { data, loading, error, refetch: fetchVenueConcerts };
 }
+
+// ============================================================================
+// Booking Hooks
+// ============================================================================
+
+/**
+ * Fetch upcoming concerts at a specific venue (for booking)
+ */
+export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWithDetails> {
+  const [data, setData] = useState<ConcertWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchUpcomingConcerts = useCallback(async () => {
+    if (!venueId) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const today = new Date().toISOString().split("T")[0];
+
+      const { data: concerts, error: fetchError } = await supabase
+        .from("concerts")
+        .select(`
+          *,
+          venue:venue_id (*),
+          series:series_id (*)
+        `)
+        .eq("venue_id", venueId)
+        .eq("status", "scheduled")
+        .gte("scheduled_date", today)
+        .order("scheduled_date", { ascending: true });
+
+      if (fetchError) throw fetchError;
+      setData(concerts || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch upcoming concerts"));
+    } finally {
+      setLoading(false);
+    }
+  }, [venueId]);
+
+  useEffect(() => {
+    fetchUpcomingConcerts();
+  }, [fetchUpcomingConcerts]);
+
+  return { data, loading, error, refetch: fetchUpcomingConcerts };
+}
+
+/**
+ * Fetch current user's upcoming bookings
+ */
+export function useMyUpcomingBookings(): UseListResult<BookingWithDetails> {
+  const { user } = useAuth();
+  const [data, setData] = useState<BookingWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchUpcomingBookings = useCallback(async () => {
+    if (!user) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const today = new Date().toISOString().split("T")[0];
+
+      const { data: bookings, error: fetchError } = await supabase
+        .from("bookings")
+        .select(`
+          *,
+          concert:concert_id (
+            *,
+            venue:venue_id (*),
+            series:series_id (*)
+          ),
+          piece_stage:piece_stage_id (
+            *,
+            piece:piece_id (
+              *,
+              collection:collection_id (
+                *,
+                series:series_id (*)
+              )
+            )
+          ),
+          performer:performer_id (*)
+        `)
+        .eq("performer_id", user.id)
+        .neq("status", "cancelled")
+        .gte("concert.scheduled_date", today)
+        .order("concert.scheduled_date", { ascending: true });
+
+      if (fetchError) throw fetchError;
+      setData(bookings || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch upcoming bookings"));
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchUpcomingBookings();
+  }, [fetchUpcomingBookings]);
+
+  return { data, loading, error, refetch: fetchUpcomingBookings };
+}

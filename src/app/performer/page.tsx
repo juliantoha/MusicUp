@@ -1,54 +1,44 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { withRole } from "@/lib/auth/withRole";
+import { BookConcertTab } from "@/components/performer/BookConcertTab";
+import { ChangeBookingTab } from "@/components/performer/ChangeBookingTab";
+import { InformationTab } from "@/components/performer/InformationTab";
+import { SheetMusicLibraryTab } from "@/components/performer/SheetMusicLibraryTab";
 
 function PerformerPage() {
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Performer Dashboard</h1>
-        <p className="text-muted-foreground">Manage your performances and repertoire</p>
+        <p className="text-gray-600">Manage your performances, track your hours, and access practice materials</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Performances</CardTitle>
-            <CardDescription>Your scheduled events</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
-              <p>No upcoming performances</p>
-            </div>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="book" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="book">Book a Concert</TabsTrigger>
+          <TabsTrigger value="manage">My Bookings</TabsTrigger>
+          <TabsTrigger value="info">Information</TabsTrigger>
+          <TabsTrigger value="library">Sheet Music</TabsTrigger>
+        </TabsList>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Repertoire</CardTitle>
-            <CardDescription>Your music collection</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
-              <p>No repertoire added yet</p>
-            </div>
-          </CardContent>
-        </Card>
+        <TabsContent value="book" className="space-y-4">
+          <BookConcertTab />
+        </TabsContent>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Status</CardTitle>
-            <CardDescription>Your account status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center h-32">
-              <Badge variant="secondary">Active</Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="manage" className="space-y-4">
+          <ChangeBookingTab />
+        </TabsContent>
+
+        <TabsContent value="info" className="space-y-4">
+          <InformationTab />
+        </TabsContent>
+
+        <TabsContent value="library" className="space-y-4">
+          <SheetMusicLibraryTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
