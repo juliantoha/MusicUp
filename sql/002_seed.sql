@@ -10,7 +10,7 @@ INSERT INTO series (id, slug, title, description) VALUES
     '00000000-0000-0000-0000-000000000001',
     'empathy',
     'Empathy Concerts',
-    'A series of intimate concerts designed to foster connection and understanding through music. Performers share personal stories and musical interpretations that explore the human experience of empathy.'
+    '8VA Empathy Concerts is a groundbreaking initiative bringing the power of music to senior citizens across America, particularly those living with dementia and Alzheimer''s. Rooted in the transformative impact of music therapy, this program creates meaningful intergenerational connections, fosters community engagement, and provides environments of growth for music students. With tailored arrangements (Beginner, Intermediate, Advanced, and Early Intermediate Duet), students of all skill levels can participate meaningfully in bringing timeless, emotionally resonant music to awaken cherished memories and nurture emotional well-being for senior audiences.'
   );
 
 -- ============================================================================
@@ -33,109 +33,65 @@ INSERT INTO venues (id, name, address, city, state, zip, contact_email, is_activ
 -- COLLECTIONS
 -- ============================================================================
 
--- Primary collection for Empathy series
+-- The Golden Collection (Primary)
 INSERT INTO collections (id, series_id, title, is_primary, order_index) VALUES
   (
     '00000000-0000-0000-0000-000000000100',
     '00000000-0000-0000-0000-000000000001',
-    'Empathy Primary Collection',
+    'The Golden Collection',
     true,
     1
   );
 
--- Secondary collections for Empathy series
+-- The Next Steps Set (Secondary)
 INSERT INTO collections (id, series_id, title, is_primary, order_index) VALUES
   (
     '00000000-0000-0000-0000-000000000101',
     '00000000-0000-0000-0000-000000000001',
-    'Stories of Connection',
+    'The Next Steps Set',
     false,
     2
-  ),
-  (
-    '00000000-0000-0000-0000-000000000102',
-    '00000000-0000-0000-0000-000000000001',
-    'Reflections and Memories',
-    false,
-    3
-  ),
-  (
-    '00000000-0000-0000-0000-000000000103',
-    '00000000-0000-0000-0000-000000000001',
-    'Voices of Compassion',
-    false,
-    4
   );
 
 -- ============================================================================
--- PIECES (12 per collection = 48 total)
+-- PIECES (12 per collection = 24 total)
 -- ============================================================================
 
--- Primary Collection Pieces
+-- The Golden Collection - 12 songs every student should learn for leading unforgettable singalongs
 INSERT INTO pieces (id, collection_id, title, order_index) VALUES
-  ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000100', 'Slow Joe', 1),
-  ('10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000100', 'Memory Lane', 2),
-  ('10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000100', 'Sunlight', 3),
-  ('10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000100', 'Evening Prayer', 4),
-  ('10000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000100', 'Dancing Leaves', 5),
-  ('10000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000100', 'Quiet Moments', 6),
-  ('10000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000100', 'Morning Mist', 7),
-  ('10000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000100', 'River Song', 8),
-  ('10000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000100', 'Twilight Dreams', 9),
-  ('10000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000100', 'Gentle Wind', 10),
-  ('10000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000100', 'Starlit Path', 11),
-  ('10000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000100', 'Winter Warmth', 12);
+  ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000100', 'Can''t Help Falling in Love', 1),
+  ('10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000100', 'Somewhere Over the Rainbow', 2),
+  ('10000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000100', 'What a Wonderful World', 3),
+  ('10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000100', 'Let Me Call You Sweetheart', 4),
+  ('10000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000100', 'Que Sera, Sera (Whatever Will Be, Will Be)', 5),
+  ('10000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000100', 'Moon River', 6),
+  ('10000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000100', 'When You Wish Upon a Star', 7),
+  ('10000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000100', 'Edelweiss', 8),
+  ('10000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000100', 'Take Me Out to the Ball Game', 9),
+  ('10000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000100', 'You Are My Sunshine', 10),
+  ('10000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000100', 'Singin'' in the Rain', 11),
+  ('10000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000100', 'Unchained Melody', 12);
 
--- Stories of Connection Pieces
+-- The Next Steps Set - Powerful second set after mastering the Golden Collection
 INSERT INTO pieces (id, collection_id, title, order_index) VALUES
-  ('10000000-0000-0000-0000-000000000101', '00000000-0000-0000-0000-000000000101', 'Hearts Entwined', 1),
-  ('10000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000101', 'Shared Journey', 2),
-  ('10000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000101', 'Bridge Between', 3),
-  ('10000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000000101', 'Common Ground', 4),
-  ('10000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000101', 'Voices Together', 5),
-  ('10000000-0000-0000-0000-000000000106', '00000000-0000-0000-0000-000000000101', 'Circle of Trust', 6),
-  ('10000000-0000-0000-0000-000000000107', '00000000-0000-0000-0000-000000000101', 'Kindred Spirits', 7),
-  ('10000000-0000-0000-0000-000000000108', '00000000-0000-0000-0000-000000000101', 'Unity Dance', 8),
-  ('10000000-0000-0000-0000-000000000109', '00000000-0000-0000-0000-000000000101', 'Together We Stand', 9),
-  ('10000000-0000-0000-0000-000000000110', '00000000-0000-0000-0000-000000000101', 'Reaching Out', 10),
-  ('10000000-0000-0000-0000-000000000111', '00000000-0000-0000-0000-000000000101', 'Hand in Hand', 11),
-  ('10000000-0000-0000-0000-000000000112', '00000000-0000-0000-0000-000000000101', 'Bonds of Light', 12);
-
--- Reflections and Memories Pieces
-INSERT INTO pieces (id, collection_id, title, order_index) VALUES
-  ('10000000-0000-0000-0000-000000000201', '00000000-0000-0000-0000-000000000102', 'Yesterday\'s Echo', 1),
-  ('10000000-0000-0000-0000-000000000202', '00000000-0000-0000-0000-000000000102', 'Faded Photographs', 2),
-  ('10000000-0000-0000-0000-000000000203', '00000000-0000-0000-0000-000000000102', 'Time Stands Still', 3),
-  ('10000000-0000-0000-0000-000000000204', '00000000-0000-0000-0000-000000000102', 'Nostalgia', 4),
-  ('10000000-0000-0000-0000-000000000205', '00000000-0000-0000-0000-000000000102', 'Looking Back', 5),
-  ('10000000-0000-0000-0000-000000000206', '00000000-0000-0000-0000-000000000102', 'Old Letters', 6),
-  ('10000000-0000-0000-0000-000000000207', '00000000-0000-0000-0000-000000000102', 'Childhood Wonder', 7),
-  ('10000000-0000-0000-0000-000000000208', '00000000-0000-0000-0000-000000000102', 'First Love', 8),
-  ('10000000-0000-0000-0000-000000000209', '00000000-0000-0000-0000-000000000102', 'Golden Days', 9),
-  ('10000000-0000-0000-0000-000000000210', '00000000-0000-0000-0000-000000000102', 'Distant Shores', 10),
-  ('10000000-0000-0000-0000-000000000211', '00000000-0000-0000-0000-000000000102', 'Echoes of Laughter', 11),
-  ('10000000-0000-0000-0000-000000000212', '00000000-0000-0000-0000-000000000102', 'Timeless Moment', 12);
-
--- Voices of Compassion Pieces
-INSERT INTO pieces (id, collection_id, title, order_index) VALUES
-  ('10000000-0000-0000-0000-000000000301', '00000000-0000-0000-0000-000000000103', 'Open Heart', 1),
-  ('10000000-0000-0000-0000-000000000302', '00000000-0000-0000-0000-000000000103', 'Gentle Embrace', 2),
-  ('10000000-0000-0000-0000-000000000303', '00000000-0000-0000-0000-000000000103', 'Words of Comfort', 3),
-  ('10000000-0000-0000-0000-000000000304', '00000000-0000-0000-0000-000000000103', 'Healing Touch', 4),
-  ('10000000-0000-0000-0000-000000000305', '00000000-0000-0000-0000-000000000103', 'Understanding', 5),
-  ('10000000-0000-0000-0000-000000000306', '00000000-0000-0000-0000-000000000103', 'Shoulders to Lean On', 6),
-  ('10000000-0000-0000-0000-000000000307', '00000000-0000-0000-0000-000000000103', 'Listening Ear', 7),
-  ('10000000-0000-0000-0000-000000000308', '00000000-0000-0000-0000-000000000103', 'Kind Words', 8),
-  ('10000000-0000-0000-0000-000000000309', '00000000-0000-0000-0000-000000000103', 'Caring Soul', 9),
-  ('10000000-0000-0000-0000-000000000310', '00000000-0000-0000-0000-000000000103', 'Warmth Within', 10),
-  ('10000000-0000-0000-0000-000000000311', '00000000-0000-0000-0000-000000000103', 'Grace and Mercy', 11),
-  ('10000000-0000-0000-0000-000000000312', '00000000-0000-0000-0000-000000000103', 'Love\'s Light', 12);
+  ('10000000-0000-0000-0000-000000000101', '00000000-0000-0000-0000-000000000101', 'It''s a Long Way to Tipperary', 1),
+  ('10000000-0000-0000-0000-000000000102', '00000000-0000-0000-0000-000000000101', 'As Time Goes By', 2),
+  ('10000000-0000-0000-0000-000000000103', '00000000-0000-0000-0000-000000000101', 'My Bonnie Lies Over the Ocean', 3),
+  ('10000000-0000-0000-0000-000000000104', '00000000-0000-0000-0000-000000000101', 'Rock Around the Clock', 4),
+  ('10000000-0000-0000-0000-000000000105', '00000000-0000-0000-0000-000000000101', 'On the Sunny Side of the Street', 5),
+  ('10000000-0000-0000-0000-000000000106', '00000000-0000-0000-0000-000000000101', 'Stand By Me', 6),
+  ('10000000-0000-0000-0000-000000000107', '00000000-0000-0000-0000-000000000101', 'Can''t Take My Eyes Off You', 7),
+  ('10000000-0000-0000-0000-000000000108', '00000000-0000-0000-0000-000000000101', 'You''ll Never Walk Alone', 8),
+  ('10000000-0000-0000-0000-000000000109', '00000000-0000-0000-0000-000000000101', 'Fly Me to the Moon', 9),
+  ('10000000-0000-0000-0000-000000000110', '00000000-0000-0000-0000-000000000101', 'Under the Boardwalk', 10),
+  ('10000000-0000-0000-0000-000000000111', '00000000-0000-0000-0000-000000000101', 'Hey Jude', 11),
+  ('10000000-0000-0000-0000-000000000112', '00000000-0000-0000-0000-000000000101', 'This Land Is Your Land', 12);
 
 -- ============================================================================
--- PIECE STAGES (3 stages per piece = 144 total)
+-- PIECE STAGES (3 stages per piece = 72 total)
 -- ============================================================================
 
--- Generate stages for all pieces (Primary Collection)
+-- Generate stages for all pieces (The Golden Collection)
 INSERT INTO piece_stages (piece_id, stage, pdf_path, audio_path)
 SELECT
   p.id,
@@ -146,7 +102,7 @@ FROM pieces p
 CROSS JOIN (VALUES (1), (2), (3)) AS s(stage)
 WHERE p.collection_id = '00000000-0000-0000-0000-000000000100';
 
--- Generate stages for all pieces (Stories of Connection)
+-- Generate stages for all pieces (The Next Steps Set)
 INSERT INTO piece_stages (piece_id, stage, pdf_path, audio_path)
 SELECT
   p.id,
@@ -156,28 +112,6 @@ SELECT
 FROM pieces p
 CROSS JOIN (VALUES (1), (2), (3)) AS s(stage)
 WHERE p.collection_id = '00000000-0000-0000-0000-000000000101';
-
--- Generate stages for all pieces (Reflections and Memories)
-INSERT INTO piece_stages (piece_id, stage, pdf_path, audio_path)
-SELECT
-  p.id,
-  s.stage,
-  'scores/' || p.id || '/stage-' || s.stage || '.pdf',
-  'audio/' || p.id || '/stage-' || s.stage || '.mp3'
-FROM pieces p
-CROSS JOIN (VALUES (1), (2), (3)) AS s(stage)
-WHERE p.collection_id = '00000000-0000-0000-0000-000000000102';
-
--- Generate stages for all pieces (Voices of Compassion)
-INSERT INTO piece_stages (piece_id, stage, pdf_path, audio_path)
-SELECT
-  p.id,
-  s.stage,
-  'scores/' || p.id || '/stage-' || s.stage || '.pdf',
-  'audio/' || p.id || '/stage-' || s.stage || '.mp3'
-FROM pieces p
-CROSS JOIN (VALUES (1), (2), (3)) AS s(stage)
-WHERE p.collection_id = '00000000-0000-0000-0000-000000000103';
 
 -- ============================================================================
 -- CONCERTS (2 concerts in the next month, each 60 minutes)
@@ -227,11 +161,11 @@ BEGIN
   RAISE NOTICE '==========================================================';
   RAISE NOTICE 'Series created:        %', series_count;
   RAISE NOTICE 'Venues created:        %', venues_count;
-  RAISE NOTICE 'Collections created:   %', collections_count;
-  RAISE NOTICE 'Pieces created:        %', pieces_count;
-  RAISE NOTICE 'Piece stages created:  %', stages_count;
+  RAISE NOTICE 'Collections created:   % (The Golden Collection, The Next Steps Set)', collections_count;
+  RAISE NOTICE 'Pieces created:        % (24 classic songs for Empathy Concerts)', pieces_count;
+  RAISE NOTICE 'Piece stages created:  % (3 difficulty stages per piece)', stages_count;
   RAISE NOTICE 'Concerts created:      %', concerts_count;
   RAISE NOTICE '==========================================================';
-  RAISE NOTICE 'Seed data loaded successfully!';
+  RAISE NOTICE '8VA Empathy Concerts seed data loaded successfully!';
   RAISE NOTICE '==========================================================';
 END $$;
