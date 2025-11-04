@@ -733,3 +733,42 @@ export function useMyUpcomingBookings(): UseListResult<BookingWithDetails> {
 
   return { data, loading, error, refetch: fetchUpcomingBookings };
 }
+
+// ============================================================================
+// Super Admin Hooks
+// ============================================================================
+
+/**
+ * Fetch all profiles (super admin only)
+ */
+export function useAllProfiles(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchProfiles = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { data: profiles, error: fetchError } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (fetchError) throw fetchError;
+      setData(profiles || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch profiles"));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProfiles();
+  }, [fetchProfiles]);
+
+  return { data, loading, error, refetch: fetchProfiles };
+}
