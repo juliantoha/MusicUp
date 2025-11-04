@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { sendBookingConfirmationEmail } from "@/lib/email/actions";
 
 export interface CreateBookingData {
   concert_id: string;
@@ -50,6 +51,12 @@ export async function createBooking(data: CreateBookingData) {
     console.error("Error creating booking:", error);
     return { error: error.message };
   }
+
+  // Send confirmation email (don't block on email send)
+  sendBookingConfirmationEmail(booking.id).catch((error) => {
+    console.error("Error sending booking confirmation email:", error);
+    // Don't fail the booking if email fails
+  });
 
   return { booking };
 }

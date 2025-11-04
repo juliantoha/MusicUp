@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { sendCompletionThankYouEmail } from "@/lib/email/actions";
 
 export interface UpdateBookingStatusData {
   booking_id: string;
@@ -262,6 +263,14 @@ export async function completeConcert(data: CompleteConcertData) {
       .in("id", data.performed_booking_ids);
 
     if (updateError) throw updateError;
+
+    // 4. Send thank you emails to performed performers (don't block on email send)
+    performedBookings.forEach((booking) => {
+      sendCompletionThankYouEmail(booking.performer_id, data.concert_id).catch((error) => {
+        console.error("Error sending completion thank you email:", error);
+        // Don't fail the concert completion if email fails
+      });
+    });
 
     return { success: true };
   } catch (error: any) {
