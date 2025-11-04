@@ -12,7 +12,8 @@ import {
 } from "./templates";
 
 // Initialize Resend with API key from environment
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Use a placeholder in development if key is missing to allow builds
+const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
 
 // Sender email - configure this in your Resend dashboard
 const FROM_EMAIL = process.env.FROM_EMAIL || "onboarding@resend.dev";
@@ -23,6 +24,12 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
  */
 export async function sendBookingConfirmationEmail(bookingId: string) {
   try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("RESEND_API_KEY not configured, skipping email send");
+      return { error: "Email service not configured" };
+    }
+
     const supabase = await createClient();
 
     // Fetch booking with all related data
@@ -139,6 +146,12 @@ export async function sendBookingConfirmationEmail(bookingId: string) {
  */
 export async function sendConcertReminderEmail(bookingId: string) {
   try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("RESEND_API_KEY not configured, skipping email send");
+      return { error: "Email service not configured" };
+    }
+
     const supabase = await createClient();
 
     // Fetch booking with all related data
@@ -253,6 +266,12 @@ export async function sendConcertReminderEmail(bookingId: string) {
  */
 export async function sendCompletionThankYouEmail(performerId: string, concertId: string) {
   try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("RESEND_API_KEY not configured, skipping email send");
+      return { error: "Email service not configured" };
+    }
+
     const supabase = await createClient();
 
     // Fetch performer
