@@ -62,13 +62,12 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <Music className="h-8 w-8 text-[#2563EB] group-hover:scale-110 transition-transform" />
-              <span className="text-2xl font-bold text-[#2563EB]">MusicUp</span>
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <Music className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
             </Link>
             <div className="flex items-center gap-4">
-              <Button asChild variant="ghost" className="hidden sm:inline-flex">
-                <Link href="#how-it-works">How it works</Link>
-              </Button>
               <Button asChild variant="outline" className="border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white">
                 <Link href="/login">Sign In</Link>
               </Button>
@@ -370,7 +369,7 @@ export default function Home() {
             </Card>
           </div>
           <div className="text-center mt-16">
-            <Button asChild size="lg" className="bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-white hover:opacity-90 shadow-xl hover:shadow-2xl transition-all px-8">
+            <Button asChild size="lg" className="bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-white hover:opacity-90 shadow-xl hover:shadow-2xl transition-all px-10 py-6 text-lg rounded-xl">
               <Link href="/library">Explore Series</Link>
             </Button>
           </div>
