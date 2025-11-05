@@ -13,6 +13,7 @@ export type Profile = {
   email: string;
   full_name: string | null;
   role: "performer" | "admin" | "super_admin";
+  profile_photo_path: string | null;
   created_at: string;
 };
 

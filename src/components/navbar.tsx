@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Music, LogOut, User } from "lucide-react";
+import { Music, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/performer", label: "Performer", roles: ["performer", "admin", "super_admin"] },
@@ -25,6 +27,20 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, signOut: authSignOut } = useAuth();
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+
+  // Load profile photo URL
+  useEffect(() => {
+    if (profile?.profile_photo_path) {
+      const supabase = createClient();
+      const { data } = supabase.storage
+        .from("profile_photos")
+        .getPublicUrl(profile.profile_photo_path);
+      setPhotoUrl(data.publicUrl);
+    } else {
+      setPhotoUrl(null);
+    }
+  }, [profile?.profile_photo_path]);
 
   // Don't show navbar on auth pages or if not authenticated
   if (pathname === "/login" || pathname === "/signup" || pathname === "/" || !user) {
@@ -83,9 +99,23 @@ export function Navbar() {
             </Select>
           </div>
 
-          <Select onValueChange={(value) => value === "logout" && handleLogout()}>
+          <Select onValueChange={(value) => {
+            if (value === "logout") {
+              handleLogout();
+            } else if (value === "settings") {
+              router.push("/settings");
+            }
+          }}>
             <SelectTrigger className="w-[180px]">
-              <User className="h-4 w-4 mr-2" />
+              {photoUrl ? (
+                <img
+                  src={photoUrl}
+                  alt="Profile"
+                  className="h-6 w-6 rounded-full object-cover mr-2"
+                />
+              ) : (
+                <User className="h-4 w-4 mr-2" />
+              )}
               <SelectValue placeholder={profile?.full_name || user.email || "Account"} />
             </SelectTrigger>
             <SelectContent>
@@ -94,6 +124,12 @@ export function Navbar() {
                   <span className="font-medium">{profile?.full_name || "User"}</span>
                   <span className="text-xs text-muted-foreground">{user.email}</span>
                 </div>
+              </SelectItem>
+              <SelectItem value="settings">
+                <span className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </span>
               </SelectItem>
               <SelectItem value="logout">
                 <span className="flex items-center gap-2">
