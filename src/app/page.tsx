@@ -67,19 +67,21 @@ export default function Home() {
               <h1 className="text-5xl md:text-7xl font-bold">MusicUp</h1>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Music up your city
+              Stop saving music for someday
             </h2>
             <p className="text-lg md:text-xl mb-10 text-blue-100 max-w-3xl mx-auto">
-              Book. Host. Perform. MusicUp connects venues, hosts, and performers so live music pops up
-              where people live. Senior homes. Libraries. Farmers markets. Hospitals. Schools. Parks.
-              Coffee shops. Museums. House concerts.
+              Play this week. Play where people live. Senior homes. Libraries. Markets. Parks.
+              Coffee shops. Museums. House concerts. Music up your city.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
                 <Link href="/signup">Get Started</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+              <Button asChild size="lg" variant="secondary" className="bg-white/20 text-white border-2 border-white hover:bg-white hover:text-[#2563EB] font-semibold">
                 <Link href="#list-venue">List Your Venue</Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary" className="bg-white/20 text-white border-2 border-white hover:bg-white hover:text-[#2563EB] font-semibold">
+                <Link href="/login">Sign In</Link>
               </Button>
             </div>
           </div>
@@ -87,21 +89,103 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
       </section>
 
-      {/* One Simple Idea */}
+      {/* Make Music a Verb */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">One simple idea</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Make music a verb</h2>
             <p className="text-xl text-muted-foreground mb-6">
-              Make music a verb. Tidy up a room. Brush up on a skill. <strong>Music up your city.</strong>
+              People learn piano, then hide it. One recital a year, if that. It trains fear, not fluency.
             </p>
-            <p className="text-lg text-muted-foreground mb-8">
-              We handle the logistics. You bring the music, the room, and the people.
-              Book. Host. Perform. That simple.
+            <p className="text-lg text-muted-foreground mb-6">
+              If sharing music is rare, it stays rare. MusicUp flips the default.
+            </p>
+            <p className="text-lg font-semibold text-foreground mb-8">
+              Perform often, in ordinary places. Keep the serious stages for when you want them.
+              Make everyday stages normal.
             </p>
             <Button asChild size="lg">
-              <Link href="/signup">Get Started</Link>
+              <Link href="/signup">Start Performing</Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* The Problem We're Fixing */}
+      <section className="py-20 bg-[#F8FAFC]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The problem we are fixing</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-[#2563EB]">Scarcity creates fear</h3>
+                <p className="text-muted-foreground">
+                  One high-stakes recital a year makes playing feel like an exam instead of a language.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-[#06B6D4]">Learning is private, impact is public</h3>
+                <p className="text-muted-foreground">
+                  Practice happens daily, but the community never hears it. Skills stall without real listeners.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-[#EB6A18]">Perfection bias</h3>
+                <p className="text-muted-foreground">
+                  People wait until they feel "ready." They never feel ready. So they never play.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-[#E9B949]">Gatekeeping</h3>
+                <p className="text-muted-foreground">
+                  Music seems reserved for the elite. Basketball has pickup games. Chess has park tables.
+                  Music needs everyday courts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* The Simple Fix */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The simple fix</h2>
+            <div className="space-y-8">
+              <Card className="border-l-4 border-l-[#2563EB]">
+                <CardHeader>
+                  <CardTitle>Frequent, low-stakes stages</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Libraries, senior homes, markets, parks, coffee shops, schools, museums, living rooms.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-l-4 border-l-[#06B6D4]">
+                <CardHeader>
+                  <CardTitle>Prebuilt sets</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Clear collections with PDFs and audio at three levels. Choose a place, choose a set, play.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-l-4 border-l-[#EB6A18]">
+                <CardHeader>
+                  <CardTitle>Proof and pride</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Attendance check, group photo, and verified credit where it matters.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
@@ -230,11 +314,11 @@ export default function Home() {
                   <div className="h-3 w-3 rounded-full bg-[#E9B949]"></div>
                   <span className="text-xs font-semibold text-[#E9B949] uppercase">Empathy Concerts</span>
                 </div>
-                <CardTitle className="text-lg">Memory-care & Senior Homes</CardTitle>
+                <CardTitle className="text-lg">Memory needs melody</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Gentle, familiar repertoire that gets residents singing.
+                  Bring familiar songs to senior homes. We verify 3 hours of service for every completed concert.
                 </p>
               </CardContent>
             </Card>
@@ -245,11 +329,11 @@ export default function Home() {
                   <div className="h-3 w-3 rounded-full bg-[#8B5CF6]"></div>
                   <span className="text-xs font-semibold text-[#8B5CF6] uppercase">PianoTales</span>
                 </div>
-                <CardTitle className="text-lg">Libraries</CardTitle>
+                <CardTitle className="text-lg">Storytime that sings</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Twelve-piece sets for ages 2–5 with books and storytelling woven in.
+                  Twelve short pieces for ages 2 to 5 with books and narration woven in.
                 </p>
               </CardContent>
             </Card>
@@ -258,13 +342,13 @@ export default function Home() {
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
                   <div className="h-3 w-3 rounded-full bg-[#16A34A]"></div>
-                  <span className="text-xs font-semibold text-[#16A34A] uppercase">Farmers Market</span>
+                  <span className="text-xs font-semibold text-[#16A34A] uppercase">Markets & Parks</span>
                 </div>
-                <CardTitle className="text-lg">Markets & Plazas</CardTitle>
+                <CardTitle className="text-lg">Weekends that feel like home</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Four themed sets of 12 songs. Warm, contemporary, and welcoming.
+                  Warm sets from the 1980s to today. Families linger. Vendors smile.
                 </p>
               </CardContent>
             </Card>
@@ -520,9 +604,12 @@ export default function Home() {
       {/* For Performers */}
       <section className="py-20 bg-gradient-to-br from-[#2563EB] to-[#06B6D4] text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">For performers</h2>
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Perform more. Fear less.</h2>
+            <p className="text-lg text-blue-100 mb-10">
+              Pick a venue, pick a set, show up. Your dashboard tracks shows and verified hours.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-6 mb-8 text-left">
               <div className="flex items-start gap-3">
                 <Star className="h-6 w-6 mt-1 flex-shrink-0" />
                 <div>
@@ -548,6 +635,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
+            <Card className="bg-white/10 border-white/20 backdrop-blur-sm text-white mb-8">
+              <CardContent className="pt-6">
+                <p className="text-lg font-semibold text-center">
+                  You do not need to be a pro. Pickup games exist for music now.
+                  Bring what you have and grow in public.
+                </p>
+              </CardContent>
+            </Card>
             <div className="text-center">
               <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
                 <Link href="/signup">Perform This Month</Link>
@@ -560,9 +655,12 @@ export default function Home() {
       {/* For Hosts and Venues */}
       <section className="py-20 bg-[#F8FAFC]">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">For hosts and venues</h2>
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Live music without the hassle</h2>
+            <p className="text-lg text-muted-foreground mb-10">
+              Listings, lineups, and a checklist that ends in a group photo. Consistent programming people love.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-6 mb-8 text-left">
               <div className="flex items-start gap-3">
                 <Heart className="h-6 w-6 mt-1 flex-shrink-0 text-[#2563EB]" />
                 <div>
