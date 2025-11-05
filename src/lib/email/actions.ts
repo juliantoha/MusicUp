@@ -10,6 +10,7 @@ import {
   type ConcertReminderData,
   type CompletionThankYouData,
 } from "./templates";
+import { email as copy } from "@/lib/copy";
 
 // Initialize Resend with API key from environment
 // Use a placeholder in development if key is missing to allow builds
@@ -124,7 +125,7 @@ export async function sendBookingConfirmationEmail(bookingId: string) {
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: FROM_EMAIL,
       to: performer.email,
-      subject: `🎵 Concert Booking Confirmed - ${piece?.title || "Your Performance"}`,
+      subject: copy.bookingConfirmation.subject(piece?.title || "Your Performance"),
       html: bookingConfirmationTemplate(emailData),
     });
 
@@ -244,7 +245,7 @@ export async function sendConcertReminderEmail(bookingId: string) {
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: FROM_EMAIL,
       to: performer.email,
-      subject: `⏰ Concert Reminder - Tomorrow at ${concertTime}`,
+      subject: copy.concertReminder.subject(concertTime),
       html: concertReminderTemplate(emailData),
     });
 
@@ -349,7 +350,7 @@ export async function sendCompletionThankYouEmail(performerId: string, concertId
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: FROM_EMAIL,
       to: performer.email,
-      subject: `🎉 Thank You for Performing - 3 Hours Credited!`,
+      subject: copy.completionThankYou.subject,
       html: completionThankYouTemplate(emailData),
     });
 

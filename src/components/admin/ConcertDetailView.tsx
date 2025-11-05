@@ -21,6 +21,7 @@ import {
 } from "@/lib/concerts/actions";
 import { CheckCircle2, XCircle, Upload, Camera, CheckCheck } from "lucide-react";
 import type { ConcertWithDetails } from "@/types/db";
+import { admin } from "@/lib/copy";
 
 interface ConcertDetailViewProps {
   concert: ConcertWithDetails;
@@ -254,7 +255,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                           currentStatus === "confirmed" ? "" : "hover:bg-muted"
                         }`}
                       >
-                        <span className="text-xs md:text-sm font-medium">Confirmed</span>
+                        <span className="text-xs md:text-sm font-medium">{admin.checklist.markConfirmed}</span>
                       </Button>
                       <Button
                         variant={currentStatus === "performed" ? "default" : "outline"}
@@ -267,7 +268,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                         }`}
                       >
                         <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
-                        <span className="text-xs md:text-sm font-medium">Performed</span>
+                        <span className="text-xs md:text-sm font-medium">{admin.checklist.markPerformed}</span>
                       </Button>
                       <Button
                         variant={currentStatus === "absent" ? "default" : "outline"}
@@ -280,7 +281,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                         }`}
                       >
                         <XCircle className="w-4 h-4 md:w-5 md:h-5" />
-                        <span className="text-xs md:text-sm font-medium">Absent</span>
+                        <span className="text-xs md:text-sm font-medium">{admin.checklist.markAbsent}</span>
                       </Button>
                     </div>
                   </div>
@@ -317,7 +318,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
               className="hidden"
             />
             <p className="text-sm text-gray-500 mt-2">
-              Upload photos of the concert (max 5MB, JPG/PNG)
+              {admin.checklist.uploadPhoto}
             </p>
           </div>
 
@@ -375,13 +376,13 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
               <p>✓ {photos.length} group photo{photos.length !== 1 ? "s" : ""} uploaded</p>
               {canComplete && (
                 <p className="text-green-700 font-medium mt-2">
-                  All requirements met! Ready to complete concert.
+                  {admin.status.allRequirementsMet}
                 </p>
               )}
               {!canComplete && (
                 <p className="text-orange-700 font-medium mt-2">
-                  {performedCount === 0 && "Mark at least one performer as performed. "}
-                  {photos.length === 0 && "Upload at least one group photo."}
+                  {performedCount === 0 && `${admin.status.needsAttendance}. `}
+                  {photos.length === 0 && admin.status.needsPhotos}
                 </p>
               )}
             </div>
@@ -391,7 +392,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
             disabled={!canComplete || completing}
             size="lg"
           >
-            {completing ? "Completing..." : "Complete Concert"}
+            {completing ? admin.checklist.completing : admin.checklist.completeConcert}
           </Button>
         </div>
         <div className="mt-4 pt-4 border-t text-sm text-gray-600">

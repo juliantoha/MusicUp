@@ -34,6 +34,7 @@ import { useMyUpcomingBookings, useSeries, useCollections, usePieces, useStages 
 import { cancelBooking, updateBooking } from "@/lib/bookings/actions";
 import { getPieceStageSignedUrl } from "@/lib/storage/actions";
 import { Download, Music, Edit } from "lucide-react";
+import { booking as copy, emptyStates } from "@/lib/copy";
 
 export function ChangeBookingTab() {
   const { data: bookings, loading, refetch } = useMyUpcomingBookings();
@@ -141,9 +142,9 @@ export function ChangeBookingTab() {
       <div className="flex items-center justify-center py-16">
         <div className="text-center max-w-md">
           <Music className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg md:text-xl font-semibold mb-2">No upcoming bookings</h3>
+          <h3 className="text-lg md:text-xl font-semibold mb-2">{emptyStates.noBookings.title}</h3>
           <p className="text-sm md:text-base text-muted-foreground">
-            Book your first concert to get started with performing!
+            {emptyStates.noBookings.message}
           </p>
         </div>
       </div>
@@ -238,14 +239,14 @@ export function ChangeBookingTab() {
                 onClick={() => handleEditClick(booking)}
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Edit Booking
+                {copy.actions.editBooking}
               </Button>
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={() => handleCancelClick(booking.id)}
               >
-                Cancel Booking
+                {copy.actions.cancelBooking}
               </Button>
             </div>
           </Card>
@@ -256,7 +257,7 @@ export function ChangeBookingTab() {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Booking</DialogTitle>
+            <DialogTitle>{copy.dialogs.editTitle}</DialogTitle>
             <DialogDescription>
               Select a new piece and difficulty level for this concert.
             </DialogDescription>
@@ -365,14 +366,14 @@ export function ChangeBookingTab() {
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+            <AlertDialogTitle>{copy.dialogs.cancelTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel this booking? This action cannot be undone.
+              {copy.dialogs.cancelMessage}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Keep Booking</AlertDialogCancel>
-            <AlertDialogAction onClick={handleCancelConfirm}>Cancel Booking</AlertDialogAction>
+            <AlertDialogCancel>{copy.actions.keepBooking}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleCancelConfirm}>{copy.actions.confirmCancel}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

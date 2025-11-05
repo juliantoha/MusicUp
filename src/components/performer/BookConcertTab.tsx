@@ -15,10 +15,11 @@ import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcoming
 import { createBooking } from "@/lib/bookings/actions";
 import { MapPin, Calendar, Music, Check } from "lucide-react";
 import type { Concert } from "@/types/db";
+import { booking as copy, emptyStates } from "@/lib/copy";
 
 const STEP_ICONS = [MapPin, Calendar, Music];
 
-const STEPS = ["Choose Location", "Select Concert", "Pick Your Piece"];
+const STEPS = copy.steps.labels;
 
 export function BookConcertTab() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -39,11 +40,11 @@ export function BookConcertTab() {
 
   const handleNext = () => {
     if (currentStep === 0 && !selectedVenueId) {
-      toast.error("Please select a venue");
+      toast.error(copy.validation.selectVenue);
       return;
     }
     if (currentStep === 1 && !selectedConcert) {
-      toast.error("Please select a concert");
+      toast.error(copy.validation.selectConcert);
       return;
     }
     setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
@@ -65,7 +66,7 @@ export function BookConcertTab() {
 
   const handleSubmit = async () => {
     if (!selectedConcert || !selectedStageId) {
-      toast.error("Please complete all selections");
+      toast.error(copy.validation.completeSelections);
       return;
     }
 
@@ -79,11 +80,11 @@ export function BookConcertTab() {
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success("Concert booked successfully! 🎵");
+        toast.success(copy.success.created);
         handleReset();
       }
     } catch (error) {
-      toast.error("Failed to create booking");
+      toast.error(copy.errors.failed);
     } finally {
       setIsSubmitting(false);
     }
@@ -217,8 +218,8 @@ export function BookConcertTab() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500">
-                <p>No upcoming concerts scheduled at this venue.</p>
-                <p className="text-sm mt-2">Please select a different venue or check back later.</p>
+                <p>{emptyStates.noConcerts.message}</p>
+                <p className="text-sm mt-2">{emptyStates.noConcerts.hint}</p>
               </div>
             )}
           </div>

@@ -14,6 +14,7 @@ import {
 import { useMyServiceHours, useMyPastConcerts } from "@/lib/hooks";
 import { Clock, Music2, Download } from "lucide-react";
 import type { ServiceHourWithDetails } from "@/types/db";
+import { emptyStates } from "@/lib/copy";
 
 // Helper function to group service hours by year
 function groupServiceHoursByYear(serviceHours: ServiceHourWithDetails[]) {
@@ -195,10 +196,10 @@ export function InformationTab() {
           <div className="text-center py-12 bg-muted/10 rounded-lg border-2 border-dashed">
             <Clock className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 text-muted-foreground" />
             <p className="text-base md:text-lg font-medium text-foreground mb-1">
-              No service hours yet
+              {emptyStates.noServiceHours.title}
             </p>
             <p className="text-sm text-muted-foreground">
-              Complete concerts to start tracking volunteer hours!
+              {emptyStates.noServiceHours.message}
             </p>
           </div>
         )}
