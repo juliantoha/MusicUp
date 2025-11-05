@@ -95,8 +95,8 @@ export default function Home() {
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               Music Every Day
             </h2>
-            <p className="text-xl md:text-2xl mb-12 text-blue-50 max-w-3xl mx-auto leading-relaxed">
-              Play where people live. Libraries. Markets. Senior homes. Parks. Coffee shops.
+            <p className="text-xl md:text-2xl mb-12 text-blue-50 max-w-3xl mx-auto leading-relaxed [text-wrap:balance]">
+              Play where people live. Libraries. Markets. Senior&nbsp;homes. Parks. Coffee&nbsp;shops.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 hover:scale-105 transition-transform font-semibold text-lg px-10 py-6 rounded-xl shadow-2xl">
@@ -371,7 +371,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-16">
             <Button asChild size="lg" className="bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-white hover:opacity-90 shadow-xl hover:shadow-2xl transition-all px-10 py-6 text-lg rounded-xl">
-              <Link href="/library">Explore Series</Link>
+              <Link href="/series">Explore Series</Link>
             </Button>
           </div>
         </div>
