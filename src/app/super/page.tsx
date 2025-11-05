@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Shield } from "lucide-react";
 import { withRole } from "@/lib/auth/withRole";
 import { VenueManagementTab } from "@/components/super/VenueManagementTab";
+import { RoleToolsTab } from "@/components/super/RoleToolsTab";
 
 function SuperAdminPage() {
   return (
@@ -28,10 +29,15 @@ function SuperAdminPage() {
       <Tabs defaultValue="venues" className="space-y-6">
         <TabsList>
           <TabsTrigger value="venues">Venue Management</TabsTrigger>
+          <TabsTrigger value="tools">Role Tools</TabsTrigger>
         </TabsList>
 
         <TabsContent value="venues" className="space-y-4">
           <VenueManagementTab />
+        </TabsContent>
+
+        <TabsContent value="tools" className="space-y-4">
+          <RoleToolsTab />
         </TabsContent>
       </Tabs>
     </div>
