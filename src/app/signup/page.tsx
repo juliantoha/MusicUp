@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Music } from "lucide-react";
+import { Music, Mail, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { signUp } from "@/lib/auth/actions";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -18,6 +19,8 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
   const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -40,8 +43,8 @@ export default function SignupPage() {
 
     try {
       await signUp({ email, password, fullName });
-      toast.success("Account created successfully!");
-      router.push("/performer");
+      setSignupSuccess(true);
+      toast.success("Account created! Check your email to verify.");
     } catch (err: any) {
       setError(err.message || "Failed to create account");
       toast.error("Failed to create account");
@@ -49,6 +52,91 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  const handleResendEmail = async () => {
+    setResendingEmail(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+
+      if (error) throw error;
+      toast.success("Verification email sent! Check your inbox.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend email");
+    } finally {
+      setResendingEmail(false);
+    }
+  };
+
+  // Show success state after signup
+  if (signupSuccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1 flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-4">
+              <CheckCircle2 className="h-12 w-12 text-green-600" />
+            </div>
+            <CardTitle className="text-2xl text-center">Check your email</CardTitle>
+            <CardDescription className="text-center">
+              We've sent a verification link to
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <Mail className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+              <p className="font-medium text-gray-900">{email}</p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-900 font-medium mb-1">What's next?</p>
+                <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                  <li>Open your email inbox</li>
+                  <li>Click the verification link we sent you</li>
+                  <li>You'll be redirected back to log in</li>
+                </ol>
+              </div>
+
+              <Alert>
+                <AlertDescription className="text-xs">
+                  <strong>Can't find the email?</strong> Check your spam folder or click below to resend it.
+                </AlertDescription>
+              </Alert>
+            </div>
+
+            <div className="space-y-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleResendEmail}
+                disabled={resendingEmail}
+              >
+                {resendingEmail ? "Sending..." : "Resend verification email"}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full"
+                onClick={() => router.push("/login")}
+              >
+                Back to login
+              </Button>
+            </div>
+
+            <p className="text-xs text-center text-gray-500 mt-4">
+              Already verified? <Link href="/login" className="text-primary hover:underline font-medium">Sign in here</Link>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
