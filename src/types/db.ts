@@ -92,6 +92,7 @@ export type Booking = {
   piece_stage_id: string;
   status: "pending" | "confirmed" | "cancelled";
   created_at: string;
+  updated_at: string;
 };
 
 export type AttendanceCheck = {
@@ -242,6 +243,7 @@ export const bookingSchema = z.object({
   piece_stage_id: z.string().uuid(),
   status: z.enum(["pending", "confirmed", "cancelled"]),
   created_at: z.string(),
+  updated_at: z.string(),
 });
 
 export const serviceHourSchema = z.object({
@@ -277,8 +279,8 @@ export const pieceStageUpdateSchema = pieceStageInsertSchema.partial();
 export const concertInsertSchema = concertSchema.omit({ id: true, created_at: true });
 export const concertUpdateSchema = concertInsertSchema.partial();
 
-export const bookingInsertSchema = bookingSchema.omit({ id: true, created_at: true });
-export const bookingUpdateSchema = bookingInsertSchema.partial();
+export const bookingInsertSchema = bookingSchema.omit({ id: true, created_at: true, updated_at: true });
+export const bookingUpdateSchema = bookingInsertSchema.omit({ concert_id: true, performer_id: true }).partial();
 
 export const serviceHourInsertSchema = serviceHourSchema.omit({ id: true, created_at: true });
 export const serviceHourUpdateSchema = serviceHourInsertSchema.partial();

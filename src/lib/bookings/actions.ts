@@ -61,6 +61,77 @@ export async function createBooking(data: CreateBookingData) {
   return { booking };
 }
 
+export interface UpdateBookingData {
+  piece_stage_id: string;
+}
+
+export async function updateBooking(bookingId: string, data: UpdateBookingData) {
+  const supabase = await createClient();
+
+  // Get current user
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in to update a booking" };
+  }
+
+  // Get booking with concert details
+  const { data: booking, error: bookingError } = await supabase
+    .from("bookings")
+    .select(`
+      *,
+      concert:concert_id (
+        scheduled_date,
+        start_time
+      )
+    `)
+    .eq("id", bookingId)
+    .single();
+
+  if (bookingError || !booking) {
+    return { error: "Booking not found" };
+  }
+
+  // Verify booking belongs to user
+  if (booking.performer_id !== user.id) {
+    return { error: "You can only update your own bookings" };
+  }
+
+  // Check if booking can still be modified (24-hour guard)
+  const concert = booking.concert as { scheduled_date: string; start_time: string | null };
+  const concertDateTime = new Date(
+    concert.start_time
+      ? `${concert.scheduled_date}T${concert.start_time}`
+      : `${concert.scheduled_date}T00:00:00`
+  );
+  const now = new Date();
+  const hoursUntilConcert = (concertDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  if (hoursUntilConcert < 24) {
+    return { error: "Cannot modify booking within 24 hours of concert start time" };
+  }
+
+  // Update booking
+  const { data: updatedBooking, error: updateError } = await supabase
+    .from("bookings")
+    .update({
+      piece_stage_id: data.piece_stage_id,
+    })
+    .eq("id", bookingId)
+    .select()
+    .single();
+
+  if (updateError) {
+    console.error("Error updating booking:", updateError);
+    return { error: updateError.message };
+  }
+
+  return { booking: updatedBooking };
+}
+
 export async function cancelBooking(bookingId: string) {
   const supabase = await createClient();
 
@@ -74,15 +145,40 @@ export async function cancelBooking(bookingId: string) {
     return { error: "You must be logged in to cancel a booking" };
   }
 
-  // Verify booking belongs to user
-  const { data: booking } = await supabase
+  // Get booking with concert details
+  const { data: booking, error: bookingError } = await supabase
     .from("bookings")
-    .select("performer_id")
+    .select(`
+      *,
+      concert:concert_id (
+        scheduled_date,
+        start_time
+      )
+    `)
     .eq("id", bookingId)
     .single();
 
-  if (!booking || booking.performer_id !== user.id) {
+  if (bookingError || !booking) {
+    return { error: "Booking not found" };
+  }
+
+  // Verify booking belongs to user
+  if (booking.performer_id !== user.id) {
     return { error: "You can only cancel your own bookings" };
+  }
+
+  // Check if booking can still be cancelled (24-hour guard)
+  const concert = booking.concert as { scheduled_date: string; start_time: string | null };
+  const concertDateTime = new Date(
+    concert.start_time
+      ? `${concert.scheduled_date}T${concert.start_time}`
+      : `${concert.scheduled_date}T00:00:00`
+  );
+  const now = new Date();
+  const hoursUntilConcert = (concertDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  if (hoursUntilConcert < 24) {
+    return { error: "Cannot cancel booking within 24 hours of concert start time" };
   }
 
   // Update booking status to cancelled
