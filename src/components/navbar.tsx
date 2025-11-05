@@ -57,74 +57,87 @@ export function Navbar() {
     }
   };
 
-  // Filter nav items based on user role
-  const visibleNavItems = navItems.filter((item) =>
-    profile?.role ? item.roles.includes(profile.role) : false
-  );
+  // Filter nav items based on user role and hide current page
+  const visibleNavItems = navItems.filter((item) => {
+    // Only show if user has access to this role
+    if (!profile?.role || !item.roles.includes(profile.role)) return false;
+    // Don't show link to current page
+    if (pathname === item.href) return false;
+    return true;
+  });
 
   return (
     <nav className="border-b bg-background">
-      <div className="flex h-16 items-center px-4 container mx-auto">
+      <div className="flex h-16 items-center px-4 container mx-auto gap-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Music className="h-6 w-6" />
-          <span className="text-xl">MusicUp</span>
+          <span className="text-xl hidden sm:inline">MusicUp</span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-4">
-          <div className="hidden md:flex gap-1">
-            {visibleNavItems.map((item) => (
-              <Button
-                key={item.href}
-                variant={pathname === item.href ? "default" : "ghost"}
-                asChild
-                size="sm"
-              >
-                <Link href={item.href}>{item.label}</Link>
-              </Button>
-            ))}
-          </div>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex gap-2 ml-auto">
+          {visibleNavItems.map((item) => (
+            <Button
+              key={item.href}
+              variant="ghost"
+              asChild
+              size="sm"
+            >
+              <Link href={item.href}>{item.label}</Link>
+            </Button>
+          ))}
+        </div>
 
-          <div className="md:hidden">
-            <Select value={pathname}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Navigation" />
-              </SelectTrigger>
-              <SelectContent>
-                {visibleNavItems.map((item) => (
-                  <SelectItem key={item.href} value={item.href}>
-                    <Link href={item.href}>{item.label}</Link>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
+        {/* Mobile & Desktop User Menu */}
+        <div className="ml-auto md:ml-0">
           <Select onValueChange={(value) => {
             if (value === "logout") {
               handleLogout();
             } else if (value === "settings") {
               router.push("/settings");
+            } else if (visibleNavItems.find(item => item.href === value)) {
+              router.push(value);
             }
           }}>
-            <SelectTrigger className="w-[180px]">
-              {photoUrl ? (
-                <img
-                  src={photoUrl}
-                  alt="Profile"
-                  className="h-6 w-6 rounded-full object-cover mr-2"
-                />
-              ) : (
-                <User className="h-4 w-4 mr-2" />
-              )}
-              <SelectValue placeholder={profile?.full_name || user.email || "Account"} />
+            <SelectTrigger className="w-[140px] sm:w-[180px]">
+              <div className="flex items-center gap-2 overflow-hidden">
+                {photoUrl ? (
+                  <img
+                    src={photoUrl}
+                    alt="Profile"
+                    className="h-6 w-6 rounded-full object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <User className="h-4 w-4 flex-shrink-0" />
+                )}
+                <span className="truncate text-sm">
+                  {profile?.full_name?.split(' ')[0] || user.email?.split('@')[0] || "Account"}
+                </span>
+              </div>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent align="end">
+              {/* Profile Info */}
               <SelectItem value="profile" disabled>
                 <div className="flex flex-col">
                   <span className="font-medium">{profile?.full_name || "User"}</span>
                   <span className="text-xs text-muted-foreground">{user.email}</span>
                 </div>
               </SelectItem>
+
+              {/* Mobile Navigation Links */}
+              {visibleNavItems.length > 0 && (
+                <>
+                  <div className="md:hidden border-t my-1" />
+                  {visibleNavItems.map((item) => (
+                    <SelectItem key={item.href} value={item.href} className="md:hidden">
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </>
+              )}
+
+              {/* Settings & Logout */}
+              <div className="border-t my-1" />
               <SelectItem value="settings">
                 <span className="flex items-center gap-2">
                   <Settings className="h-4 w-4" />
