@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { withRole } from "@/lib/auth/withRole";
 import { ConcertsIHostTab } from "@/components/admin/ConcertsIHostTab";
 import { MyPerformancesTab } from "@/components/admin/MyPerformancesTab";
+import { AdminMetrics } from "@/components/admin/AdminMetrics";
 
 function AdminPage() {
   return (
@@ -11,6 +12,11 @@ function AdminPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
         <p className="text-gray-600">Manage concerts at your venues and track your performances</p>
+      </div>
+
+      {/* Activity Metrics */}
+      <div className="mb-6">
+        <AdminMetrics />
       </div>
 
       <Tabs defaultValue="concerts" className="space-y-6">

@@ -11,6 +11,7 @@ import {
   type CompletionThankYouData,
 } from "./templates";
 import { email as copy } from "@/lib/copy";
+import { logEmailSent } from "@/lib/logging/actions";
 
 // Initialize Resend with API key from environment
 // Use a placeholder in development if key is missing to allow builds
@@ -135,6 +136,12 @@ export async function sendBookingConfirmationEmail(bookingId: string) {
     }
 
     console.log("Booking confirmation email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(performer.email, "booking_confirmation", bookingId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendBookingConfirmationEmail:", error);
@@ -255,6 +262,12 @@ export async function sendConcertReminderEmail(bookingId: string) {
     }
 
     console.log("Concert reminder email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(performer.email, "concert_reminder", bookingId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendConcertReminderEmail:", error);
@@ -360,6 +373,12 @@ export async function sendCompletionThankYouEmail(performerId: string, concertId
     }
 
     console.log("Completion thank you email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(performer.email, "completion_thank_you", undefined, concertId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendCompletionThankYouEmail:", error);

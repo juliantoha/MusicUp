@@ -122,6 +122,14 @@ export type ServiceHour = {
   created_at: string;
 };
 
+export type Log = {
+  id: string;
+  event: string;
+  actor_profile_id: string | null;
+  payload: Record<string, any> | null;
+  created_at: string;
+};
+
 // ============================================================================
 // Extended Types with Relations
 // ============================================================================

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { sendBookingConfirmationEmail } from "@/lib/email/actions";
+import { logBookingCreated, logBookingChanged, logBookingCancelled } from "@/lib/logging/actions";
 
 export interface CreateBookingData {
   concert_id: string;
@@ -51,6 +52,11 @@ export async function createBooking(data: CreateBookingData) {
     console.error("Error creating booking:", error);
     return { error: error.message };
   }
+
+  // Log booking created event
+  logBookingCreated(user.id, booking.id, data.concert_id, data.piece_stage_id).catch((error) => {
+    console.error("Error logging booking created:", error);
+  });
 
   // Send confirmation email (don't block on email send)
   sendBookingConfirmationEmail(booking.id).catch((error) => {
@@ -114,6 +120,9 @@ export async function updateBooking(bookingId: string, data: UpdateBookingData) 
     return { error: "Cannot modify booking within 24 hours of concert start time" };
   }
 
+  // Store old piece_stage_id for logging
+  const oldPieceStageId = booking.piece_stage_id;
+
   // Update booking
   const { data: updatedBooking, error: updateError } = await supabase
     .from("bookings")
@@ -128,6 +137,11 @@ export async function updateBooking(bookingId: string, data: UpdateBookingData) 
     console.error("Error updating booking:", updateError);
     return { error: updateError.message };
   }
+
+  // Log booking changed event
+  logBookingChanged(user.id, bookingId, oldPieceStageId, data.piece_stage_id).catch((error) => {
+    console.error("Error logging booking changed:", error);
+  });
 
   return { booking: updatedBooking };
 }
@@ -191,6 +205,11 @@ export async function cancelBooking(bookingId: string) {
     console.error("Error cancelling booking:", error);
     return { error: error.message };
   }
+
+  // Log booking cancelled event
+  logBookingCancelled(user.id, bookingId, booking.concert_id).catch((error) => {
+    console.error("Error logging booking cancelled:", error);
+  });
 
   return { success: true };
 }
