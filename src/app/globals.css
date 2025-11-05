@@ -45,6 +45,19 @@
   --color-ring: hsl(var(--ring));
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* MusicUp Brand Colors */
+  --color-brand-blue: #2563EB;
+  --color-brand-cyan: #06B6D4;
+  --color-brand-orange: #EB6A18;
+  --color-brand-bg-light: #F8FAFC;
+  --color-brand-bg-dark: #0B1220;
+
+  /* Concert Series Colors */
+  --color-series-empathy: #E9B949;
+  --color-series-pianotales: #8B5CF6;
+  --color-series-market: #16A34A;
+  --color-series-sound: #DC2626;
 }
 
 @media (prefers-color-scheme: dark) {
