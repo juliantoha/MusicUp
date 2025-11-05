@@ -69,9 +69,6 @@ export default function Home() {
               <Button asChild variant="ghost" className="hidden sm:inline-flex">
                 <Link href="#how-it-works">How it works</Link>
               </Button>
-              <Button asChild variant="ghost" className="hidden sm:inline-flex">
-                <Link href="/library">Library</Link>
-              </Button>
               <Button asChild variant="outline" className="border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white">
                 <Link href="/login">Sign In</Link>
               </Button>
@@ -90,7 +87,7 @@ export default function Home() {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-5xl mx-auto text-center">
             <div className="mb-8 inline-block">
-              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+              <div className="flex items-center gap-3 bg-gradient-to-r from-[#EB6A18] to-[#c2410c] backdrop-blur-sm rounded-full px-6 py-3 shadow-xl">
                 <Music className="h-10 w-10" />
                 <h1 className="text-4xl md:text-6xl font-bold">MusicUp</h1>
               </div>
@@ -467,7 +464,7 @@ export default function Home() {
       </section>
 
       {/* For Partners and Cities */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-white via-purple-50/20 to-white">
+      <section className="py-24 md:py-32 bg-gradient-to-br from-orange-50/50 via-amber-50/30 to-orange-50/50">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto text-center">
             <div className="inline-block px-4 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-semibold mb-6">
