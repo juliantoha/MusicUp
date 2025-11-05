@@ -67,11 +67,10 @@ export default function Home() {
               <h1 className="text-5xl md:text-7xl font-bold">MusicUp</h1>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Stop saving music for someday
+              Music Every Day
             </h2>
             <p className="text-lg md:text-xl mb-10 text-blue-100 max-w-3xl mx-auto">
-              Play this week. Play where people live. Senior homes. Libraries. Markets. Parks.
-              Coffee shops. Museums. House concerts. Music up your city.
+              Play where people live. Libraries. Markets. Senior homes. Parks. Coffee shops.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
@@ -87,107 +86,6 @@ export default function Home() {
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
-      </section>
-
-      {/* Make Music a Verb */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Make music a verb</h2>
-            <p className="text-xl text-muted-foreground mb-6">
-              People learn piano, then hide it. One recital a year, if that. It trains fear, not fluency.
-            </p>
-            <p className="text-lg text-muted-foreground mb-6">
-              If sharing music is rare, it stays rare. MusicUp flips the default.
-            </p>
-            <p className="text-lg font-semibold text-foreground mb-8">
-              Perform often, in ordinary places. Keep the serious stages for when you want them.
-              Make everyday stages normal.
-            </p>
-            <Button asChild size="lg">
-              <Link href="/signup">Start Performing</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* The Problem We're Fixing */}
-      <section className="py-20 bg-[#F8FAFC]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The problem we are fixing</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-[#2563EB]">Scarcity creates fear</h3>
-                <p className="text-muted-foreground">
-                  One high-stakes recital a year makes playing feel like an exam instead of a language.
-                </p>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-[#06B6D4]">Learning is private, impact is public</h3>
-                <p className="text-muted-foreground">
-                  Practice happens daily, but the community never hears it. Skills stall without real listeners.
-                </p>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-[#EB6A18]">Perfection bias</h3>
-                <p className="text-muted-foreground">
-                  People wait until they feel "ready." They never feel ready. So they never play.
-                </p>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-xl font-bold text-[#E9B949]">Gatekeeping</h3>
-                <p className="text-muted-foreground">
-                  Music seems reserved for the elite. Basketball has pickup games. Chess has park tables.
-                  Music needs everyday courts.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* The Simple Fix */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">The simple fix</h2>
-            <div className="space-y-8">
-              <Card className="border-l-4 border-l-[#2563EB]">
-                <CardHeader>
-                  <CardTitle>Frequent, low-stakes stages</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Libraries, senior homes, markets, parks, coffee shops, schools, museums, living rooms.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-l-4 border-l-[#06B6D4]">
-                <CardHeader>
-                  <CardTitle>Prebuilt sets</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Clear collections with PDFs and audio at three levels. Choose a place, choose a set, play.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-l-4 border-l-[#EB6A18]">
-                <CardHeader>
-                  <CardTitle>Proof and pride</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Attendance check, group photo, and verified credit where it matters.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* How It Works Section */}
@@ -451,142 +349,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What Makes MusicUp Work */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What makes MusicUp work</h2>
-          </div>
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="border-l-4 border-l-[#2563EB] pl-6">
-              <h3 className="text-xl font-bold mb-2">Pattern</h3>
-              <p className="text-muted-foreground">
-                Communities want music that fits the room and the moment.
-              </p>
-            </div>
-            <div className="border-l-4 border-l-[#06B6D4] pl-6">
-              <h3 className="text-xl font-bold mb-2">System</h3>
-              <p className="text-muted-foreground">
-                Series → Collections → Pieces → Stages. Every piece has a PDF and audio reference.
-                Every concert has a time, place, checklist, and photo.
-              </p>
-            </div>
-            <div className="border-l-4 border-l-[#EB6A18] pl-6">
-              <h3 className="text-xl font-bold mb-2">Leverage</h3>
-              <p className="text-muted-foreground">
-                One model powers every venue type. Add cities and series as data, not new code.
-              </p>
-            </div>
-            <div className="border-l-4 border-l-[#E9B949] pl-6">
-              <h3 className="text-xl font-bold mb-2">Consequences</h3>
-              <p className="text-muted-foreground">
-                Reliable bookings. Higher attendance. Verified hours. Happier venues. Safer, simpler shows.
-              </p>
-            </div>
-            <div className="border-l-4 border-l-[#8B5CF6] pl-6">
-              <h3 className="text-xl font-bold mb-2">Story</h3>
-              <p className="text-muted-foreground">
-                A student plays. A room remembers. A city feels more like home.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features That Matter */}
-      <section className="py-20 bg-[#F8FAFC]">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Features that matter</h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-[#2563EB]" />
-                  Booking rail
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Where. When. What. Three steps.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Library className="h-5 w-5 text-[#06B6D4]" />
-                  Repertoire library
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Primary and secondary collections with 12 pieces each. Three stages per piece for difficulty. PDFs and audio included.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-[#EB6A18]" />
-                  Performer profile
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Track upcoming shows, past concerts, and service hours.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-[#E9B949]" />
-                  Admin checklist
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Mark Performed or Absent. Upload a group photo. Tap Complete Concert to grant hours.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5 text-[#8B5CF6]" />
-                  Auto emails
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Confirmations. Reminders 48 hours before. Completion receipts.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5 text-[#16A34A]" />
-                  Proof of service
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  MusicUp verifies 3 hours per Empathy Concert. CSV export for schools.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* Built on Real Music Education */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -655,42 +417,14 @@ export default function Home() {
       {/* For Hosts and Venues */}
       <section className="py-20 bg-[#F8FAFC]">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Live music without the hassle</h2>
-            <p className="text-lg text-muted-foreground mb-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Live music without the hassle</h2>
+            <p className="text-xl text-muted-foreground mb-10">
               Listings, lineups, and a checklist that ends in a group photo. Consistent programming people love.
             </p>
-            <div className="grid sm:grid-cols-2 gap-6 mb-8 text-left">
-              <div className="flex items-start gap-3">
-                <Heart className="h-6 w-6 mt-1 flex-shrink-0 text-[#2563EB]" />
-                <div>
-                  <h3 className="font-bold mb-1">Prebuilt set lists that fit your space</h3>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Heart className="h-6 w-6 mt-1 flex-shrink-0 text-[#2563EB]" />
-                <div>
-                  <h3 className="font-bold mb-1">Easy lineup management</h3>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Heart className="h-6 w-6 mt-1 flex-shrink-0 text-[#2563EB]" />
-                <div>
-                  <h3 className="font-bold mb-1">Photo and attendance proof</h3>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Heart className="h-6 w-6 mt-1 flex-shrink-0 text-[#2563EB]" />
-                <div>
-                  <h3 className="font-bold mb-1">One click to complete and credit hours</h3>
-                </div>
-              </div>
-            </div>
-            <div className="text-center">
-              <Button asChild size="lg" id="list-venue">
-                <Link href="/signup">List Your First Concert</Link>
-              </Button>
-            </div>
+            <Button asChild size="lg" id="list-venue">
+              <Link href="/signup">List Your First Concert</Link>
+            </Button>
           </div>
         </div>
       </section>
