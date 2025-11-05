@@ -73,14 +73,8 @@ export default function Home() {
               Play where people live. Libraries. Markets. Senior homes. Parks. Coffee shops.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
+              <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold text-lg px-8">
                 <Link href="/signup">Get Started</Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary" className="bg-white/20 text-white border-2 border-white hover:bg-white hover:text-[#2563EB] font-semibold">
-                <Link href="#list-venue">List Your Venue</Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary" className="bg-white/20 text-white border-2 border-white hover:bg-white hover:text-[#2563EB] font-semibold">
-                <Link href="/login">Sign In</Link>
               </Button>
             </div>
           </div>
@@ -89,10 +83,13 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-[#F8FAFC]">
+      <section id="how-it-works" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Three simple steps to start performing
+            </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Card className="border-2 hover:border-[#2563EB] transition-all duration-300 hover:shadow-lg">
@@ -100,11 +97,11 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-full bg-[#2563EB] text-white flex items-center justify-center text-xl font-bold mb-4">
                   1
                 </div>
-                <CardTitle className="text-xl">Create an account</CardTitle>
+                <CardTitle className="text-xl">Browse concerts</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Build a performer or host profile. Pick your city.
+                  Explore upcoming concerts near you—from libraries to senior homes to farmers markets. Find a venue and date that works for your schedule.
                 </p>
               </CardContent>
             </Card>
@@ -114,11 +111,11 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-full bg-[#06B6D4] text-white flex items-center justify-center text-xl font-bold mb-4">
                   2
                 </div>
-                <CardTitle className="text-xl">Book or list a concert</CardTitle>
+                <CardTitle className="text-xl">Choose your music</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Choose location, date, and a collection of music.
+                  Pick from curated collections at Stage 1, 2, or 3 difficulty. Every piece includes sheet music and audio so you know exactly what you're playing.
                 </p>
               </CardContent>
             </Card>
@@ -128,23 +125,14 @@ export default function Home() {
                 <div className="h-12 w-12 rounded-full bg-[#EB6A18] text-white flex items-center justify-center text-xl font-bold mb-4">
                   3
                 </div>
-                <CardTitle className="text-xl">Play and verify</CardTitle>
+                <CardTitle className="text-xl">Perform and earn credit</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Perform. Admin checks attendees and uploads a group photo. Everyone gets credit.
-                  Empathy Concerts grant 3 verified service hours per performer.
+                  Show up and share your music with a real audience. Your performance is verified with a group photo, and you'll earn service hours for your record.
                 </p>
               </CardContent>
             </Card>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-            <Button asChild size="lg">
-              <Link href="/signup">Join as a Performer</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/signup">Become a Host</Link>
-            </Button>
           </div>
         </div>
       </section>
@@ -349,97 +337,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Built on Real Music Education */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Built on real music education</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              MusicUp is created by <strong>Oclef</strong>, the team behind daily micro-lessons and
-              professor-led instruction that lifted student success from 17% to 80%. The same focus on
-              clarity and care powers MusicUp's repertoire, pedagogy, and safety.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* For Performers */}
+      {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-[#2563EB] to-[#06B6D4] text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Perform more. Fear less.</h2>
-            <p className="text-lg text-blue-100 mb-10">
-              Pick a venue, pick a set, show up. Your dashboard tracks shows and verified hours.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-6 mb-8 text-left">
-              <div className="flex items-start gap-3">
-                <Star className="h-6 w-6 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-bold mb-1">Instant access to concerts near you</h3>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Star className="h-6 w-6 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-bold mb-1">Clear sets that match your level</h3>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Star className="h-6 w-6 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-bold mb-1">Sheet music and audio ready to go</h3>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Star className="h-6 w-6 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-bold mb-1">Service hours tracked and downloadable</h3>
-                </div>
-              </div>
-            </div>
-            <Card className="bg-white/10 border-white/20 backdrop-blur-sm text-white mb-8">
-              <CardContent className="pt-6">
-                <p className="text-lg font-semibold text-center">
-                  You do not need to be a pro. Pickup games exist for music now.
-                  Bring what you have and grow in public.
-                </p>
-              </CardContent>
-            </Card>
-            <div className="text-center">
-              <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
-                <Link href="/signup">Perform This Month</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* For Hosts and Venues */}
-      <section className="py-20 bg-[#F8FAFC]">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Live music without the hassle</h2>
-            <p className="text-xl text-muted-foreground mb-10">
-              Listings, lineups, and a checklist that ends in a group photo. Consistent programming people love.
-            </p>
-            <Button asChild size="lg" id="list-venue">
-              <Link href="/signup">List Your First Concert</Link>
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Start Your Performance Journey?
+          </h2>
+          <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+            Join hundreds of musicians bringing music every day to their local community.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
+              <Link href="/signup">Create Free Account</Link>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Cities We're Activating */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Cities we're activating</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              LA. NYC. SF. Bring MusicUp to your city with a starter pack: three venues, one anchor series,
-              monthly concerts that compound.
-            </p>
-            <Button asChild size="lg">
-              <Link href="/signup">Bring MusicUp to My City</Link>
+            <Button asChild size="lg" variant="secondary" className="bg-white/20 text-white border-2 border-white hover:bg-white hover:text-[#2563EB] font-semibold">
+              <Link href="/login">Sign In</Link>
             </Button>
           </div>
         </div>
@@ -457,27 +369,27 @@ export default function Home() {
               {[
                 {
                   question: "How do service hours work?",
-                  answer: "For Empathy Concerts, MusicUp verifies 3 hours per completed concert per performer after the admin completes the checklist and uploads the group photo. Export a CSV for your school."
+                  answer: "Great question! When you perform at an Empathy Concert (our senior home series), you'll earn 3 verified service hours once the concert is complete. Here's how it works: After you perform, the host admin will mark your attendance and upload a group photo of all the performers. Once they tap 'Complete Concert,' those hours are automatically added to your profile. You can download a CSV file anytime to submit to your school or organization. It's all tracked for you—no paperwork, no hassle."
                 },
                 {
                   question: "What does a set look like?",
-                  answer: "Each series uses collections of 12 pieces with three difficulty stages. PDFs and audio references are included."
+                  answer: "Think of a set as your playlist for the concert. Each concert series (like PianoTales or Farmers Market Sessions) has collections of 12 pieces you can choose from. Every piece is labeled by difficulty—Stage 1 for beginners, Stage 2 for intermediate, and Stage 3 for more advanced players. When you pick a piece, you'll get the sheet music (PDF) and an audio recording so you can hear how it should sound. You'll know exactly what you're playing before you book."
                 },
                 {
-                  question: "What happens if a performer cancels?",
-                  answer: "Admins can mark Absent. No hours are granted."
+                  question: "What happens if I need to cancel?",
+                  answer: "Life happens, and we totally get it. If you need to cancel your booking, just go to your dashboard and cancel from there. We ask that you try to cancel at least 48 hours before the concert so another performer can fill your slot. If you do cancel, no service hours are granted for that performance. But don't worry—you can always book another concert when your schedule clears up!"
                 },
                 {
-                  question: "Do I need a piano?",
-                  answer: "Senior homes, schools, and some venues provide one. Markets and parks may require a keyboard. Details are listed on each concert."
+                  question: "Do I need my own piano or instrument?",
+                  answer: "It depends on the venue! Senior homes, schools, and many libraries usually have a piano already set up for you to use. For outdoor venues like farmers markets or parks, you might need to bring a portable keyboard or your own instrument. Each concert listing will clearly show what's provided and what you'll need to bring, so there are no surprises. If you're not sure, you can always reach out to the venue host before booking."
                 },
                 {
-                  question: "Costs",
-                  answer: "Most community concerts are free to host and free to perform. Some venues may offer stipends or request donations. The listing shows terms upfront."
+                  question: "How much does it cost to perform?",
+                  answer: "Most MusicUp concerts are completely free to perform—our mission is to make live performance accessible to everyone. Some venues might offer a small stipend to performers, and others may request a small donation to cover venue costs. Whatever the arrangement, it's always shown clearly in the concert listing before you book, so you'll know exactly what to expect. No hidden fees, ever."
                 },
                 {
-                  question: "Safety and privacy",
-                  answer: "Hosts approve bookings. Group photos verify attendance. Personal contact info is never shared publicly."
+                  question: "Is my personal information safe?",
+                  answer: "Absolutely. Your privacy matters to us. When you book a concert, the venue host can approve or decline your booking, but your personal contact info (like your phone number or email) is never shared publicly. After the concert, the group photo is used to verify attendance and celebrate the event—faces are visible, but it's all about the music and the community. You're in control of your profile and what you share."
                 }
               ].map((faq, index) => (
                 <div key={index} className="bg-white rounded-lg border">
@@ -539,15 +451,39 @@ export default function Home() {
       </section>
 
       {/* For Partners and Cities */}
-      <section className="py-20 bg-gradient-to-br from-[#2563EB] to-[#06B6D4] text-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">For partners and cities</h2>
-            <p className="text-lg mb-8 text-blue-100">
-              Want to activate five venues and a monthly cadence in 90 days? We'll help you launch Empathy
-              Concerts, PianoTales, and Farmers Market Sessions with ready repertoire, admin training, and reporting.
+            <p className="text-lg text-muted-foreground mb-8">
+              Ready to bring live music to your community? We'll help you launch concert series tailored to your venues:
             </p>
-            <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
+            <div className="grid md:grid-cols-2 gap-6 mb-10 max-w-2xl mx-auto">
+              <Card className="border-l-4 border-l-[#8B5CF6]">
+                <CardHeader>
+                  <CardTitle className="text-lg">Libraries: PianoTales</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Storytime concerts for ages 2-5 with music and books woven together.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-[#E9B949]">
+                <CardHeader>
+                  <CardTitle className="text-lg">Senior Homes: Empathy Concerts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Familiar melodies for memory care and senior living communities.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="text-md text-muted-foreground mb-8">
+              We provide ready repertoire, admin training, and reporting to help you activate venues and establish a monthly concert cadence in 90 days.
+            </p>
+            <Button asChild size="lg">
               <Link href="/signup">Book a Launch Call</Link>
             </Button>
           </div>
