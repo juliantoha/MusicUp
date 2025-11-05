@@ -192,10 +192,13 @@ export function InformationTab() {
             })}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            <p>No service hours recorded yet.</p>
-            <p className="text-sm mt-1">
-              Complete concerts to start tracking your volunteer hours!
+          <div className="text-center py-12 bg-muted/10 rounded-lg border-2 border-dashed">
+            <Clock className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-base md:text-lg font-medium text-foreground mb-1">
+              No service hours yet
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Complete concerts to start tracking volunteer hours!
             </p>
           </div>
         )}
@@ -233,9 +236,14 @@ export function InformationTab() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            <p>No past concerts yet.</p>
-            <p className="text-sm mt-1">Your completed performances will appear here!</p>
+          <div className="text-center py-12 bg-muted/10 rounded-lg border-2 border-dashed">
+            <Music2 className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-base md:text-lg font-medium text-foreground mb-1">
+              No past concerts yet
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Completed performances will appear here
+            </p>
           </div>
         )}
       </Card>

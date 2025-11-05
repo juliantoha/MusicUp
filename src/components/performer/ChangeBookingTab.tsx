@@ -138,12 +138,14 @@ export function ChangeBookingTab() {
 
   if (bookings.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">🎵</div>
-        <h3 className="text-lg font-semibold mb-2">No Upcoming Bookings</h3>
-        <p className="text-gray-600 mb-4">
-          You don't have any concerts booked yet. Head to the "Book a Concert" tab to get started!
-        </p>
+      <div className="flex items-center justify-center py-16">
+        <div className="text-center max-w-md">
+          <Music className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg md:text-xl font-semibold mb-2">No upcoming bookings</h3>
+          <p className="text-sm md:text-base text-muted-foreground">
+            Book your first concert to get started with performing!
+          </p>
+        </div>
       </div>
     );
   }

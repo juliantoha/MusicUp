@@ -13,7 +13,10 @@ import {
 import { toast } from "sonner";
 import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
+import { MapPin, Calendar, Music, Check } from "lucide-react";
 import type { Concert } from "@/types/db";
+
+const STEP_ICONS = [MapPin, Calendar, Music];
 
 const STEPS = ["Choose Location", "Select Concert", "Pick Your Piece"];
 
@@ -91,37 +94,52 @@ export function BookConcertTab() {
 
   return (
     <div className="space-y-6">
-      {/* Stepper */}
-      <div className="flex items-center justify-between">
-        {STEPS.map((step, index) => (
-          <div key={step} className="flex items-center flex-1">
-            <div className="flex flex-col items-center flex-1">
-              <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                  index <= currentStep
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-300 text-gray-400"
-                }`}
-              >
-                {index + 1}
+      {/* Stepper - Mobile-First Design */}
+      <div className="flex items-start md:items-center justify-between gap-2">
+        {STEPS.map((step, index) => {
+          const Icon = STEP_ICONS[index];
+          const isActive = index === currentStep;
+          const isCompleted = index < currentStep;
+
+          return (
+            <div key={step} className="flex items-center flex-1">
+              <div className="flex flex-col items-center flex-1">
+                <div
+                  className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border-2 transition-all ${
+                    isCompleted
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : isActive
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-background text-muted-foreground"
+                  }`}
+                  aria-current={isActive ? "step" : undefined}
+                  aria-label={`Step ${index + 1}: ${step}`}
+                >
+                  {isCompleted ? (
+                    <Check className="w-6 h-6 md:w-7 md:h-7" aria-hidden="true" />
+                  ) : (
+                    <Icon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+                  )}
+                </div>
+                <span
+                  className={`mt-2 text-xs md:text-sm font-medium text-center transition-colors ${
+                    isActive || isCompleted ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {step}
+                </span>
               </div>
-              <span
-                className={`mt-2 text-sm font-medium ${
-                  index <= currentStep ? "text-blue-600" : "text-gray-400"
-                }`}
-              >
-                {step}
-              </span>
+              {index < STEPS.length - 1 && (
+                <div
+                  className={`h-0.5 w-full max-w-[2rem] md:max-w-[4rem] mx-1 md:mx-4 transition-colors ${
+                    index < currentStep ? "bg-primary" : "bg-border"
+                  }`}
+                  aria-hidden="true"
+                />
+              )}
             </div>
-            {index < STEPS.length - 1 && (
-              <div
-                className={`h-0.5 flex-1 mx-4 ${
-                  index < currentStep ? "bg-blue-600" : "bg-gray-300"
-                }`}
-              />
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Step Content */}
