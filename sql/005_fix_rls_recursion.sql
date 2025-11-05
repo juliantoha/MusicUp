@@ -58,7 +58,7 @@ DROP POLICY IF EXISTS "Admins and super_admins can update concert photos" ON sto
 DROP POLICY IF EXISTS "Admins and super_admins can delete concert photos" ON storage.objects;
 
 -- Create security definer function to get user role without recursion
-CREATE OR REPLACE FUNCTION auth.user_role()
+CREATE OR REPLACE FUNCTION public.get_user_role()
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -76,108 +76,109 @@ END;
 $$;
 
 -- Grant execute permission
-GRANT EXECUTE ON FUNCTION auth.user_role() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_user_role() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_user_role() TO anon;
 
 -- Recreate profiles policies using the security definer function
 CREATE POLICY "Super admins can view all profiles"
 ON profiles FOR SELECT
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Admins can view performers"
 ON profiles FOR SELECT
 USING (
-  auth.user_role() = 'admin'
+  public.get_user_role() = 'admin'
   AND role = 'performer'
 );
 
 CREATE POLICY "Super admins can insert profiles"
 ON profiles FOR INSERT
-WITH CHECK (auth.user_role() = 'super_admin');
+WITH CHECK (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Super admins can update any profile"
 ON profiles FOR UPDATE
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 -- Venues policies
 CREATE POLICY "Admins can view all venues"
 ON venues FOR SELECT
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can insert venues"
 ON venues FOR INSERT
-WITH CHECK (auth.user_role() IN ('admin', 'super_admin'));
+WITH CHECK (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can update venues"
 ON venues FOR UPDATE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 -- Admins-Venues policies
 CREATE POLICY "Admins can view their own venue assignments"
 ON admins_venues FOR SELECT
 USING (
   profile_id = auth.uid() OR
-  auth.user_role() = 'super_admin'
+  public.get_user_role() = 'super_admin'
 );
 
 CREATE POLICY "Only super admins can insert venue assignments"
 ON admins_venues FOR INSERT
-WITH CHECK (auth.user_role() = 'super_admin');
+WITH CHECK (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Only super admins can delete venue assignments"
 ON admins_venues FOR DELETE
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 -- Series policies
 CREATE POLICY "Admins and super admins can insert series"
 ON series FOR INSERT
-WITH CHECK (auth.user_role() IN ('admin', 'super_admin'));
+WITH CHECK (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can update series"
 ON series FOR UPDATE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can delete series"
 ON series FOR DELETE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 -- Collections policies
 CREATE POLICY "Admins and super admins can insert collections"
 ON collections FOR INSERT
-WITH CHECK (auth.user_role() IN ('admin', 'super_admin'));
+WITH CHECK (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can update collections"
 ON collections FOR UPDATE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can delete collections"
 ON collections FOR DELETE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 -- Pieces policies
 CREATE POLICY "Admins and super admins can insert pieces"
 ON pieces FOR INSERT
-WITH CHECK (auth.user_role() IN ('admin', 'super_admin'));
+WITH CHECK (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can update pieces"
 ON pieces FOR UPDATE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can delete pieces"
 ON pieces FOR DELETE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 -- Piece stages policies
 CREATE POLICY "Admins and super admins can insert piece stages"
 ON piece_stages FOR INSERT
-WITH CHECK (auth.user_role() IN ('admin', 'super_admin'));
+WITH CHECK (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can update piece stages"
 ON piece_stages FOR UPDATE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 CREATE POLICY "Admins and super admins can delete piece stages"
 ON piece_stages FOR DELETE
-USING (auth.user_role() IN ('admin', 'super_admin'));
+USING (public.get_user_role() IN ('admin', 'super_admin'));
 
 -- Concerts policies
 CREATE POLICY "Anyone can view scheduled concerts"
@@ -187,7 +188,7 @@ USING (status = 'scheduled');
 CREATE POLICY "Admins can view all concerts for their venues"
 ON concerts FOR SELECT
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   venue_id IN (
     SELECT venue_id FROM admins_venues WHERE profile_id = auth.uid()
   )
@@ -195,12 +196,12 @@ USING (
 
 CREATE POLICY "Super admins can view all concerts"
 ON concerts FOR SELECT
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Admins can insert concerts for their venues"
 ON concerts FOR INSERT
 WITH CHECK (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   venue_id IN (
     SELECT venue_id FROM admins_venues WHERE profile_id = auth.uid()
   )
@@ -208,12 +209,12 @@ WITH CHECK (
 
 CREATE POLICY "Super admins can insert concerts"
 ON concerts FOR INSERT
-WITH CHECK (auth.user_role() = 'super_admin');
+WITH CHECK (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Admins can update concerts for their venues"
 ON concerts FOR UPDATE
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   venue_id IN (
     SELECT venue_id FROM admins_venues WHERE profile_id = auth.uid()
   )
@@ -221,7 +222,7 @@ USING (
 
 CREATE POLICY "Super admins can update concerts"
 ON concerts FOR UPDATE
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 -- Bookings policies
 CREATE POLICY "Users can view their own bookings"
@@ -231,7 +232,7 @@ USING (profile_id = auth.uid());
 CREATE POLICY "Admins can view bookings for their venue concerts"
 ON bookings FOR SELECT
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -241,7 +242,7 @@ USING (
 
 CREATE POLICY "Super admins can view all bookings"
 ON bookings FOR SELECT
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Users can insert their own bookings"
 ON bookings FOR INSERT
@@ -254,7 +255,7 @@ USING (profile_id = auth.uid());
 CREATE POLICY "Admins can update bookings for their venue concerts"
 ON bookings FOR UPDATE
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -264,13 +265,13 @@ USING (
 
 CREATE POLICY "Super admins can update bookings"
 ON bookings FOR UPDATE
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 -- Attendance checks policies
 CREATE POLICY "Admins can view attendance for their venue concerts"
 ON attendance_checks FOR SELECT
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -280,12 +281,12 @@ USING (
 
 CREATE POLICY "Super admins can view all attendance"
 ON attendance_checks FOR SELECT
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Admins can insert attendance for their venue concerts"
 ON attendance_checks FOR INSERT
 WITH CHECK (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -295,13 +296,13 @@ WITH CHECK (
 
 CREATE POLICY "Super admins can insert attendance"
 ON attendance_checks FOR INSERT
-WITH CHECK (auth.user_role() = 'super_admin');
+WITH CHECK (public.get_user_role() = 'super_admin');
 
 -- Concert photos policies
 CREATE POLICY "Admins can view photos for their venue concerts"
 ON concert_photos FOR SELECT
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -311,12 +312,12 @@ USING (
 
 CREATE POLICY "Super admins can view all concert photos"
 ON concert_photos FOR SELECT
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Admins can insert concert photos for their venue concerts"
 ON concert_photos FOR INSERT
 WITH CHECK (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -326,7 +327,7 @@ WITH CHECK (
 
 CREATE POLICY "Super admins can insert concert photos"
 ON concert_photos FOR INSERT
-WITH CHECK (auth.user_role() = 'super_admin');
+WITH CHECK (public.get_user_role() = 'super_admin');
 
 -- Service hours policies
 CREATE POLICY "Users can view their own service hours"
@@ -336,7 +337,7 @@ USING (profile_id = auth.uid());
 CREATE POLICY "Admins can view service hours for their venue concerts"
 ON service_hours FOR SELECT
 USING (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -346,12 +347,12 @@ USING (
 
 CREATE POLICY "Super admins can view all service hours"
 ON service_hours FOR SELECT
-USING (auth.user_role() = 'super_admin');
+USING (public.get_user_role() = 'super_admin');
 
 CREATE POLICY "Admins can insert service hours for their venue concerts"
 ON service_hours FOR INSERT
 WITH CHECK (
-  auth.user_role() = 'admin' AND
+  public.get_user_role() = 'admin' AND
   concert_id IN (
     SELECT c.id FROM concerts c
     INNER JOIN admins_venues av ON av.venue_id = c.venue_id
@@ -361,28 +362,28 @@ WITH CHECK (
 
 CREATE POLICY "Super admins can insert service hours"
 ON service_hours FOR INSERT
-WITH CHECK (auth.user_role() = 'super_admin');
+WITH CHECK (public.get_user_role() = 'super_admin');
 
 -- Storage policies for scores bucket
 CREATE POLICY "Admins and super_admins can upload scores"
 ON storage.objects FOR INSERT
 WITH CHECK (
   bucket_id = 'scores' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 CREATE POLICY "Admins and super_admins can update scores"
 ON storage.objects FOR UPDATE
 USING (
   bucket_id = 'scores' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 CREATE POLICY "Admins and super_admins can delete scores"
 ON storage.objects FOR DELETE
 USING (
   bucket_id = 'scores' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 -- Storage policies for audio bucket
@@ -390,21 +391,21 @@ CREATE POLICY "Admins and super_admins can upload audio"
 ON storage.objects FOR INSERT
 WITH CHECK (
   bucket_id = 'audio' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 CREATE POLICY "Admins and super_admins can update audio"
 ON storage.objects FOR UPDATE
 USING (
   bucket_id = 'audio' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 CREATE POLICY "Admins and super_admins can delete audio"
 ON storage.objects FOR DELETE
 USING (
   bucket_id = 'audio' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 -- Storage policies for concert_photos bucket
@@ -412,19 +413,19 @@ CREATE POLICY "Admins and super_admins can upload concert photos"
 ON storage.objects FOR INSERT
 WITH CHECK (
   bucket_id = 'concert_photos' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 CREATE POLICY "Admins and super_admins can update concert photos"
 ON storage.objects FOR UPDATE
 USING (
   bucket_id = 'concert_photos' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
 
 CREATE POLICY "Admins and super_admins can delete concert photos"
 ON storage.objects FOR DELETE
 USING (
   bucket_id = 'concert_photos' AND
-  auth.user_role() IN ('admin', 'super_admin')
+  public.get_user_role() IN ('admin', 'super_admin')
 );
