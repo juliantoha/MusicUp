@@ -80,8 +80,11 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2563EB] via-[#EB6A18] via-[#1e40af] to-[#06B6D4] text-white pt-32 pb-20 md:pt-40 md:pb-28">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1e40af] via-[#2563EB] to-[#06B6D4] text-white pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        {/* Orange accent glows for warmth */}
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-[#EB6A18] opacity-20 rounded-full blur-[120px]"></div>
+        <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-[#f97316] opacity-15 rounded-full blur-[100px]"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"></div>
         <div className="container mx-auto px-4 relative">
           <div className="max-w-5xl mx-auto text-center">
