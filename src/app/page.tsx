@@ -80,16 +80,14 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2563EB] via-[#1e40af] to-[#06B6D4] text-white pt-32 pb-20 md:pt-40 md:pb-28">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#2563EB] via-[#EB6A18] via-[#1e40af] to-[#06B6D4] text-white pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"></div>
         <div className="container mx-auto px-4 relative">
           <div className="max-w-5xl mx-auto text-center">
-            <div className="mb-8 inline-block">
-              <div className="flex items-center gap-3 bg-gradient-to-r from-[#EB6A18] to-[#c2410c] backdrop-blur-sm rounded-full px-6 py-3 shadow-xl">
-                <Music className="h-10 w-10" />
-                <h1 className="text-4xl md:text-6xl font-bold">MusicUp</h1>
-              </div>
+            <div className="mb-8 flex items-center justify-center gap-3">
+              <Music className="h-12 w-12 md:h-16 md:w-16" />
+              <h1 className="text-5xl md:text-7xl font-bold">MusicUp</h1>
             </div>
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               Music Every Day
