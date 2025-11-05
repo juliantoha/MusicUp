@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Music Library - Browse Curated Concert Repertoire | MusicUp",
     description: "Complete collection of concert pieces organized by series and difficulty. PDFs and audio included for every stage.",
-    url: "https://musicup.app/library",
+    url: "https://music-up-alpha.vercel.app/library",
     type: "website",
   },
   twitter: {
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description: "Curated concert pieces with sheet music PDFs and audio references. Filter by difficulty stage.",
   },
   alternates: {
-    canonical: "https://musicup.app/library",
+    canonical: "https://music-up-alpha.vercel.app/library",
   },
 };
 

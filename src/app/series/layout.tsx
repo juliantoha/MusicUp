@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Concert Series - Play the right set in the right room | MusicUp",
     description: "9 ready-to-run concert series for libraries, senior homes, markets, schools, and community spaces. Each with curated repertoire and clear format guidelines.",
-    url: "https://musicup.app/series",
+    url: "https://music-up-alpha.vercel.app/series",
     type: "website",
     images: [
       {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     images: ["/og-series.png"],
   },
   alternates: {
-    canonical: "https://musicup.app/series",
+    canonical: "https://music-up-alpha.vercel.app/series",
   },
 };
 

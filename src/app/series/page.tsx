@@ -210,8 +210,30 @@ export default function SeriesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <Music className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Button asChild variant="outline" className="border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white">
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button asChild className="bg-[#2563EB] hover:bg-[#1d4ed8]">
+                <Link href="/signup">Get Started</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1e40af] via-[#2563EB] to-[#06B6D4] text-white py-20 md:py-28">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1e40af] via-[#2563EB] to-[#06B6D4] text-white pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-[#EB6A18] opacity-20 rounded-full blur-[120px]"></div>
         <div className="container mx-auto px-4 relative">
@@ -299,60 +321,60 @@ export default function SeriesPage() {
                       <div className="flex items-start justify-between gap-4 flex-wrap">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
-                            <div className="h-12 w-12 rounded-xl flex items-center justify-center shadow-md" style={{ backgroundColor: s.color }}>
-                              <Icon className="h-6 w-6 text-white" />
+                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: s.color }}>
+                              <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
                             </div>
                             <div>
-                              <h3 className="text-2xl font-bold">{s.name}</h3>
-                              <p className="text-gray-600 italic">{s.tagline}</p>
+                              <h3 className="text-xl md:text-2xl font-bold">{s.name}</h3>
+                              <p className="text-sm md:text-base text-gray-600 italic">{s.tagline}</p>
                             </div>
                           </div>
-                          <p className="text-gray-700 text-lg mb-4">{s.description}</p>
+                          <p className="text-base md:text-lg text-gray-700 mb-4">{s.description}</p>
 
                           {/* Format */}
-                          <div className="grid sm:grid-cols-3 gap-3 mb-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
                             <div className="flex items-start gap-2">
                               <Clock className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                              <span className="text-sm text-gray-600">{s.format.duration}</span>
+                              <span className="text-xs sm:text-sm text-gray-600">{s.format.duration}</span>
                             </div>
                             <div className="flex items-start gap-2">
                               <Users className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                              <span className="text-sm text-gray-600">{s.format.performers}</span>
+                              <span className="text-xs sm:text-sm text-gray-600">{s.format.performers}</span>
                             </div>
                             <div className="flex items-start gap-2">
                               <Volume2 className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                              <span className="text-sm text-gray-600">{s.format.volume}</span>
+                              <span className="text-xs sm:text-sm text-gray-600">{s.format.volume}</span>
                             </div>
                           </div>
 
                           {/* Good For */}
                           <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                            <p className="text-sm font-semibold text-gray-700 mb-1">Good for</p>
-                            <p className="text-sm text-gray-600">{s.goodFor}</p>
+                            <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-1">Good for</p>
+                            <p className="text-xs sm:text-sm text-gray-600">{s.goodFor}</p>
                           </div>
 
                           {/* What You Get */}
                           <div className="mb-4">
-                            <p className="text-sm font-semibold text-gray-700 mb-2">What you get</p>
+                            <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">What you get</p>
                             <ul className="space-y-2">
                               {s.benefits.map((benefit, idx) => (
                                 <li key={idx} className="flex items-start gap-2">
                                   <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: s.color }} />
-                                  <span className="text-sm text-gray-600">{benefit}</span>
+                                  <span className="text-xs sm:text-sm text-gray-600">{benefit}</span>
                                 </li>
                               ))}
                             </ul>
                           </div>
                         </div>
 
-                        <div className="flex flex-col gap-3 sm:min-w-[200px]">
+                        <div className="flex flex-col gap-3 w-full sm:w-auto sm:min-w-[200px]">
                           {s.badge && (
-                            <div className="inline-flex items-center gap-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div className="inline-flex items-center gap-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg w-fit">
                               <Award className="h-4 w-4 text-yellow-600" />
                               <span className="text-sm font-semibold text-yellow-700">{s.badge}</span>
                             </div>
                           )}
-                          <Button asChild className="shadow-md" style={{ backgroundColor: s.color }}>
+                          <Button asChild className="shadow-md w-full sm:w-auto" style={{ backgroundColor: s.color }}>
                             <Link href="/signup">{s.cta}</Link>
                           </Button>
                         </div>

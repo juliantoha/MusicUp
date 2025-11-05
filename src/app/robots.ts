@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://musicup.app' // Update with your actual domain
+  const baseUrl = 'https://music-up-alpha.vercel.app'
 
   return {
     rules: [

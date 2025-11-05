@@ -6,7 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { OrganizationStructuredData, ServiceStructuredData } from "@/components/structured-data";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://musicup.app'), // Update with your actual domain
+  metadataBase: new URL('https://music-up-alpha.vercel.app'),
   title: {
     default: "MusicUp - Music Every Day | Concerts for Libraries, Senior Homes & Community Spaces",
     template: "%s | MusicUp"
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://musicup.app",
+    url: "https://music-up-alpha.vercel.app",
     siteName: "MusicUp",
     title: "MusicUp - Music Every Day | Concert Series for Community Spaces",
     description: "Short, ready-to-run concerts that fit real places. Pick a series, pick a set, show up. MusicUp handles the rest.",

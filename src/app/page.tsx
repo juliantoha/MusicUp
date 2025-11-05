@@ -513,9 +513,9 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0B1220] text-white py-12">
+      <footer className="bg-[#0B1220] text-white py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-12 mb-8">
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-sm text-gray-400">
