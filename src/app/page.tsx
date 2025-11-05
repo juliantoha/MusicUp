@@ -57,129 +57,169 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2563EB] to-[#06B6D4] text-white">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="container mx-auto px-4 py-24 md:py-32 relative">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-8 flex items-center justify-center gap-3">
-              <Music className="h-16 w-16 md:h-20 md:w-20" />
-              <h1 className="text-5xl md:text-7xl font-bold">MusicUp</h1>
-            </div>
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Music Every Day
-            </h2>
-            <p className="text-lg md:text-xl mb-10 text-blue-100 max-w-3xl mx-auto">
-              Play where people live. Libraries. Markets. Senior homes. Parks. Coffee shops.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold text-lg px-8">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 group">
+              <Music className="h-8 w-8 text-[#2563EB] group-hover:scale-110 transition-transform" />
+              <span className="text-2xl font-bold text-[#2563EB]">MusicUp</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Button asChild variant="ghost" className="hidden sm:inline-flex">
+                <Link href="#how-it-works">How it works</Link>
+              </Button>
+              <Button asChild variant="ghost" className="hidden sm:inline-flex">
+                <Link href="/library">Library</Link>
+              </Button>
+              <Button asChild variant="outline" className="border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white">
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button asChild className="bg-[#2563EB] hover:bg-[#1d4ed8]">
                 <Link href="/signup">Get Started</Link>
               </Button>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#2563EB] via-[#1e40af] to-[#06B6D4] text-white pt-32 pb-20 md:pt-40 md:pb-28">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10"></div>
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="mb-8 inline-block">
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+                <Music className="h-10 w-10" />
+                <h1 className="text-4xl md:text-6xl font-bold">MusicUp</h1>
+              </div>
+            </div>
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              Music Every Day
+            </h2>
+            <p className="text-xl md:text-2xl mb-12 text-blue-50 max-w-3xl mx-auto leading-relaxed">
+              Play where people live. Libraries. Markets. Senior homes. Parks. Coffee shops.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 hover:scale-105 transition-transform font-semibold text-lg px-10 py-6 rounded-xl shadow-2xl">
+                <Link href="/signup">Get Started Free</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-white">
+      <section id="how-it-works" className="py-24 md:py-32 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-20">
+            <div className="inline-block px-4 py-2 bg-blue-100 text-[#2563EB] rounded-full text-sm font-semibold mb-6">
+              Simple & Fast
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">How it works</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Three simple steps to start performing
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="border-2 hover:border-[#2563EB] transition-all duration-300 hover:shadow-lg">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-full bg-[#2563EB] text-white flex items-center justify-center text-xl font-bold mb-4">
-                  1
-                </div>
-                <CardTitle className="text-xl">Browse concerts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Explore upcoming concerts near you—from libraries to senior homes to farmers markets. Find a venue and date that works for your schedule.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="group">
+              <Card className="h-full border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white to-blue-50/30">
+                <CardHeader className="pb-4">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] text-white flex items-center justify-center text-2xl font-bold mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                    1
+                  </div>
+                  <CardTitle className="text-2xl mb-2">Browse concerts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 leading-relaxed">
+                    Explore upcoming concerts near you—from libraries to senior homes to farmers markets. Find a venue and date that works for your schedule.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card className="border-2 hover:border-[#06B6D4] transition-all duration-300 hover:shadow-lg">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-full bg-[#06B6D4] text-white flex items-center justify-center text-xl font-bold mb-4">
-                  2
-                </div>
-                <CardTitle className="text-xl">Choose your music</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Pick from curated collections at Stage 1, 2, or 3 difficulty. Every piece includes sheet music and audio so you know exactly what you're playing.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="group">
+              <Card className="h-full border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white to-cyan-50/30">
+                <CardHeader className="pb-4">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] text-white flex items-center justify-center text-2xl font-bold mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                    2
+                  </div>
+                  <CardTitle className="text-2xl mb-2">Choose your music</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 leading-relaxed">
+                    Pick from curated collections at Stage 1, 2, or 3 difficulty. Every piece includes sheet music and audio so you know exactly what you're playing.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card className="border-2 hover:border-[#EB6A18] transition-all duration-300 hover:shadow-lg">
-              <CardHeader>
-                <div className="h-12 w-12 rounded-full bg-[#EB6A18] text-white flex items-center justify-center text-xl font-bold mb-4">
-                  3
-                </div>
-                <CardTitle className="text-xl">Perform and earn credit</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Show up and share your music with a real audience. Your performance is verified with a group photo, and you'll earn service hours for your record.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="group">
+              <Card className="h-full border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white to-orange-50/30">
+                <CardHeader className="pb-4">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] text-white flex items-center justify-center text-2xl font-bold mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                    3
+                  </div>
+                  <CardTitle className="text-2xl mb-2">Perform and earn credit</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 leading-relaxed">
+                    Show up and share your music with a real audience. Your performance is verified with a group photo, and you'll earn service hours for your record.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Who This Is For Section */}
-      <section className="py-20 bg-white">
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Who this is for</h2>
+          <div className="text-center mb-20">
+            <div className="inline-block px-4 py-2 bg-purple-100 text-purple-600 rounded-full text-sm font-semibold mb-6">
+              Built for Everyone
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Who this is for</h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            <div className="text-center p-6">
-              <div className="h-20 w-20 rounded-full bg-[#2563EB] mx-auto mb-6 flex items-center justify-center">
-                <Music className="h-10 w-10 text-white" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <div className="group text-center p-8 rounded-2xl hover:bg-gradient-to-br hover:from-blue-50 hover:to-white transition-all duration-300">
+              <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] mx-auto mb-6 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <Music className="h-12 w-12 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Performers</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="text-2xl font-bold mb-4">Performers</h3>
+              <p className="text-gray-600 text-base leading-relaxed">
                 Fast bookings. Clear repertoire. Verified service hours.
               </p>
             </div>
 
-            <div className="text-center p-6">
-              <div className="h-20 w-20 rounded-full bg-[#06B6D4] mx-auto mb-6 flex items-center justify-center">
-                <Users className="h-10 w-10 text-white" />
+            <div className="group text-center p-8 rounded-2xl hover:bg-gradient-to-br hover:from-cyan-50 hover:to-white transition-all duration-300">
+              <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] mx-auto mb-6 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <Users className="h-12 w-12 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Hosts</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="text-2xl font-bold mb-4">Hosts</h3>
+              <p className="text-gray-600 text-base leading-relaxed">
                 Simple checklists. Auto emails. Photo proof. Real community impact.
               </p>
             </div>
 
-            <div className="text-center p-6">
-              <div className="h-20 w-20 rounded-full bg-[#EB6A18] mx-auto mb-6 flex items-center justify-center">
-                <Library className="h-10 w-10 text-white" />
+            <div className="group text-center p-8 rounded-2xl hover:bg-gradient-to-br hover:from-orange-50 hover:to-white transition-all duration-300">
+              <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] mx-auto mb-6 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <Library className="h-12 w-12 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Venues</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="text-2xl font-bold mb-4">Venues</h3>
+              <p className="text-gray-600 text-base leading-relaxed">
                 Consistent programming. Family-friendly sets. Zero chaos.
               </p>
             </div>
 
-            <div className="text-center p-6">
-              <div className="h-20 w-20 rounded-full bg-[#E9B949] mx-auto mb-6 flex items-center justify-center">
-                <TrendingUp className="h-10 w-10 text-white" />
+            <div className="group text-center p-8 rounded-2xl hover:bg-gradient-to-br hover:from-yellow-50 hover:to-white transition-all duration-300">
+              <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-[#E9B949] to-[#ca8a04] mx-auto mb-6 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <TrendingUp className="h-12 w-12 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Cities</h3>
-              <p className="text-muted-foreground text-sm">
+              <h3 className="text-2xl font-bold mb-4">Cities</h3>
+              <p className="text-gray-600 text-base leading-relaxed">
                 A repeatable way to light up public spaces with local talent.
               </p>
             </div>
@@ -188,149 +228,152 @@ export default function Home() {
       </section>
 
       {/* Concert Series Section */}
-      <section className="py-20 bg-[#F8FAFC]">
+      <section className="py-24 md:py-32 bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Concert series you can run today</h2>
+          <div className="text-center mb-20">
+            <div className="inline-block px-4 py-2 bg-gradient-to-r from-blue-100 to-cyan-100 text-[#2563EB] rounded-full text-sm font-semibold mb-6">
+              9 Concert Series
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Concert series you can run today</h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            <Card className="border-l-4 border-l-[#E9B949] hover:shadow-lg transition-shadow">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            <Card className="group border-0 border-l-4 border-l-[#E9B949] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#E9B949]"></div>
-                  <span className="text-xs font-semibold text-[#E9B949] uppercase">Empathy Concerts</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#E9B949] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#E9B949] uppercase tracking-wider">Empathy Concerts</span>
                 </div>
-                <CardTitle className="text-lg">Memory needs melody</CardTitle>
+                <CardTitle className="text-xl">Memory needs melody</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Bring familiar songs to senior homes. We verify 3 hours of service for every completed concert.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#8B5CF6] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#8B5CF6] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#8B5CF6]"></div>
-                  <span className="text-xs font-semibold text-[#8B5CF6] uppercase">PianoTales</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#8B5CF6] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#8B5CF6] uppercase tracking-wider">PianoTales</span>
                 </div>
-                <CardTitle className="text-lg">Storytime that sings</CardTitle>
+                <CardTitle className="text-xl">Storytime that sings</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Twelve short pieces for ages 2 to 5 with books and narration woven in.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#16A34A] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#16A34A] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#16A34A]"></div>
-                  <span className="text-xs font-semibold text-[#16A34A] uppercase">Markets & Parks</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#16A34A] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#16A34A] uppercase tracking-wider">Markets & Parks</span>
                 </div>
-                <CardTitle className="text-lg">Weekends that feel like home</CardTitle>
+                <CardTitle className="text-xl">Weekends that feel like home</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Warm sets from the 1980s to today. Families linger. Vendors smile.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#DC2626] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#DC2626] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#DC2626]"></div>
-                  <span className="text-xs font-semibold text-[#DC2626] uppercase">Hospitals</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#DC2626] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#DC2626] uppercase tracking-wider">Hospitals</span>
                 </div>
-                <CardTitle className="text-lg">Lobbies & Healing Spaces</CardTitle>
+                <CardTitle className="text-xl">Lobbies & Healing Spaces</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Calm sets for visitors and staff.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#2563EB] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#2563EB] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#2563EB]"></div>
-                  <span className="text-xs font-semibold text-[#2563EB] uppercase">K-6 Schools</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#2563EB] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#2563EB] uppercase tracking-wider">K-6 Schools</span>
                 </div>
-                <CardTitle className="text-lg">Assemblies & After-School</CardTitle>
+                <CardTitle className="text-xl">Assemblies & After-School</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Short interactive pieces. Teachers get easy handouts.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#06B6D4] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#06B6D4] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#06B6D4]"></div>
-                  <span className="text-xs font-semibold text-[#06B6D4] uppercase">Playgrounds</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#06B6D4] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#06B6D4] uppercase tracking-wider">Playgrounds</span>
                 </div>
-                <CardTitle className="text-lg">Parks & Weekends</CardTitle>
+                <CardTitle className="text-xl">Parks & Weekends</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Pop-up music for families.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#EB6A18] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#EB6A18] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#EB6A18]"></div>
-                  <span className="text-xs font-semibold text-[#EB6A18] uppercase">Coffee Shops</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#EB6A18] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#EB6A18] uppercase tracking-wider">Coffee Shops</span>
                 </div>
-                <CardTitle className="text-lg">Acoustic Hours</CardTitle>
+                <CardTitle className="text-xl">Acoustic Hours</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Sets that fit service flow.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#9333EA] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#9333EA] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#9333EA]"></div>
-                  <span className="text-xs font-semibold text-[#9333EA] uppercase">Museums</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#9333EA] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#9333EA] uppercase tracking-wider">Museums</span>
                 </div>
-                <CardTitle className="text-lg">Galleries & Art Spaces</CardTitle>
+                <CardTitle className="text-xl">Galleries & Art Spaces</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Quiet sets that respect the room.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-[#D97706] hover:shadow-lg transition-shadow">
+            <Card className="group border-0 border-l-4 border-l-[#D97706] hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-white">
               <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-3 w-3 rounded-full bg-[#D97706]"></div>
-                  <span className="text-xs font-semibold text-[#D97706] uppercase">House Concerts</span>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-[#D97706] group-hover:scale-125 transition-transform"></div>
+                  <span className="text-xs font-bold text-[#D97706] uppercase tracking-wider">House Concerts</span>
                 </div>
-                <CardTitle className="text-lg">Living Rooms</CardTitle>
+                <CardTitle className="text-xl">Living Rooms</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Intimate shows with clear run-of-show.
                 </p>
               </CardContent>
             </Card>
           </div>
-          <div className="text-center mt-12">
-            <Button asChild size="lg">
+          <div className="text-center mt-16">
+            <Button asChild size="lg" className="bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-white hover:opacity-90 shadow-xl hover:shadow-2xl transition-all px-8">
               <Link href="/library">Explore Series</Link>
             </Button>
           </div>
@@ -338,19 +381,22 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-[#2563EB] to-[#06B6D4] text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="relative py-24 md:py-32 bg-gradient-to-br from-[#2563EB] via-[#1e40af] to-[#06B6D4] text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl"></div>
+        <div className="container mx-auto px-4 text-center relative">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
             Ready to Start Your Performance Journey?
           </h2>
-          <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-blue-50 mb-12 max-w-3xl mx-auto leading-relaxed">
             Join hundreds of musicians bringing music every day to their local community.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 font-semibold">
+            <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 hover:scale-105 transition-all font-semibold text-lg px-10 py-6 rounded-xl shadow-2xl">
               <Link href="/signup">Create Free Account</Link>
             </Button>
-            <Button asChild size="lg" variant="secondary" className="bg-white/20 text-white border-2 border-white hover:bg-white hover:text-[#2563EB] font-semibold">
+            <Button asChild size="lg" className="bg-white/10 backdrop-blur-sm text-white border-2 border-white hover:bg-white hover:text-[#2563EB] hover:scale-105 transition-all font-semibold text-lg px-10 py-6 rounded-xl">
               <Link href="/login">Sign In</Link>
             </Button>
           </div>
@@ -358,11 +404,15 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-[#F8FAFC]">
+      <section className="py-24 md:py-32 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">FAQ</h2>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-20">
+              <div className="inline-block px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold mb-6">
+                Got Questions?
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h2>
+              <p className="text-xl text-gray-600">Everything you need to know about performing with MusicUp</p>
             </div>
 
             <div className="space-y-4">
@@ -392,20 +442,20 @@ export default function Home() {
                   answer: "Absolutely. Your privacy matters to us. When you book a concert, the venue host can approve or decline your booking, but your personal contact info (like your phone number or email) is never shared publicly. After the concert, the group photo is used to verify attendance and celebrate the event—faces are visible, but it's all about the music and the community. You're in control of your profile and what you share."
                 }
               ].map((faq, index) => (
-                <div key={index} className="bg-white rounded-lg border">
+                <div key={index} className="bg-white rounded-xl border-2 border-gray-100 hover:border-[#2563EB]/30 transition-all duration-300 shadow-sm hover:shadow-md">
                   <button
                     onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-all rounded-xl"
                   >
-                    <span className="font-semibold">{faq.question}</span>
+                    <span className="font-bold text-lg text-gray-900">{faq.question}</span>
                     <ChevronDown
-                      className={`h-5 w-5 text-muted-foreground transition-transform ${
+                      className={`h-6 w-6 text-[#2563EB] transition-transform duration-300 flex-shrink-0 ml-4 ${
                         openFAQ === index ? "rotate-180" : ""
                       }`}
                     />
                   </button>
                   {openFAQ === index && (
-                    <div className="px-6 pb-4 text-muted-foreground">
+                    <div className="px-8 pb-6 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
                       {faq.answer}
                     </div>
                   )}
@@ -416,74 +466,49 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Quick Start */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Quick start</h2>
-            <div className="space-y-4 mb-8">
-              <div className="flex items-start gap-4">
-                <div className="h-8 w-8 rounded-full bg-[#2563EB] text-white flex items-center justify-center flex-shrink-0 font-bold">
-                  1
-                </div>
-                <p className="text-lg pt-1">Create a profile and pick your city.</p>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="h-8 w-8 rounded-full bg-[#06B6D4] text-white flex items-center justify-center flex-shrink-0 font-bold">
-                  2
-                </div>
-                <p className="text-lg pt-1">Book an Empathy Concert set this month.</p>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="h-8 w-8 rounded-full bg-[#EB6A18] text-white flex items-center justify-center flex-shrink-0 font-bold">
-                  3
-                </div>
-                <p className="text-lg pt-1">Perform, snapshot, complete. Hours appear in your dashboard.</p>
-              </div>
-            </div>
-            <div className="text-center">
-              <Button asChild size="lg">
-                <Link href="/signup">Start Now</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* For Partners and Cities */}
-      <section className="py-20 bg-white">
+      <section className="py-24 md:py-32 bg-gradient-to-br from-white via-purple-50/20 to-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">For partners and cities</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="inline-block px-4 py-2 bg-orange-100 text-orange-600 rounded-full text-sm font-semibold mb-6">
+              For Cities & Venues
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-8">For partners and cities</h2>
+            <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
               Ready to bring live music to your community? We'll help you launch concert series tailored to your venues:
             </p>
-            <div className="grid md:grid-cols-2 gap-6 mb-10 max-w-2xl mx-auto">
-              <Card className="border-l-4 border-l-[#8B5CF6]">
+            <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-3xl mx-auto">
+              <Card className="group border-0 border-l-4 border-l-[#8B5CF6] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <CardHeader>
-                  <CardTitle className="text-lg">Libraries: PianoTales</CardTitle>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Library className="h-6 w-6 text-[#8B5CF6] group-hover:scale-110 transition-transform" />
+                  </div>
+                  <CardTitle className="text-2xl">Libraries: PianoTales</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-base text-gray-600 leading-relaxed">
                     Storytime concerts for ages 2-5 with music and books woven together.
                   </p>
                 </CardContent>
               </Card>
-              <Card className="border-l-4 border-l-[#E9B949]">
+              <Card className="group border-0 border-l-4 border-l-[#E9B949] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <CardHeader>
-                  <CardTitle className="text-lg">Senior Homes: Empathy Concerts</CardTitle>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="h-6 w-6 text-[#E9B949] group-hover:scale-110 transition-transform" />
+                  </div>
+                  <CardTitle className="text-2xl">Senior Homes: Empathy Concerts</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-base text-gray-600 leading-relaxed">
                     Familiar melodies for memory care and senior living communities.
                   </p>
                 </CardContent>
               </Card>
             </div>
-            <p className="text-md text-muted-foreground mb-8">
+            <p className="text-lg text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
               We provide ready repertoire, admin training, and reporting to help you activate venues and establish a monthly concert cadence in 90 days.
             </p>
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-white hover:opacity-90 shadow-xl hover:shadow-2xl transition-all px-10 py-6 text-lg rounded-xl">
               <Link href="/signup">Book a Launch Call</Link>
             </Button>
           </div>
