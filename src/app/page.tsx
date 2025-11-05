@@ -1,9 +1,47 @@
+"use client";
+
+import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Music, Users, Library, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
+  const router = useRouter();
+  const { user, profile, loading } = useAuth();
+
+  useEffect(() => {
+    // Redirect authenticated users to their dashboard
+    if (!loading && user && profile) {
+      if (profile.role === "super_admin") {
+        router.push("/super");
+      } else if (profile.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/performer");
+      }
+    }
+  }, [user, profile, loading, router]);
+
+  // Show loading or landing page
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <Music className="h-16 w-16 mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Only show landing page if not authenticated
+  if (user) {
+    return null; // Will redirect in useEffect
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <section className="flex flex-col items-center justify-center flex-1 px-4 py-20 text-center">
