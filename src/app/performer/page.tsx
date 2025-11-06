@@ -11,7 +11,7 @@ import { Music, Calendar, Award } from "lucide-react";
 
 function PerformerPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
         <div className="mb-10">
@@ -81,16 +81,16 @@ function PerformerPage() {
         {/* Main Tabs */}
         <Tabs defaultValue="book" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-white shadow-lg rounded-xl p-2 border-0">
-            <TabsTrigger value="book" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="book" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               Book Concert
             </TabsTrigger>
-            <TabsTrigger value="manage" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="manage" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               My Bookings
             </TabsTrigger>
-            <TabsTrigger value="info" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="info" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               Service Hours
             </TabsTrigger>
-            <TabsTrigger value="library" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="library" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               Repertoire
             </TabsTrigger>
           </TabsList>

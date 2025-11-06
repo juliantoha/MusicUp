@@ -20,7 +20,6 @@ const navItems = [
   { href: "/performer", label: "Performer", roles: ["performer", "admin", "super_admin"] },
   { href: "/admin", label: "Admin", roles: ["admin", "super_admin"] },
   { href: "/super", label: "Super Admin", roles: ["super_admin"] },
-  { href: "/library", label: "Library", roles: ["performer", "admin", "super_admin"] },
 ];
 
 export function Navbar() {
@@ -69,9 +68,11 @@ export function Navbar() {
   return (
     <nav className="border-b bg-background">
       <div className="flex h-16 items-center px-4 container mx-auto gap-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Music className="h-6 w-6" />
-          <span className="text-xl hidden sm:inline">MusicUp</span>
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+            <Music className="h-6 w-6 text-white" />
+          </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent hidden sm:inline">MusicUp</span>
         </Link>
 
         {/* Desktop Navigation */}
