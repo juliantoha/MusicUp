@@ -13,6 +13,7 @@ ALTER TABLE collections ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE pieces ADD COLUMN IF NOT EXISTS composer TEXT;
 ALTER TABLE pieces ADD COLUMN IF NOT EXISTS year_composed INTEGER;
 ALTER TABLE venues ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE concerts ADD COLUMN IF NOT EXISTS notes TEXT;
 
 SELECT 'Step 1 Complete: Columns added successfully!' as status;
 
@@ -136,16 +137,16 @@ BEGIN
   -- Delete old scheduled concerts for these venues
   DELETE FROM concerts WHERE venue_id IN (ivy_park_id, oakmont_id) AND status = 'scheduled';
 
-  -- Insert 6 new concerts
-  INSERT INTO concerts (series_id, venue_id, scheduled_date, start_time, end_time, status, notes) VALUES
+  -- Insert 6 new concerts (using starts_at and ends_at as TIMESTAMPTZ)
+  INSERT INTO concerts (series_id, venue_id, starts_at, ends_at, status, notes) VALUES
   -- Ivy Park - 2 concerts
-  (empathy_series_id, ivy_park_id, '2025-11-08', '16:00:00', '16:30:00', 'scheduled', 'Ivy Park at Pleasanton'),
-  (empathy_series_id, ivy_park_id, '2025-12-13', '16:00:00', '16:30:00', 'scheduled', 'Ivy Park at Pleasanton'),
+  (empathy_series_id, ivy_park_id, '2025-11-08 16:00:00'::timestamptz, '2025-11-08 16:30:00'::timestamptz, 'scheduled', 'Ivy Park at Pleasanton'),
+  (empathy_series_id, ivy_park_id, '2025-12-13 16:00:00'::timestamptz, '2025-12-13 16:30:00'::timestamptz, 'scheduled', 'Ivy Park at Pleasanton'),
   -- Oakmont - 4 concerts (2 time slots on each date)
-  (empathy_series_id, oakmont_id, '2025-11-08', '10:30:00', '11:00:00', 'scheduled', 'Back upright piano'),
-  (empathy_series_id, oakmont_id, '2025-11-08', '11:00:00', '11:30:00', 'scheduled', 'Main front grand piano'),
-  (empathy_series_id, oakmont_id, '2025-12-13', '10:30:00', '11:00:00', 'scheduled', 'Back upright piano'),
-  (empathy_series_id, oakmont_id, '2025-12-13', '11:00:00', '11:30:00', 'scheduled', 'Main front grand piano');
+  (empathy_series_id, oakmont_id, '2025-11-08 10:30:00'::timestamptz, '2025-11-08 11:00:00'::timestamptz, 'scheduled', 'Back upright piano'),
+  (empathy_series_id, oakmont_id, '2025-11-08 11:00:00'::timestamptz, '2025-11-08 11:30:00'::timestamptz, 'scheduled', 'Main front grand piano'),
+  (empathy_series_id, oakmont_id, '2025-12-13 10:30:00'::timestamptz, '2025-12-13 11:00:00'::timestamptz, 'scheduled', 'Back upright piano'),
+  (empathy_series_id, oakmont_id, '2025-12-13 11:00:00'::timestamptz, '2025-12-13 11:30:00'::timestamptz, 'scheduled', 'Main front grand piano');
 
   RAISE NOTICE '✅ Successfully created 6 concerts!';
 END $$;
@@ -153,14 +154,14 @@ END $$;
 -- Verify concerts were created
 SELECT
   v.name as venue,
-  c.scheduled_date as date,
-  to_char(c.start_time, 'HH12:MI AM') as start_time,
-  to_char(c.end_time, 'HH12:MI AM') as end_time,
+  c.starts_at::date as date,
+  to_char(c.starts_at, 'HH12:MI AM') as start_time,
+  to_char(c.ends_at, 'HH12:MI AM') as end_time,
   c.notes
 FROM concerts c
 JOIN venues v ON c.venue_id = v.id
 WHERE c.status = 'scheduled'
-ORDER BY c.scheduled_date, c.start_time;
+ORDER BY c.starts_at;
 
 
 -- ============================================================================
@@ -183,12 +184,12 @@ SELECT 'Scheduled Concerts:', COUNT(*) FROM concerts WHERE status = 'scheduled';
 SELECT
   s.title as series,
   v.name as venue,
-  c.scheduled_date,
-  c.start_time,
-  c.end_time,
+  c.starts_at::date as date,
+  to_char(c.starts_at, 'HH12:MI AM') as start_time,
+  to_char(c.ends_at, 'HH12:MI AM') as end_time,
   c.notes
 FROM concerts c
 JOIN series s ON c.series_id = s.id
 JOIN venues v ON c.venue_id = v.id
 WHERE c.status = 'scheduled'
-ORDER BY c.scheduled_date, c.start_time;
+ORDER BY c.starts_at;

@@ -13,8 +13,11 @@ ALTER TABLE collections ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE pieces ADD COLUMN IF NOT EXISTS composer TEXT;
 ALTER TABLE pieces ADD COLUMN IF NOT EXISTS year_composed INTEGER;
 
--- Add missing columns to venues table (if any)
+-- Add missing columns to venues table
 ALTER TABLE venues ADD COLUMN IF NOT EXISTS notes TEXT;
+
+-- Add missing columns to concerts table
+ALTER TABLE concerts ADD COLUMN IF NOT EXISTS notes TEXT;
 
 -- Verify the columns were added
 SELECT 'Successfully added missing columns!' as status;

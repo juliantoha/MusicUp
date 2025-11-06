@@ -9,8 +9,8 @@ DECLARE
   ivy_park_id UUID;
   oakmont_id UUID;
 BEGIN
-  -- Get series ID
-  SELECT id INTO empathy_series_id FROM series WHERE name = 'empathy' LIMIT 1;
+  -- Get series ID (using 'title' column)
+  SELECT id INTO empathy_series_id FROM series WHERE title = 'empathy' LIMIT 1;
 
   IF empathy_series_id IS NULL THEN
     RAISE EXCEPTION 'Empathy series not found! Please run the seed script first.';
@@ -29,23 +29,21 @@ BEGIN
   WHERE venue_id IN (ivy_park_id, oakmont_id)
   AND status = 'scheduled';
 
-  -- Insert new concerts for November 8, 2025
-  INSERT INTO concerts (series_id, venue_id, scheduled_date, start_time, end_time, status, notes) VALUES
+  -- Insert new concerts using starts_at and ends_at TIMESTAMPTZ columns
+  INSERT INTO concerts (series_id, venue_id, starts_at, ends_at, status, notes) VALUES
   -- Ivy Park - November 8
-  (empathy_series_id, ivy_park_id, '2025-11-08', '16:00:00', '16:30:00', 'scheduled', 'Ivy Park at Pleasanton Empathy Concert'),
+  (empathy_series_id, ivy_park_id, '2025-11-08 16:00:00'::timestamptz, '2025-11-08 16:30:00'::timestamptz, 'scheduled', 'Ivy Park at Pleasanton Empathy Concert'),
 
   -- Oakmont - November 8 (two time slots)
-  (empathy_series_id, oakmont_id, '2025-11-08', '10:30:00', '11:00:00', 'scheduled', 'Back upright piano'),
-  (empathy_series_id, oakmont_id, '2025-11-08', '11:00:00', '11:30:00', 'scheduled', 'Main front grand piano');
+  (empathy_series_id, oakmont_id, '2025-11-08 10:30:00'::timestamptz, '2025-11-08 11:00:00'::timestamptz, 'scheduled', 'Back upright piano'),
+  (empathy_series_id, oakmont_id, '2025-11-08 11:00:00'::timestamptz, '2025-11-08 11:30:00'::timestamptz, 'scheduled', 'Main front grand piano'),
 
-  -- Insert new concerts for December 13, 2025
-  INSERT INTO concerts (series_id, venue_id, scheduled_date, start_time, end_time, status, notes) VALUES
   -- Ivy Park - December 13
-  (empathy_series_id, ivy_park_id, '2025-12-13', '16:00:00', '16:30:00', 'scheduled', 'Ivy Park at Pleasanton Empathy Concert'),
+  (empathy_series_id, ivy_park_id, '2025-12-13 16:00:00'::timestamptz, '2025-12-13 16:30:00'::timestamptz, 'scheduled', 'Ivy Park at Pleasanton Empathy Concert'),
 
   -- Oakmont - December 13 (two time slots)
-  (empathy_series_id, oakmont_id, '2025-12-13', '10:30:00', '11:00:00', 'scheduled', 'Back upright piano'),
-  (empathy_series_id, oakmont_id, '2025-12-13', '11:00:00', '11:30:00', 'scheduled', 'Main front grand piano');
+  (empathy_series_id, oakmont_id, '2025-12-13 10:30:00'::timestamptz, '2025-12-13 11:00:00'::timestamptz, 'scheduled', 'Back upright piano'),
+  (empathy_series_id, oakmont_id, '2025-12-13 11:00:00'::timestamptz, '2025-12-13 11:30:00'::timestamptz, 'scheduled', 'Main front grand piano');
 
   RAISE NOTICE '✅ Successfully created 6 concerts!';
   RAISE NOTICE '';
@@ -65,11 +63,11 @@ END $$;
 -- Verify concerts were created
 SELECT
   v.name as venue,
-  c.scheduled_date,
-  c.start_time,
-  c.end_time,
+  c.starts_at::date as date,
+  to_char(c.starts_at, 'HH12:MI AM') as start_time,
+  to_char(c.ends_at, 'HH12:MI AM') as end_time,
   c.notes
 FROM concerts c
 JOIN venues v ON c.venue_id = v.id
 WHERE c.status = 'scheduled'
-ORDER BY c.scheduled_date, c.start_time;
+ORDER BY c.starts_at;
