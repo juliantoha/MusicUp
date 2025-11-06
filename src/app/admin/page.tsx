@@ -37,12 +37,12 @@ function AdminPage() {
         {/* Main Tabs */}
         <Tabs defaultValue="concerts" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 bg-white shadow-lg rounded-xl p-2 border-0">
-            <TabsTrigger value="concerts" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
+            <TabsTrigger value="concerts" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Concerts I Host</span>
               <span className="sm:hidden">Host</span>
             </TabsTrigger>
-            <TabsTrigger value="performances" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
+            <TabsTrigger value="performances" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">My Performances</span>
               <span className="sm:hidden">Perform</span>

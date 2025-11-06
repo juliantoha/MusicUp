@@ -14,20 +14,22 @@ function PerformerPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
+        {/* Hero Section */}
         <div className="mb-10">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg flex-shrink-0">
               <Music className="h-7 w-7 text-white" />
             </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563EB] to-[#06B6D4] bg-clip-text text-transparent">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563EB] to-[#06B6D4] bg-clip-text text-transparent mb-2">
                 Music up your city
               </h1>
-              <p className="text-lg text-gray-600 mt-1">
+              <p className="text-lg text-gray-600">
                 Book concerts. Perform live. Track your hours. All in one place.
               </p>
             </div>
           </div>
+        </div>
         </div>
 
         {/* Quick Stats */}
@@ -81,16 +83,16 @@ function PerformerPage() {
         {/* Main Tabs */}
         <Tabs defaultValue="book" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-white shadow-lg rounded-xl p-2 border-0">
-            <TabsTrigger value="book" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="book" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               Book Concert
             </TabsTrigger>
-            <TabsTrigger value="manage" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="manage" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               My Bookings
             </TabsTrigger>
-            <TabsTrigger value="info" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="info" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               Service Hours
             </TabsTrigger>
-            <TabsTrigger value="library" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
+            <TabsTrigger value="library" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
               Repertoire
             </TabsTrigger>
           </TabsList>

@@ -106,7 +106,7 @@ export function BookConcertTab() {
             <div key={step} className="flex items-center flex-1">
               <div className="flex flex-col items-center flex-1">
                 <div
-                  className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border-2 transition-all ${
+                  className={`relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border-2 transition-all ${
                     isCompleted
                       ? "border-primary bg-primary text-primary-foreground"
                       : isActive
@@ -116,6 +116,15 @@ export function BookConcertTab() {
                   aria-current={isActive ? "step" : undefined}
                   aria-label={`Step ${index + 1}: ${step}`}
                 >
+                  {/* Step Number Badge */}
+                  <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isCompleted || isActive
+                      ? "bg-primary text-white shadow-md"
+                      : "bg-gray-300 text-gray-600"
+                  }`}>
+                    {index + 1}
+                  </div>
+                  {/* Icon */}
                   {isCompleted ? (
                     <Check className="w-6 h-6 md:w-7 md:h-7" aria-hidden="true" />
                   ) : (

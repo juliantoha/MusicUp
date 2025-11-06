@@ -43,12 +43,12 @@ function SuperAdminPage() {
         {/* Main Tabs */}
         <Tabs defaultValue="venues" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 bg-white shadow-lg rounded-xl p-2 border-0">
-            <TabsTrigger value="venues" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:text-white font-semibold flex items-center gap-2">
+            <TabsTrigger value="venues" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:text-white font-semibold flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">Venue Management</span>
               <span className="sm:hidden">Venues</span>
             </TabsTrigger>
-            <TabsTrigger value="tools" className="rounded-lg py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:text-white font-semibold flex items-center gap-2">
+            <TabsTrigger value="tools" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:text-white font-semibold flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Role Tools</span>
               <span className="sm:hidden">Roles</span>

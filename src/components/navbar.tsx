@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Music, LogOut, User, Settings } from "lucide-react";
+import { Music, LogOut, User, Settings, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -56,6 +56,17 @@ export function Navbar() {
     }
   };
 
+  // Determine dashboard URL based on user role
+  const getDashboardUrl = () => {
+    if (!profile?.role) return "/performer";
+    if (profile.role === "super_admin") return "/super";
+    if (profile.role === "admin") return "/admin";
+    return "/performer";
+  };
+
+  // Check if we're on settings page
+  const isOnSettings = pathname === "/settings";
+
   // Filter nav items based on user role and hide current page
   const visibleNavItems = navItems.filter((item) => {
     // Only show if user has access to this role
@@ -77,16 +88,25 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-2 ml-auto">
-          {visibleNavItems.map((item) => (
-            <Button
-              key={item.href}
-              variant="ghost"
-              asChild
-              size="sm"
-            >
-              <Link href={item.href}>{item.label}</Link>
+          {isOnSettings ? (
+            <Button variant="ghost" asChild size="sm">
+              <Link href={getDashboardUrl()} className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Dashboard
+              </Link>
             </Button>
-          ))}
+          ) : (
+            visibleNavItems.map((item) => (
+              <Button
+                key={item.href}
+                variant="ghost"
+                asChild
+                size="sm"
+              >
+                <Link href={item.href}>{item.label}</Link>
+              </Button>
+            ))
+          )}
         </div>
 
         {/* Mobile & Desktop User Menu */}
@@ -96,7 +116,7 @@ export function Navbar() {
               handleLogout();
             } else if (value === "settings") {
               router.push("/settings");
-            } else if (visibleNavItems.find(item => item.href === value)) {
+            } else if (value === getDashboardUrl() || visibleNavItems.find(item => item.href === value)) {
               router.push(value);
             }
           }}>
@@ -126,14 +146,23 @@ export function Navbar() {
               </SelectItem>
 
               {/* Mobile Navigation Links */}
-              {visibleNavItems.length > 0 && (
+              {(isOnSettings || visibleNavItems.length > 0) && (
                 <>
                   <div className="md:hidden border-t my-1" />
-                  {visibleNavItems.map((item) => (
-                    <SelectItem key={item.href} value={item.href} className="md:hidden">
-                      {item.label}
+                  {isOnSettings ? (
+                    <SelectItem value={getDashboardUrl()} className="md:hidden">
+                      <span className="flex items-center gap-2">
+                        <Home className="h-4 w-4" />
+                        Dashboard
+                      </span>
                     </SelectItem>
-                  ))}
+                  ) : (
+                    visibleNavItems.map((item) => (
+                      <SelectItem key={item.href} value={item.href} className="md:hidden">
+                        {item.label}
+                      </SelectItem>
+                    ))
+                  )}
                 </>
               )}
 
