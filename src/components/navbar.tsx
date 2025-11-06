@@ -64,8 +64,8 @@ export function Navbar() {
     return "/performer";
   };
 
-  // Check if we're on settings page
-  const isOnSettings = pathname === "/settings";
+  // Check if we're on a dashboard page
+  const isOnDashboard = pathname === "/performer" || pathname === "/admin" || pathname === "/super";
 
   // Filter nav items based on user role and hide current page
   const visibleNavItems = navItems.filter((item) => {
@@ -88,25 +88,26 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-2 ml-auto">
-          {isOnSettings ? (
+          {/* Always show Dashboard button if not on dashboard */}
+          {!isOnDashboard && (
             <Button variant="ghost" asChild size="sm">
               <Link href={getDashboardUrl()} className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
                 Dashboard
               </Link>
             </Button>
-          ) : (
-            visibleNavItems.map((item) => (
-              <Button
-                key={item.href}
-                variant="ghost"
-                asChild
-                size="sm"
-              >
-                <Link href={item.href}>{item.label}</Link>
-              </Button>
-            ))
           )}
+          {/* Show other navigation items */}
+          {visibleNavItems.map((item) => (
+            <Button
+              key={item.href}
+              variant="ghost"
+              asChild
+              size="sm"
+            >
+              <Link href={item.href}>{item.label}</Link>
+            </Button>
+          ))}
         </div>
 
         {/* Mobile & Desktop User Menu */}
@@ -146,23 +147,22 @@ export function Navbar() {
               </SelectItem>
 
               {/* Mobile Navigation Links */}
-              {(isOnSettings || visibleNavItems.length > 0) && (
+              {(!isOnDashboard || visibleNavItems.length > 0) && (
                 <>
                   <div className="md:hidden border-t my-1" />
-                  {isOnSettings ? (
+                  {!isOnDashboard && (
                     <SelectItem value={getDashboardUrl()} className="md:hidden">
                       <span className="flex items-center gap-2">
                         <Home className="h-4 w-4" />
                         Dashboard
                       </span>
                     </SelectItem>
-                  ) : (
-                    visibleNavItems.map((item) => (
-                      <SelectItem key={item.href} value={item.href} className="md:hidden">
-                        {item.label}
-                      </SelectItem>
-                    ))
                   )}
+                  {visibleNavItems.map((item) => (
+                    <SelectItem key={item.href} value={item.href} className="md:hidden">
+                      {item.label}
+                    </SelectItem>
+                  ))}
                 </>
               )}
 
