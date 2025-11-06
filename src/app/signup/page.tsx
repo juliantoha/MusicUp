@@ -74,17 +74,31 @@ export default function SignupPage() {
   // Show success state after signup
   if (signupSuccess) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1 flex flex-col items-center">
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle2 className="h-12 w-12 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl text-center">Check your email</CardTitle>
-            <CardDescription className="text-center">
-              We've sent a verification link to
-            </CardDescription>
-          </CardHeader>
+      <div className="flex min-h-screen flex-col">
+        {/* Navigation Header */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+          <div className="container mx-auto px-4 py-4">
+            <Link href="/" className="flex items-center gap-2 group w-fit">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <Music className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+            </Link>
+          </div>
+        </nav>
+
+        {/* Main Content */}
+        <div className="flex flex-1 items-center justify-center p-4 pt-24">
+          <Card className="w-full max-w-md">
+            <CardHeader className="space-y-1 flex flex-col items-center">
+              <div className="flex items-center gap-2 mb-4">
+                <CheckCircle2 className="h-12 w-12 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl text-center">Check your email</CardTitle>
+              <CardDescription className="text-center">
+                We've sent a verification link to
+              </CardDescription>
+            </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <Mail className="h-8 w-8 mx-auto mb-2 text-gray-400" />
@@ -133,22 +147,33 @@ export default function SignupPage() {
               Already verified? <Link href="/login" className="text-primary hover:underline font-medium">Sign in here</Link>
             </p>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 flex flex-col items-center">
-          <div className="flex items-center gap-2 mb-4">
-            <Music className="h-8 w-8" />
-            <span className="text-2xl font-bold">MusicUp</span>
-          </div>
-          <CardTitle className="text-2xl">Create an account</CardTitle>
-          <CardDescription>Enter your details to get started</CardDescription>
-        </CardHeader>
+    <div className="flex min-h-screen flex-col">
+      {/* Navigation Header */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+        <div className="container mx-auto px-4 py-4">
+          <Link href="/" className="flex items-center gap-2 group w-fit">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+              <Music className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+          </Link>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="flex flex-1 items-center justify-center p-4 pt-24">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Create an account</CardTitle>
+            <CardDescription className="text-center">Enter your details to get started</CardDescription>
+          </CardHeader>
         <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-4">
@@ -221,7 +246,8 @@ export default function SignupPage() {
             </Link>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }
