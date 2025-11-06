@@ -14,7 +14,6 @@ function PerformerPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
-        {/* Hero Section */}
         <div className="mb-10">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg flex-shrink-0">
@@ -29,7 +28,6 @@ function PerformerPage() {
               </p>
             </div>
           </div>
-        </div>
         </div>
 
         {/* Quick Stats */}
