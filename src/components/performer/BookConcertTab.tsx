@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -37,6 +37,13 @@ export function BookConcertTab() {
   const { data: collections } = useCollections(selectedSeriesId);
   const { data: pieces } = usePieces(selectedCollectionId);
   const { data: stages } = useStages(selectedPieceId);
+
+  // Auto-populate series when concert is selected
+  useEffect(() => {
+    if (selectedConcert?.series_id) {
+      setSelectedSeriesId(selectedConcert.series_id);
+    }
+  }, [selectedConcert]);
 
   const handleNext = () => {
     if (currentStep === 0 && !selectedVenueId) {
