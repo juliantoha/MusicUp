@@ -27,6 +27,7 @@ export function Navbar() {
   const router = useRouter();
   const { user, profile, signOut: authSignOut } = useAuth();
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [selectValue, setSelectValue] = useState<string>("");
 
   // Load profile photo URL
   useEffect(() => {
@@ -40,6 +41,11 @@ export function Navbar() {
       setPhotoUrl(null);
     }
   }, [profile?.profile_photo_path]);
+
+  // Reset select value when pathname changes (fixes Settings navigation bug)
+  useEffect(() => {
+    setSelectValue("");
+  }, [pathname]);
 
   // Don't show navbar on auth pages or if not authenticated
   if (pathname === "/login" || pathname === "/signup" || pathname === "/" || !user) {
@@ -111,28 +117,23 @@ export function Navbar() {
               <Link href={item.href}>{item.label}</Link>
             </Button>
           ))}
-          {/* Always show Settings button if not on settings page */}
-          {!isOnSettings && (
-            <Button variant="ghost" asChild size="sm">
-              <Link href="/settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Settings
-              </Link>
-            </Button>
-          )}
         </div>
 
         {/* Mobile & Desktop User Menu */}
         <div className="ml-auto md:ml-0">
-          <Select onValueChange={(value) => {
-            if (value === "logout") {
-              handleLogout();
-            } else if (value === "settings") {
-              router.push("/settings");
-            } else if (value === getDashboardUrl() || visibleNavItems.find(item => item.href === value)) {
-              router.push(value);
-            }
-          }}>
+          <Select
+            value={selectValue}
+            onValueChange={(value) => {
+              setSelectValue(value);
+              if (value === "logout") {
+                handleLogout();
+              } else if (value === "settings") {
+                router.push("/settings");
+              } else if (value === getDashboardUrl() || visibleNavItems.find(item => item.href === value)) {
+                router.push(value);
+              }
+            }}
+          >
             <SelectTrigger className="w-[140px] sm:w-[180px]">
               <div className="flex items-center gap-2 overflow-hidden">
                 {photoUrl ? (
