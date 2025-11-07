@@ -110,6 +110,7 @@ export function ConcertsIHostTab() {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
+                          timeZone: "America/Los_Angeles",
                         })}
                       </p>
                       <p className="text-sm text-gray-600">
@@ -117,13 +118,16 @@ export function ConcertsIHostTab() {
                           hour: "numeric",
                           minute: "2-digit",
                           hour12: true,
+                          timeZone: "America/Los_Angeles",
                         })}
                         {" - "}
                         {new Date(concert.ends_at).toLocaleTimeString("en-US", {
                           hour: "numeric",
                           minute: "2-digit",
                           hour12: true,
+                          timeZone: "America/Los_Angeles",
                         })}
+                        {" PT"}
                       </p>
                     </div>
                   </TableCell>

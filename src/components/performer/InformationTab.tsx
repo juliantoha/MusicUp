@@ -46,7 +46,7 @@ function exportToCSV(serviceHours: ServiceHourWithDetails[]) {
   // Map service hours to CSV rows
   const rows = serviceHours.map((sh) => [
     sh.concert?.starts_at
-      ? new Date(sh.concert.starts_at).toLocaleDateString("en-US")
+      ? new Date(sh.concert.starts_at).toLocaleDateString("en-US", { timeZone: "America/Los_Angeles" })
       : "N/A",
     sh.concert?.venue?.name || "N/A",
     sh.concert?.series?.title || "N/A",
@@ -165,7 +165,7 @@ export function InformationTab() {
                             <TableRow key={sh.id}>
                               <TableCell>
                                 {sh.concert?.starts_at &&
-                                  new Date(sh.concert.starts_at).toLocaleDateString()}
+                                  new Date(sh.concert.starts_at).toLocaleDateString("en-US", { timeZone: "America/Los_Angeles" })}
                               </TableCell>
                               <TableCell>{sh.concert?.series?.title || "N/A"}</TableCell>
                               <TableCell>{sh.concert?.venue?.name || "N/A"}</TableCell>
@@ -228,6 +228,7 @@ export function InformationTab() {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
+                        timeZone: "America/Los_Angeles",
                       })}
                     </p>
                   </div>

@@ -136,7 +136,7 @@ export function useCollections(seriesId?: string): UseListResult<CollectionWithS
           series:series_id (*)
         `)
         .eq("series_id", seriesId)
-        .order("display_order");
+        .order("order_index");
 
       if (fetchError) throw fetchError;
       setData(collections || []);
@@ -184,7 +184,7 @@ export function usePieces(collectionId?: string): UseListResult<PieceWithCollect
           )
         `)
         .eq("collection_id", collectionId)
-        .order("display_order");
+        .order("order_index");
 
       if (fetchError) throw fetchError;
       setData(pieces || []);

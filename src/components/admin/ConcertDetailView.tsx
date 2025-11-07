@@ -173,6 +173,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                   year: "numeric",
                   month: "long",
                   day: "numeric",
+                  timeZone: "America/Los_Angeles",
                 })}
               </p>
               <p>
@@ -181,13 +182,16 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                   hour: "numeric",
                   minute: "2-digit",
                   hour12: true,
+                  timeZone: "America/Los_Angeles",
                 })}
                 {" - "}
                 {new Date(concert.ends_at).toLocaleTimeString("en-US", {
                   hour: "numeric",
                   minute: "2-digit",
                   hour12: true,
+                  timeZone: "America/Los_Angeles",
                 })}
+                {" PT"}
               </p>
             </div>
           </div>

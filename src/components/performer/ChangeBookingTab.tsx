@@ -199,6 +199,7 @@ export function ChangeBookingTab() {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
+                        timeZone: "America/Los_Angeles",
                       })}
                   </p>
                   <p>
@@ -208,6 +209,7 @@ export function ChangeBookingTab() {
                         hour: "numeric",
                         minute: "2-digit",
                         hour12: true,
+                        timeZone: "America/Los_Angeles",
                       })}
                     {concert?.ends_at && " - "}
                     {concert?.ends_at &&
@@ -215,7 +217,9 @@ export function ChangeBookingTab() {
                         hour: "numeric",
                         minute: "2-digit",
                         hour12: true,
+                        timeZone: "America/Los_Angeles",
                       })}
+                    {concert?.ends_at && " PT"}
                   </p>
                 </div>
               </div>
