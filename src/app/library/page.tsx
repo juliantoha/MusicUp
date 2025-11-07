@@ -31,10 +31,10 @@ interface PieceStageData {
     year_composed: number | null;
     collection: {
       id: string;
-      name: string;
+      title: string;
       series: {
         id: string;
-        name: string;
+        title: string;
       };
     };
   };
@@ -108,51 +108,11 @@ export default function LibraryPage() {
     if (!user) return;
 
     const supabase = createClient();
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString();
 
-    const { data, error } = await supabase
-      .from("bookings")
-      .select(`
-        id,
-        piece_stage_id,
-        concert:concert_id (
-          scheduled_date,
-          venue:venue_id (
-            name
-          )
-        ),
-        piece_stage:piece_stage_id (
-          *,
-          piece:piece_id (
-            *,
-            collection:collection_id (
-              *,
-              series:series_id (*)
-            )
-          )
-        )
-      `)
-      .eq("performer_id", user.id)
-      .neq("status", "cancelled")
-      .gte("concert.scheduled_date", today)
-      .order("concert.scheduled_date");
-
-    if (!error && data) {
-      const bookedStages = data
-        .map((booking: any) => {
-          if (!booking.piece_stage) return null;
-          return {
-            ...booking.piece_stage,
-            booking: {
-              id: booking.id,
-              concert: booking.concert,
-            },
-          };
-        })
-        .filter(Boolean);
-
-      setBookedPieceStages(bookedStages);
-    }
+    // For now, show booked pieces as empty since we need to restructure this
+    // to work with the new schema where bookings link to pieces+stage, not piece_stages
+    setBookedPieceStages([]);
   };
 
   // Extract unique series and collections for filters
@@ -165,7 +125,11 @@ export default function LibraryPage() {
       const collection = ps.piece?.collection;
 
       if (serie && !seriesMap.has(serie.id)) {
-        seriesMap.set(serie.id, serie);
+        // Format series title for display (capitalize first letter)
+        seriesMap.set(serie.id, {
+          ...serie,
+          displayName: serie.title.charAt(0).toUpperCase() + serie.title.slice(1)
+        });
       }
 
       if (collection && !collectionsMap.has(collection.id)) {
@@ -195,8 +159,8 @@ export default function LibraryPage() {
       filtered = filtered.filter((ps: any) => {
         const title = ps.piece?.title?.toLowerCase() || "";
         const composer = ps.piece?.composer?.toLowerCase() || "";
-        const series = ps.piece?.collection?.series?.name?.toLowerCase() || "";
-        const collection = ps.piece?.collection?.name?.toLowerCase() || "";
+        const series = ps.piece?.collection?.series?.title?.toLowerCase() || "";
+        const collection = ps.piece?.collection?.title?.toLowerCase() || "";
 
         return (
           title.includes(search) ||
@@ -409,7 +373,7 @@ export default function LibraryPage() {
                 <SelectItem value="all">All Series</SelectItem>
                 {series.map((s: any) => (
                   <SelectItem key={s.id} value={s.id}>
-                    {s.name}
+                    {s.displayName || s.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -430,7 +394,7 @@ export default function LibraryPage() {
                 <SelectItem value="all">All Collections</SelectItem>
                 {filteredCollections.map((c: any) => (
                   <SelectItem key={c.id} value={c.id}>
-                    {c.name}
+                    {c.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -486,10 +450,12 @@ export default function LibraryPage() {
 
               <div className="mb-3">
                 <p className="text-sm text-gray-600">
-                  <strong>Series:</strong> {piece.collection?.series?.name}
+                  <strong>Series:</strong> {piece.collection?.series?.title ?
+                    piece.collection.series.title.charAt(0).toUpperCase() + piece.collection.series.title.slice(1) :
+                    'N/A'}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Collection:</strong> {piece.collection?.name}
+                  <strong>Collection:</strong> {piece.collection?.title}
                 </p>
               </div>
 

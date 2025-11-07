@@ -325,7 +325,17 @@ export function BookConcertTab() {
                 <label className="block text-sm font-medium mb-2">Difficulty Level</label>
                 <Select value={selectedStageId} onValueChange={setSelectedStageId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select difficulty" />
+                    <SelectValue>
+                      {selectedStageId
+                        ? (() => {
+                            const selectedStage = stages.find(s => s.id === selectedStageId);
+                            if (!selectedStage) return "Select difficulty";
+                            return selectedStage.stage === "stage_1" ? "Stage 1" :
+                                   selectedStage.stage === "stage_2" ? "Stage 2" :
+                                   selectedStage.stage === "stage_3" ? "Stage 3" : "Select difficulty";
+                          })()
+                        : "Select difficulty"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {stages.map((stage) => {
