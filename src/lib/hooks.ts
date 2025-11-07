@@ -639,7 +639,7 @@ export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWith
 
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString(); // Full ISO timestamp
 
       const { data: concerts, error: fetchError } = await supabase
         .from("concerts")
@@ -650,8 +650,8 @@ export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWith
         `)
         .eq("venue_id", venueId)
         .eq("status", "scheduled")
-        .gte("scheduled_date", today)
-        .order("scheduled_date", { ascending: true });
+        .gte("starts_at", today)
+        .order("starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);

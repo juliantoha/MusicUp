@@ -90,8 +90,7 @@ export async function updateBooking(bookingId: string, data: UpdateBookingData) 
     .select(`
       *,
       concert:concert_id (
-        scheduled_date,
-        start_time
+        starts_at
       )
     `)
     .eq("id", bookingId)
@@ -107,12 +106,8 @@ export async function updateBooking(bookingId: string, data: UpdateBookingData) 
   }
 
   // Check if booking can still be modified (24-hour guard)
-  const concert = booking.concert as { scheduled_date: string; start_time: string | null };
-  const concertDateTime = new Date(
-    concert.start_time
-      ? `${concert.scheduled_date}T${concert.start_time}`
-      : `${concert.scheduled_date}T00:00:00`
-  );
+  const concert = booking.concert as { starts_at: string };
+  const concertDateTime = new Date(concert.starts_at);
   const now = new Date();
   const hoursUntilConcert = (concertDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
@@ -165,8 +160,7 @@ export async function cancelBooking(bookingId: string) {
     .select(`
       *,
       concert:concert_id (
-        scheduled_date,
-        start_time
+        starts_at
       )
     `)
     .eq("id", bookingId)
@@ -182,12 +176,8 @@ export async function cancelBooking(bookingId: string) {
   }
 
   // Check if booking can still be cancelled (24-hour guard)
-  const concert = booking.concert as { scheduled_date: string; start_time: string | null };
-  const concertDateTime = new Date(
-    concert.start_time
-      ? `${concert.scheduled_date}T${concert.start_time}`
-      : `${concert.scheduled_date}T00:00:00`
-  );
+  const concert = booking.concert as { starts_at: string };
+  const concertDateTime = new Date(concert.starts_at);
   const now = new Date();
   const hoursUntilConcert = (concertDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 

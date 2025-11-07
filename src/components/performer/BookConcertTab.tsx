@@ -202,21 +202,28 @@ export function BookConcertTab() {
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium">{concert.series?.name}</p>
+                        <p className="font-medium">{concert.series?.title}</p>
                         <p className="text-sm text-gray-600">
-                          {new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                          {new Date(concert.starts_at).toLocaleDateString("en-US", {
                             weekday: "long",
                             year: "numeric",
                             month: "long",
                             day: "numeric",
                           })}
                         </p>
-                        {concert.start_time && (
-                          <p className="text-sm text-gray-600">
-                            {concert.start_time}
-                            {concert.end_time && ` - ${concert.end_time}`}
-                          </p>
-                        )}
+                        <p className="text-sm text-gray-600">
+                          {new Date(concert.starts_at).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                          {" - "}
+                          {new Date(concert.ends_at).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </p>
                       </div>
                       {selectedConcert?.id === concert.id && (
                         <div className="text-blue-600">✓</div>
@@ -253,7 +260,7 @@ export function BookConcertTab() {
                 <SelectContent>
                   {seriesList.map((series) => (
                     <SelectItem key={series.id} value={series.id}>
-                      {series.name}
+                      {series.title}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -271,7 +278,7 @@ export function BookConcertTab() {
                   <SelectContent>
                     {collections.map((collection) => (
                       <SelectItem key={collection.id} value={collection.id}>
-                        {collection.name}
+                        {collection.title}
                       </SelectItem>
                     ))}
                   </SelectContent>

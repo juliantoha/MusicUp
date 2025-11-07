@@ -105,19 +105,26 @@ export function ConcertsIHostTab() {
                   <TableCell>
                     <div>
                       <p className="font-medium">
-                        {new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                        {new Date(concert.starts_at).toLocaleDateString("en-US", {
                           weekday: "short",
                           month: "short",
                           day: "numeric",
                           year: "numeric",
                         })}
                       </p>
-                      {concert.start_time && (
-                        <p className="text-sm text-gray-600">
-                          {concert.start_time}
-                          {concert.end_time && ` - ${concert.end_time}`}
-                        </p>
-                      )}
+                      <p className="text-sm text-gray-600">
+                        {new Date(concert.starts_at).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                        {" - "}
+                        {new Date(concert.ends_at).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -132,7 +139,7 @@ export function ConcertsIHostTab() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="font-medium">{concert.series?.name}</p>
+                    <p className="font-medium">{concert.series?.title}</p>
                   </TableCell>
                   <TableCell>
                     <Button variant="outline" size="sm">

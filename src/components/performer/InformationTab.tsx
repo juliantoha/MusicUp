@@ -21,8 +21,8 @@ function groupServiceHoursByYear(serviceHours: ServiceHourWithDetails[]) {
   const yearGroups: { [year: string]: ServiceHourWithDetails[] } = {};
 
   serviceHours.forEach((sh) => {
-    if (sh.concert?.scheduled_date) {
-      const year = new Date(sh.concert.scheduled_date).getFullYear().toString();
+    if (sh.concert?.starts_at) {
+      const year = new Date(sh.concert.starts_at).getFullYear().toString();
       if (!yearGroups[year]) {
         yearGroups[year] = [];
       }
@@ -45,11 +45,11 @@ function exportToCSV(serviceHours: ServiceHourWithDetails[]) {
 
   // Map service hours to CSV rows
   const rows = serviceHours.map((sh) => [
-    sh.concert?.scheduled_date
-      ? new Date(sh.concert.scheduled_date).toLocaleDateString("en-US")
+    sh.concert?.starts_at
+      ? new Date(sh.concert.starts_at).toLocaleDateString("en-US")
       : "N/A",
     sh.concert?.venue?.name || "N/A",
-    sh.concert?.series?.name || "N/A",
+    sh.concert?.series?.title || "N/A",
     sh.hours.toString(),
     sh.concert_id || "N/A",
     sh.approver?.full_name || sh.approver?.email || "N/A",
@@ -158,16 +158,16 @@ export function InformationTab() {
                         {yearHours
                           .sort(
                             (a, b) =>
-                              new Date(b.concert?.scheduled_date || "").getTime() -
-                              new Date(a.concert?.scheduled_date || "").getTime()
+                              new Date(b.concert?.starts_at || "").getTime() -
+                              new Date(a.concert?.starts_at || "").getTime()
                           )
                           .map((sh) => (
                             <TableRow key={sh.id}>
                               <TableCell>
-                                {sh.concert?.scheduled_date &&
-                                  new Date(sh.concert.scheduled_date).toLocaleDateString()}
+                                {sh.concert?.starts_at &&
+                                  new Date(sh.concert.starts_at).toLocaleDateString()}
                               </TableCell>
-                              <TableCell>{sh.concert?.series?.name || "N/A"}</TableCell>
+                              <TableCell>{sh.concert?.series?.title || "N/A"}</TableCell>
                               <TableCell>{sh.concert?.venue?.name || "N/A"}</TableCell>
                               <TableCell>{sh.hours.toFixed(1)}</TableCell>
                               <TableCell>
@@ -220,10 +220,10 @@ export function InformationTab() {
               <Card key={concert.id} className="p-4 bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{concert.series?.name}</h4>
+                    <h4 className="font-medium">{concert.series?.title}</h4>
                     <p className="text-sm text-gray-600">{concert.venue?.name}</p>
                     <p className="text-sm text-gray-500">
-                      {new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                      {new Date(concert.starts_at).toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
                         month: "long",

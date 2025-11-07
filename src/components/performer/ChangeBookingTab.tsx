@@ -186,27 +186,37 @@ export function ChangeBookingTab() {
                     {stage?.stage === "stage_3" && "Stage 3 - Advanced"}
                   </p>
                   <p>
-                    <strong>Concert:</strong> {concert?.series?.name}
+                    <strong>Concert:</strong> {concert?.series?.title}
                   </p>
                   <p>
                     <strong>Venue:</strong> {concert?.venue?.name}
                   </p>
                   <p>
                     <strong>Date:</strong>{" "}
-                    {concert?.scheduled_date &&
-                      new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                    {concert?.starts_at &&
+                      new Date(concert.starts_at).toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
                         month: "long",
                         day: "numeric",
                       })}
                   </p>
-                  {concert?.start_time && (
-                    <p>
-                      <strong>Time:</strong> {concert.start_time}
-                      {concert.end_time && ` - ${concert.end_time}`}
-                    </p>
-                  )}
+                  <p>
+                    <strong>Time:</strong>{" "}
+                    {concert?.starts_at &&
+                      new Date(concert.starts_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    {concert?.ends_at && " - "}
+                    {concert?.ends_at &&
+                      new Date(concert.ends_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                  </p>
                 </div>
               </div>
             </div>
@@ -274,7 +284,7 @@ export function ChangeBookingTab() {
                 <SelectContent>
                   {seriesList.map((series) => (
                     <SelectItem key={series.id} value={series.id}>
-                      {series.name}
+                      {series.title}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -292,7 +302,7 @@ export function ChangeBookingTab() {
                   <SelectContent>
                     {collections.map((collection) => (
                       <SelectItem key={collection.id} value={collection.id}>
-                        {collection.name}
+                        {collection.title}
                       </SelectItem>
                     ))}
                   </SelectContent>

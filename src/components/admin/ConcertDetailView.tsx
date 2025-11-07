@@ -157,7 +157,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
       <Card className="p-6">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-bold mb-2">{concert.series?.name}</h2>
+            <h2 className="text-2xl font-bold mb-2">{concert.series?.title}</h2>
             <div className="space-y-1 text-gray-600">
               <p>
                 <strong>Venue:</strong> {concert.venue?.name}
@@ -168,19 +168,27 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
               </p>
               <p>
                 <strong>Date:</strong>{" "}
-                {new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                {new Date(concert.starts_at).toLocaleDateString("en-US", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
                   day: "numeric",
                 })}
               </p>
-              {concert.start_time && (
-                <p>
-                  <strong>Time:</strong> {concert.start_time}
-                  {concert.end_time && ` - ${concert.end_time}`}
-                </p>
-              )}
+              <p>
+                <strong>Time:</strong>{" "}
+                {new Date(concert.starts_at).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+                {" - "}
+                {new Date(concert.ends_at).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </p>
             </div>
           </div>
           <Badge>{concert.status}</Badge>

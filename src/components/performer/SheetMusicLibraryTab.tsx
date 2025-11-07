@@ -60,7 +60,7 @@ export function SheetMusicLibraryTab() {
               <SelectContent>
                 {seriesList.map((series) => (
                   <SelectItem key={series.id} value={series.id}>
-                    {series.name}
+                    {series.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -84,7 +84,7 @@ export function SheetMusicLibraryTab() {
               <SelectContent>
                 {collections.map((collection) => (
                   <SelectItem key={collection.id} value={collection.id}>
-                    {collection.name}
+                    {collection.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -117,7 +117,7 @@ export function SheetMusicLibraryTab() {
       {/* Series Description */}
       {selectedSeries && (
         <Card className="p-4 bg-blue-50">
-          <h4 className="font-semibold mb-2">{selectedSeries.name}</h4>
+          <h4 className="font-semibold mb-2">{selectedSeries.title}</h4>
           {selectedSeries.description && (
             <p className="text-sm text-gray-700">{selectedSeries.description}</p>
           )}

@@ -40,7 +40,8 @@ export type AdminsVenue = {
 
 export type Series = {
   id: string;
-  name: string;
+  slug: string;
+  title: string;
   description: string | null;
   created_at: string;
 };
@@ -48,9 +49,10 @@ export type Series = {
 export type Collection = {
   id: string;
   series_id: string;
-  name: string;
+  title: string;
   description: string | null;
-  display_order: number;
+  is_primary: boolean;
+  order_index: number;
   created_at: string;
 };
 
@@ -60,7 +62,7 @@ export type Piece = {
   title: string;
   composer: string | null;
   year_composed: number | null;
-  display_order: number;
+  order_index: number;
   created_at: string;
 };
 
@@ -78,9 +80,8 @@ export type Concert = {
   id: string;
   venue_id: string;
   series_id: string;
-  scheduled_date: string;
-  start_time: string | null;
-  end_time: string | null;
+  starts_at: string; // TIMESTAMPTZ - combined date and time
+  ends_at: string; // TIMESTAMPTZ - combined date and time
   status: "scheduled" | "in_progress" | "completed" | "cancelled";
   notes: string | null;
   created_at: string;
@@ -199,7 +200,8 @@ export const venueSchema = z.object({
 
 export const seriesSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1, "Series name is required"),
+  slug: z.string().min(1, "Series slug is required"),
+  title: z.string().min(1, "Series title is required"),
   description: z.string().nullable(),
   created_at: z.string(),
 });
@@ -207,9 +209,10 @@ export const seriesSchema = z.object({
 export const collectionSchema = z.object({
   id: z.string().uuid(),
   series_id: z.string().uuid(),
-  name: z.string().min(1, "Collection name is required"),
+  title: z.string().min(1, "Collection title is required"),
   description: z.string().nullable(),
-  display_order: z.number().int().nonnegative(),
+  is_primary: z.boolean(),
+  order_index: z.number().int().nonnegative(),
   created_at: z.string(),
 });
 
@@ -219,7 +222,7 @@ export const pieceSchema = z.object({
   title: z.string().min(1, "Title is required"),
   composer: z.string().nullable(),
   year_composed: z.number().int().min(1000).max(9999).nullable(),
-  display_order: z.number().int().nonnegative(),
+  order_index: z.number().int().nonnegative(),
   created_at: z.string(),
 });
 
@@ -237,9 +240,8 @@ export const concertSchema = z.object({
   id: z.string().uuid(),
   venue_id: z.string().uuid(),
   series_id: z.string().uuid(),
-  scheduled_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
-  start_time: z.string().nullable(),
-  end_time: z.string().nullable(),
+  starts_at: z.string(), // ISO 8601 timestamp
+  ends_at: z.string(), // ISO 8601 timestamp
   status: z.enum(["scheduled", "in_progress", "completed", "cancelled"]),
   notes: z.string().nullable(),
   created_at: z.string(),

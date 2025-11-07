@@ -183,7 +183,7 @@ function LibraryUploadPage() {
               <SelectContent>
                 {seriesList.map((series) => (
                   <SelectItem key={series.id} value={series.id}>
-                    {series.name}
+                    {series.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -210,7 +210,7 @@ function LibraryUploadPage() {
               <SelectContent>
                 {collections.map((collection) => (
                   <SelectItem key={collection.id} value={collection.id}>
-                    {collection.name}
+                    {collection.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -277,7 +277,7 @@ function LibraryUploadPage() {
           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm font-medium mb-1">Selected:</p>
             <p className="text-sm text-gray-700">
-              {selectedSeries?.name} → {selectedCollection?.name} → {selectedPiece?.title} →{" "}
+              {selectedSeries?.title} → {selectedCollection?.title} → {selectedPiece?.title} →{" "}
               {selectedStage.stage === "stage_1" && "Stage 1"}
               {selectedStage.stage === "stage_2" && "Stage 2"}
               {selectedStage.stage === "stage_3" && "Stage 3"}
