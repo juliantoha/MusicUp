@@ -213,9 +213,9 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
         ) : (
           <div className="space-y-3">
             {concert.bookings.map((booking: any) => {
-              const performer = booking.performer;
-              const piece = booking.piece_stage?.piece;
-              const stage = booking.piece_stage;
+              const performer = booking.profile;
+              const piece = booking.piece;
+              const stage = booking.stage;
               const currentStatus = bookingStatuses[booking.id] || booking.status;
 
               return (
@@ -249,9 +249,9 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                           </p>
                           <p>
                             <strong>Stage:</strong>{" "}
-                            {stage?.stage === "stage_1" && "Stage 1 - Beginner"}
-                            {stage?.stage === "stage_2" && "Stage 2 - Intermediate"}
-                            {stage?.stage === "stage_3" && "Stage 3 - Advanced"}
+                            {stage === 1 && "Stage 1"}
+                            {stage === 2 && "Stage 2"}
+                            {stage === 3 && "Stage 3"}
                           </p>
                         </div>
                       </div>

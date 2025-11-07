@@ -137,16 +137,17 @@ BEGIN
   -- Delete old scheduled concerts for these venues
   DELETE FROM concerts WHERE venue_id IN (ivy_park_id, oakmont_id) AND status = 'scheduled';
 
-  -- Insert 6 new concerts (using starts_at and ends_at as TIMESTAMPTZ)
+  -- Insert 6 new concerts in Pacific Time (America/Los_Angeles timezone)
+  -- Using AT TIME ZONE to ensure times are interpreted as Pacific Time
   INSERT INTO concerts (series_id, venue_id, starts_at, ends_at, status, notes) VALUES
-  -- Ivy Park - 2 concerts
-  (empathy_series_id, ivy_park_id, '2025-11-08 16:00:00'::timestamptz, '2025-11-08 16:30:00'::timestamptz, 'scheduled', 'Ivy Park at Pleasanton'),
-  (empathy_series_id, ivy_park_id, '2025-12-13 16:00:00'::timestamptz, '2025-12-13 16:30:00'::timestamptz, 'scheduled', 'Ivy Park at Pleasanton'),
-  -- Oakmont - 4 concerts (2 time slots on each date)
-  (empathy_series_id, oakmont_id, '2025-11-08 10:30:00'::timestamptz, '2025-11-08 11:00:00'::timestamptz, 'scheduled', 'Back upright piano'),
-  (empathy_series_id, oakmont_id, '2025-11-08 11:00:00'::timestamptz, '2025-11-08 11:30:00'::timestamptz, 'scheduled', 'Main front grand piano'),
-  (empathy_series_id, oakmont_id, '2025-12-13 10:30:00'::timestamptz, '2025-12-13 11:00:00'::timestamptz, 'scheduled', 'Back upright piano'),
-  (empathy_series_id, oakmont_id, '2025-12-13 11:00:00'::timestamptz, '2025-12-13 11:30:00'::timestamptz, 'scheduled', 'Main front grand piano');
+  -- Ivy Park - 2 concerts (4:00 PM - 4:30 PM PT)
+  (empathy_series_id, ivy_park_id, ('2025-11-08 16:00:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, ('2025-11-08 16:30:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, 'scheduled', 'Ivy Park at Pleasanton'),
+  (empathy_series_id, ivy_park_id, ('2025-12-13 16:00:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, ('2025-12-13 16:30:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, 'scheduled', 'Ivy Park at Pleasanton'),
+  -- Oakmont - 4 concerts (10:30 AM - 11:30 AM PT, two 30-minute slots)
+  (empathy_series_id, oakmont_id, ('2025-11-08 10:30:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, ('2025-11-08 11:00:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, 'scheduled', 'Back upright piano'),
+  (empathy_series_id, oakmont_id, ('2025-11-08 11:00:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, ('2025-11-08 11:30:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, 'scheduled', 'Main front grand piano'),
+  (empathy_series_id, oakmont_id, ('2025-12-13 10:30:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, ('2025-12-13 11:00:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, 'scheduled', 'Back upright piano'),
+  (empathy_series_id, oakmont_id, ('2025-12-13 11:00:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, ('2025-12-13 11:30:00' AT TIME ZONE 'America/Los_Angeles')::timestamptz, 'scheduled', 'Main front grand piano');
 
   RAISE NOTICE '✅ Successfully created 6 concerts!';
 END $$;
