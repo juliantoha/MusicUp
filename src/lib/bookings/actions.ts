@@ -22,13 +22,29 @@ export async function createBooking(data: CreateBookingData) {
     return { error: "You must be logged in to create a booking" };
   }
 
-  // Check if booking already exists for this concert and piece stage
+  // Get piece_stage details to extract piece_id and stage number
+  const { data: pieceStage, error: stageError } = await supabase
+    .from("piece_stages")
+    .select("piece_id, stage")
+    .eq("id", data.piece_stage_id)
+    .single();
+
+  if (stageError || !pieceStage) {
+    console.error("Error fetching piece stage:", stageError);
+    return { error: "Invalid piece stage selected" };
+  }
+
+  // Convert stage from "stage_1" format to integer 1, 2, or 3
+  const stageNumber = pieceStage.stage === "stage_1" ? 1 : pieceStage.stage === "stage_2" ? 2 : 3;
+
+  // Check if booking already exists for this concert and piece/stage
   const { data: existingBooking } = await supabase
     .from("bookings")
     .select("id")
     .eq("concert_id", data.concert_id)
-    .eq("performer_id", user.id)
-    .eq("piece_stage_id", data.piece_stage_id)
+    .eq("profile_id", user.id)
+    .eq("piece_id", pieceStage.piece_id)
+    .eq("stage", stageNumber)
     .neq("status", "cancelled")
     .maybeSingle();
 
@@ -41,9 +57,10 @@ export async function createBooking(data: CreateBookingData) {
     .from("bookings")
     .insert({
       concert_id: data.concert_id,
-      performer_id: user.id,
-      piece_stage_id: data.piece_stage_id,
-      status: "confirmed",
+      profile_id: user.id,
+      piece_id: pieceStage.piece_id,
+      stage: stageNumber,
+      status: "booked",
     })
     .select()
     .single();

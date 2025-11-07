@@ -261,12 +261,14 @@ export function BookConcertTab() {
               </p>
             </div>
 
-            {/* Series Select */}
+            {/* Series Select - Auto-populated from concert */}
             <div>
               <label className="block text-sm font-medium mb-2">Series</label>
-              <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId}>
+              <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId} disabled>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select series" />
+                  <SelectValue>
+                    {seriesList.find(s => s.id === selectedSeriesId)?.title || "Select series"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {seriesList.map((series) => (
@@ -323,14 +325,14 @@ export function BookConcertTab() {
                 <label className="block text-sm font-medium mb-2">Difficulty Level</label>
                 <Select value={selectedStageId} onValueChange={setSelectedStageId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select stage" />
+                    <SelectValue placeholder="Select difficulty" />
                   </SelectTrigger>
                   <SelectContent>
                     {stages.map((stage) => (
                       <SelectItem key={stage.id} value={stage.id}>
-                        {stage.stage === "stage_1" && "Stage 1 - Beginner"}
-                        {stage.stage === "stage_2" && "Stage 2 - Intermediate"}
-                        {stage.stage === "stage_3" && "Stage 3 - Advanced"}
+                        {stage.stage === "stage_1" && "Stage 1"}
+                        {stage.stage === "stage_2" && "Stage 2"}
+                        {stage.stage === "stage_3" && "Stage 3"}
                       </SelectItem>
                     ))}
                   </SelectContent>

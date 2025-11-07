@@ -15,15 +15,15 @@ function PerformerPage() {
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
         <div className="mb-10">
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4">
             <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg flex-shrink-0">
               <Music className="h-7 w-7 text-white" />
             </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563EB] to-[#06B6D4] bg-clip-text text-transparent mb-3">
+            <div className="flex-1 overflow-visible">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563EB] to-[#06B6D4] bg-clip-text text-transparent mb-3 leading-tight">
                 Music up your city
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-lg text-gray-600 leading-relaxed mt-2">
                 Book concerts. Perform live. Track your hours. All in one place.
               </p>
             </div>

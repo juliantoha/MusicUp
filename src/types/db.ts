@@ -90,11 +90,11 @@ export type Concert = {
 export type Booking = {
   id: string;
   concert_id: string;
-  performer_id: string;
-  piece_stage_id: string;
-  status: "pending" | "confirmed" | "cancelled";
+  profile_id: string;
+  piece_id: string;
+  stage: 1 | 2 | 3;
+  status: "booked" | "changed" | "cancelled" | "performed" | "absent";
   created_at: string;
-  updated_at: string;
 };
 
 export type AttendanceCheck = {
@@ -153,8 +153,8 @@ export type BookingWithDetails = Booking & {
     venue: Venue;
     series: Series;
   };
-  piece_stage: PieceStageWithPiece;
-  performer: Profile;
+  piece: PieceWithCollection;
+  profile: Profile;
 };
 
 export type ConcertWithDetails = Concert & {

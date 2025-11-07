@@ -100,8 +100,8 @@ export function Navbar() {
               </Link>
             </Button>
           )}
-          {/* Show other navigation items */}
-          {visibleNavItems.map((item) => (
+          {/* Show other navigation items only if not on settings page */}
+          {!isOnSettings && visibleNavItems.map((item) => (
             <Button
               key={item.href}
               variant="ghost"
@@ -150,7 +150,7 @@ export function Navbar() {
               </SelectItem>
 
               {/* Mobile Navigation Links */}
-              {(!isOnDashboard || visibleNavItems.length > 0) && (
+              {(!isOnDashboard || (!isOnSettings && visibleNavItems.length > 0)) && (
                 <>
                   <div className="md:hidden border-t my-1" />
                   {!isOnDashboard && (
@@ -161,7 +161,7 @@ export function Navbar() {
                       </span>
                     </SelectItem>
                   )}
-                  {visibleNavItems.map((item) => (
+                  {!isOnSettings && visibleNavItems.map((item) => (
                     <SelectItem key={item.href} value={item.href} className="md:hidden">
                       {item.label}
                     </SelectItem>
