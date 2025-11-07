@@ -111,6 +111,15 @@ export function Navbar() {
               <Link href={item.href}>{item.label}</Link>
             </Button>
           ))}
+          {/* Always show Settings button if not on settings page */}
+          {!isOnSettings && (
+            <Button variant="ghost" asChild size="sm">
+              <Link href="/settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Settings
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile & Desktop User Menu */}
@@ -150,24 +159,20 @@ export function Navbar() {
               </SelectItem>
 
               {/* Mobile Navigation Links */}
-              {(!isOnDashboard || (!isOnSettings && visibleNavItems.length > 0)) && (
-                <>
-                  <div className="md:hidden border-t my-1" />
-                  {!isOnDashboard && (
-                    <SelectItem value={getDashboardUrl()} className="md:hidden">
-                      <span className="flex items-center gap-2">
-                        <Home className="h-4 w-4" />
-                        Dashboard
-                      </span>
-                    </SelectItem>
-                  )}
-                  {!isOnSettings && visibleNavItems.map((item) => (
-                    <SelectItem key={item.href} value={item.href} className="md:hidden">
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </>
+              <div className="md:hidden border-t my-1" />
+              {!isOnDashboard && (
+                <SelectItem value={getDashboardUrl()} className="md:hidden">
+                  <span className="flex items-center gap-2">
+                    <Home className="h-4 w-4" />
+                    Dashboard
+                  </span>
+                </SelectItem>
               )}
+              {!isOnSettings && visibleNavItems.map((item) => (
+                <SelectItem key={item.href} value={item.href} className="md:hidden">
+                  {item.label}
+                </SelectItem>
+              ))}
 
               {/* Settings & Logout */}
               <div className="border-t my-1" />
