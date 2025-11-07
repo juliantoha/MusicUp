@@ -287,19 +287,16 @@ export function useMyBookings(): UseListResult<BookingWithDetails> {
             venue:venue_id (*),
             series:series_id (*)
           ),
-          piece_stage:piece_stage_id (
+          piece:piece_id (
             *,
-            piece:piece_id (
+            collection:collection_id (
               *,
-              collection:collection_id (
-                *,
-                series:series_id (*)
-              )
+              series:series_id (*)
             )
           ),
-          performer:performer_id (*)
+          profile:profile_id (*)
         `)
-        .eq("performer_id", user.id)
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
@@ -399,12 +396,12 @@ export function useMyPastConcerts(): UseListResult<ConcertWithDetails> {
           series:series_id (*),
           bookings!inner (
             *,
-            performer_id
+            profile_id
           )
         `)
-        .eq("bookings.performer_id", user.id)
+        .eq("bookings.profile_id", user.id)
         .eq("status", "completed")
-        .order("scheduled_date", { ascending: false });
+        .order("starts_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);
@@ -494,7 +491,7 @@ export function useMyManagedConcerts(): UseListResult<ConcertWithDetails> {
 
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString();
 
       // First get the venue IDs the admin manages
       const { data: adminVenues, error: venuesError } = await supabase
@@ -521,23 +518,20 @@ export function useMyManagedConcerts(): UseListResult<ConcertWithDetails> {
           series:series_id (*),
           bookings (
             *,
-            performer:performer_id (*),
-            piece_stage:piece_stage_id (
+            profile:profile_id (*),
+            piece:piece_id (
               *,
-              piece:piece_id (
+              collection:collection_id (
                 *,
-                collection:collection_id (
-                  *,
-                  series:series_id (*)
-                )
+                series:series_id (*)
               )
             )
           )
         `)
         .in("venue_id", venueIds)
         .eq("status", "scheduled")
-        .gte("scheduled_date", today)
-        .order("scheduled_date", { ascending: true });
+        .gte("starts_at", today)
+        .order("starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);
@@ -583,21 +577,18 @@ export function useVenueConcerts(venueId?: string): UseListResult<ConcertWithDet
           series:series_id (*),
           bookings (
             *,
-            performer:performer_id (*),
-            piece_stage:piece_stage_id (
+            profile:profile_id (*),
+            piece:piece_id (
               *,
-              piece:piece_id (
+              collection:collection_id (
                 *,
-                collection:collection_id (
-                  *,
-                  series:series_id (*)
-                )
+                series:series_id (*)
               )
             )
           )
         `)
         .eq("venue_id", venueId)
-        .order("scheduled_date", { ascending: false });
+        .order("starts_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);
@@ -690,7 +681,7 @@ export function useMyUpcomingBookings(): UseListResult<BookingWithDetails> {
 
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString(); // Full timestamp for comparison
 
       const { data: bookings, error: fetchError } = await supabase
         .from("bookings")
@@ -701,22 +692,19 @@ export function useMyUpcomingBookings(): UseListResult<BookingWithDetails> {
             venue:venue_id (*),
             series:series_id (*)
           ),
-          piece_stage:piece_stage_id (
+          piece:piece_id (
             *,
-            piece:piece_id (
+            collection:collection_id (
               *,
-              collection:collection_id (
-                *,
-                series:series_id (*)
-              )
+              series:series_id (*)
             )
           ),
-          performer:performer_id (*)
+          profile:profile_id (*)
         `)
-        .eq("performer_id", user.id)
+        .eq("profile_id", user.id)
         .neq("status", "cancelled")
-        .gte("concert.scheduled_date", today)
-        .order("concert.scheduled_date", { ascending: true });
+        .gte("concert.starts_at", today)
+        .order("concert.starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
       setData(bookings || []);

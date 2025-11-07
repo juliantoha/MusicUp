@@ -328,13 +328,18 @@ export function BookConcertTab() {
                     <SelectValue placeholder="Select difficulty" />
                   </SelectTrigger>
                   <SelectContent>
-                    {stages.map((stage) => (
-                      <SelectItem key={stage.id} value={stage.id}>
-                        {stage.stage === "stage_1" && "Stage 1"}
-                        {stage.stage === "stage_2" && "Stage 2"}
-                        {stage.stage === "stage_3" && "Stage 3"}
-                      </SelectItem>
-                    ))}
+                    {stages.map((stage) => {
+                      const stageLabel =
+                        stage.stage === "stage_1" ? "Stage 1" :
+                        stage.stage === "stage_2" ? "Stage 2" :
+                        stage.stage === "stage_3" ? "Stage 3" : "Unknown";
+
+                      return (
+                        <SelectItem key={stage.id} value={stage.id}>
+                          {stageLabel}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
