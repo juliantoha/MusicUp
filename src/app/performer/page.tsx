@@ -78,28 +78,59 @@ function PerformerPage() {
           </Card>
         </div>
 
-        {/* Main Tabs */}
+        {/* Main Tabs - Modern Redesign */}
         <Tabs defaultValue="book" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-white shadow-lg rounded-xl p-2 border-0">
-            <TabsTrigger value="book" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
-              Book Concert
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-3 bg-transparent p-0 h-auto">
+            <TabsTrigger
+              value="book"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#2563EB] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Calendar className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">Book Concert</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
-            <TabsTrigger value="manage" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
-              My Bookings
+
+            <TabsTrigger
+              value="manage"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#06B6D4] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Music className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">My Bookings</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
-            <TabsTrigger value="info" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
-              Service Hours
+
+            <TabsTrigger
+              value="info"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#EB6A18] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#EB6A18] data-[state=active]:to-[#c2410c] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Award className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">Service Hours</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
-            <TabsTrigger value="library" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:text-white font-semibold">
-              Repertoire
+
+            <TabsTrigger
+              value="library"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#8B5CF6] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Music className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">Repertoire</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="book" className="space-y-4">
             <Card className="border-0 shadow-xl">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Find a concert near you</CardTitle>
-                <CardDescription className="text-base">
+                <CardTitle className="text-2xl text-gray-900">Find a concert near you</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   Browse available concerts in your city. Choose your location, date, and repertoire.
                 </CardDescription>
               </CardHeader>
@@ -112,8 +143,8 @@ function PerformerPage() {
           <TabsContent value="manage" className="space-y-4">
             <Card className="border-0 shadow-xl">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Your bookings</CardTitle>
-                <CardDescription className="text-base">
+                <CardTitle className="text-2xl text-gray-900">Your bookings</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   View upcoming performances and manage your bookings. Cancel at least 48 hours in advance.
                 </CardDescription>
               </CardHeader>
@@ -126,8 +157,8 @@ function PerformerPage() {
           <TabsContent value="info" className="space-y-4">
             <Card className="border-0 shadow-xl">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Service hours tracker</CardTitle>
-                <CardDescription className="text-base">
+                <CardTitle className="text-2xl text-gray-900">Service hours tracker</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   MusicUp verifies 3 hours per Empathy Concert. Export your hours for school or community service requirements.
                 </CardDescription>
               </CardHeader>
@@ -140,8 +171,8 @@ function PerformerPage() {
           <TabsContent value="library" className="space-y-4">
             <Card className="border-0 shadow-xl">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Music library</CardTitle>
-                <CardDescription className="text-base">
+                <CardTitle className="text-2xl text-gray-900">Music library</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   Access sheet music, audio references, and practice resources. Every piece has PDF and audio included.
                 </CardDescription>
               </CardHeader>

@@ -67,6 +67,9 @@ export function Navbar() {
   // Check if we're on a dashboard page
   const isOnDashboard = pathname === "/performer" || pathname === "/admin" || pathname === "/super";
 
+  // Check if we're on settings page
+  const isOnSettings = pathname === "/settings";
+
   // Filter nav items based on user role and hide current page
   const visibleNavItems = navItems.filter((item) => {
     // Only show if user has access to this role
@@ -168,12 +171,14 @@ export function Navbar() {
 
               {/* Settings & Logout */}
               <div className="border-t my-1" />
-              <SelectItem value="settings">
-                <span className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </span>
-              </SelectItem>
+              {!isOnSettings && (
+                <SelectItem value="settings">
+                  <span className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </span>
+                </SelectItem>
+              )}
               <SelectItem value="logout">
                 <span className="flex items-center gap-2">
                   <LogOut className="h-4 w-4" />
