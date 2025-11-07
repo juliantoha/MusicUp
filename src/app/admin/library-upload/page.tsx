@@ -73,7 +73,7 @@ function LibraryUploadPage() {
       formData.append("series_slug", details.seriesSlug);
       formData.append("collection_id", details.collectionId);
       formData.append("piece_id", details.pieceId);
-      formData.append("stage", selectedStage?.stage || "stage_1");
+      formData.append("stage", selectedStage?.stage?.toString() || "1");
       formData.append("file", scoreFile);
 
       const result = await uploadScore(formData);
@@ -122,7 +122,7 @@ function LibraryUploadPage() {
       formData.append("series_slug", details.seriesSlug);
       formData.append("collection_id", details.collectionId);
       formData.append("piece_id", details.pieceId);
-      formData.append("stage", selectedStage?.stage || "stage_1");
+      formData.append("stage", selectedStage?.stage?.toString() || "1");
       formData.append("file", audioFile);
 
       const result = await uploadAudio(formData);
@@ -263,9 +263,9 @@ function LibraryUploadPage() {
               <SelectContent>
                 {stages.map((stage) => (
                   <SelectItem key={stage.id} value={stage.id}>
-                    {stage.stage === "stage_1" && "Stage 1 - Beginner"}
-                    {stage.stage === "stage_2" && "Stage 2 - Intermediate"}
-                    {stage.stage === "stage_3" && "Stage 3 - Advanced"}
+                    {stage.stage === 1 && "Stage 1 - Beginner"}
+                    {stage.stage === 2 && "Stage 2 - Intermediate"}
+                    {stage.stage === 3 && "Stage 3 - Advanced"}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -278,9 +278,9 @@ function LibraryUploadPage() {
             <p className="text-sm font-medium mb-1">Selected:</p>
             <p className="text-sm text-gray-700">
               {selectedSeries?.title} → {selectedCollection?.title} → {selectedPiece?.title} →{" "}
-              {selectedStage.stage === "stage_1" && "Stage 1"}
-              {selectedStage.stage === "stage_2" && "Stage 2"}
-              {selectedStage.stage === "stage_3" && "Stage 3"}
+              {selectedStage.stage === 1 && "Stage 1"}
+              {selectedStage.stage === 2 && "Stage 2"}
+              {selectedStage.stage === 3 && "Stage 3"}
             </p>
           </div>
         )}

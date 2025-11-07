@@ -69,7 +69,7 @@ export type Piece = {
 export type PieceStage = {
   id: string;
   piece_id: string;
-  stage: "stage_1" | "stage_2" | "stage_3";
+  stage: 1 | 2 | 3;
   score_url: string | null;
   audio_url: string | null;
   notes: string | null;

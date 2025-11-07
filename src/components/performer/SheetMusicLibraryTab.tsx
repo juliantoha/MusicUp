@@ -145,9 +145,9 @@ export function SheetMusicLibraryTab() {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h6 className="font-medium">
-                        {stage.stage === "stage_1" && "Stage 1 - Beginner"}
-                        {stage.stage === "stage_2" && "Stage 2 - Intermediate"}
-                        {stage.stage === "stage_3" && "Stage 3 - Advanced"}
+                        {stage.stage === 1 && "Stage 1 - Beginner"}
+                        {stage.stage === 2 && "Stage 2 - Intermediate"}
+                        {stage.stage === 3 && "Stage 3 - Advanced"}
                       </h6>
                       {stage.notes && (
                         <p className="text-sm text-gray-600 mt-1">{stage.notes}</p>

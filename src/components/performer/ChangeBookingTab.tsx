@@ -325,9 +325,9 @@ export function ChangeBookingTab() {
                   <SelectContent>
                     {stages.map((stage) => (
                       <SelectItem key={stage.id} value={stage.id}>
-                        {stage.stage === "stage_1" && "Stage 1 - Beginner"}
-                        {stage.stage === "stage_2" && "Stage 2 - Intermediate"}
-                        {stage.stage === "stage_3" && "Stage 3 - Advanced"}
+                        {stage.stage === 1 && "Stage 1 - Beginner"}
+                        {stage.stage === 2 && "Stage 2 - Intermediate"}
+                        {stage.stage === 3 && "Stage 3 - Advanced"}
                       </SelectItem>
                     ))}
                   </SelectContent>

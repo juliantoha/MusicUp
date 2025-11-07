@@ -20,7 +20,7 @@ import { Search, Download, Music, Star, Library as LibraryIcon } from "lucide-re
 
 interface PieceStageData {
   id: string;
-  stage: "stage_1" | "stage_2" | "stage_3";
+  stage: 1 | 2 | 3;
   score_url: string | null;
   audio_url: string | null;
   notes: string | null;
@@ -185,7 +185,7 @@ export default function LibraryPage() {
 
     // Stage filter
     if (selectedStage !== "all") {
-      filtered = filtered.filter((ps) => ps.stage === selectedStage);
+      filtered = filtered.filter((ps) => ps.stage === parseInt(selectedStage));
     }
 
     return filtered;
@@ -252,10 +252,10 @@ export default function LibraryPage() {
     }
   };
 
-  const getStageName = (stage: string) => {
-    return stage === "stage_1"
+  const getStageName = (stage: number) => {
+    return stage === 1
       ? "Stage 1 - Beginner"
-      : stage === "stage_2"
+      : stage === 2
       ? "Stage 2 - Intermediate"
       : "Stage 3 - Advanced";
   };
@@ -409,9 +409,9 @@ export default function LibraryPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Stages</SelectItem>
-                <SelectItem value="stage_1">Stage 1 - Beginner</SelectItem>
-                <SelectItem value="stage_2">Stage 2 - Intermediate</SelectItem>
-                <SelectItem value="stage_3">Stage 3 - Advanced</SelectItem>
+                <SelectItem value="1">Stage 1 - Beginner</SelectItem>
+                <SelectItem value="2">Stage 2 - Intermediate</SelectItem>
+                <SelectItem value="3">Stage 3 - Advanced</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -312,9 +312,9 @@ export function BookConcertTab() {
                         ? (() => {
                             const selectedStage = stages.find(s => s.id === selectedStageId);
                             if (!selectedStage) return "Select difficulty";
-                            return selectedStage.stage === "stage_1" ? "Stage 1" :
-                                   selectedStage.stage === "stage_2" ? "Stage 2" :
-                                   selectedStage.stage === "stage_3" ? "Stage 3" : "Select difficulty";
+                            return selectedStage.stage === 1 ? "Stage 1" :
+                                   selectedStage.stage === 2 ? "Stage 2" :
+                                   selectedStage.stage === 3 ? "Stage 3" : "Select difficulty";
                           })()
                         : "Select difficulty"}
                     </SelectValue>
@@ -322,9 +322,9 @@ export function BookConcertTab() {
                   <SelectContent>
                     {stages.map((stage) => {
                       const stageLabel =
-                        stage.stage === "stage_1" ? "Stage 1" :
-                        stage.stage === "stage_2" ? "Stage 2" :
-                        stage.stage === "stage_3" ? "Stage 3" : "Unknown";
+                        stage.stage === 1 ? "Stage 1" :
+                        stage.stage === 2 ? "Stage 2" :
+                        stage.stage === 3 ? "Stage 3" : "Unknown";
 
                       return (
                         <SelectItem key={stage.id} value={stage.id}>
