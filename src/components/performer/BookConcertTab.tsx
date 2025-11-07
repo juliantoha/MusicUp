@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
+import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
 import { MapPin, Calendar, Music, Check } from "lucide-react";
 import type { Concert } from "@/types/db";
 import { booking as copy, emptyStates } from "@/lib/copy";
@@ -211,29 +212,10 @@ export function BookConcertTab() {
                       <div>
                         <p className="font-medium">{concert.series?.title}</p>
                         <p className="text-sm text-gray-600">
-                          {new Date(concert.starts_at).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            timeZone: "America/Los_Angeles",
-                          })}
+                          {formatPacificDate(concert.starts_at)}
                         </p>
                         <p className="text-sm text-gray-600">
-                          {new Date(concert.starts_at).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                            timeZone: "America/Los_Angeles",
-                          })}
-                          {" - "}
-                          {new Date(concert.ends_at).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                            timeZone: "America/Los_Angeles",
-                          })}
-                          {" PT"}
+                          {formatPacificTimeRange(concert.starts_at, concert.ends_at)}
                         </p>
                       </div>
                       {selectedConcert?.id === concert.id && (
