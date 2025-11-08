@@ -91,7 +91,7 @@ export function useSeries(): UseListResult<Series> {
       const { data: series, error: fetchError } = await supabase
         .from("series")
         .select("*")
-        .order("name");
+        .order("title");
 
       if (fetchError) throw fetchError;
       setData(series || []);
