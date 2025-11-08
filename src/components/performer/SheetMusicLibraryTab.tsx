@@ -127,14 +127,27 @@ export function SheetMusicLibraryTab() {
       {/* Piece Details & Stages */}
       {selectedPiece && (
         <Card className="p-6">
-          <div className="mb-4">
-            <h4 className="text-lg font-semibold">{selectedPiece.title}</h4>
-            {selectedPiece.composer && (
-              <p className="text-gray-600">Composer: {selectedPiece.composer}</p>
+          <div className="flex gap-4 mb-4">
+            {/* Album Cover / Thumbnail */}
+            {selectedPiece.image_url && (
+              <div className="flex-shrink-0">
+                <img
+                  src={selectedPiece.image_url}
+                  alt={`${selectedPiece.title} cover`}
+                  className="w-32 h-32 object-cover rounded-lg shadow-md"
+                />
+              </div>
             )}
-            {selectedPiece.year_composed && (
-              <p className="text-gray-600">Year: {selectedPiece.year_composed}</p>
-            )}
+            {/* Piece Info */}
+            <div className="flex-1">
+              <h4 className="text-lg font-semibold">{selectedPiece.title}</h4>
+              {selectedPiece.composer && (
+                <p className="text-gray-600">Composer: {selectedPiece.composer}</p>
+              )}
+              {selectedPiece.year_composed && (
+                <p className="text-gray-600">Year: {selectedPiece.year_composed}</p>
+              )}
+            </div>
           </div>
 
           {stages.length > 0 ? (

@@ -62,6 +62,7 @@ export type Piece = {
   title: string;
   composer: string | null;
   year_composed: number | null;
+  image_url: string | null;
   order_index: number;
   created_at: string;
 };
