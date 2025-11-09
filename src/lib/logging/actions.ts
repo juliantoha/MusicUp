@@ -130,7 +130,7 @@ export async function logHoursGranted(
 
 export async function logEmailSent(
   recipientEmail: string,
-  emailType: "booking_confirmation" | "concert_reminder" | "completion_thank_you",
+  emailType: "booking_confirmation" | "concert_reminder" | "completion_thank_you" | "venue_contact_notification",
   bookingId?: string,
   concertId?: string
 ) {
