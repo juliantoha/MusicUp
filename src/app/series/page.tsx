@@ -22,191 +22,36 @@ import {
   Clock,
   Award
 } from "lucide-react";
+import { useSeries } from "@/lib/hooks";
+
+// Icon map for series slugs
+const seriesIcons: Record<string, any> = {
+  empathy: Heart,
+  pianotales: BookOpen,
+  market_sessions: ShoppingBag,
+  healing_hours: Building2,
+  schoolstage: School,
+  playground_sessions: Trees,
+  cafe_sets: Coffee,
+  gallery_sound: Palette,
+  house_sessions: Home
+};
+
+// Color map for series slugs
+const seriesColors: Record<string, string> = {
+  empathy: "#E9B949",
+  pianotales: "#8B5CF6",
+  market_sessions: "#16A34A",
+  healing_hours: "#DC2626",
+  schoolstage: "#2563EB",
+  playground_sessions: "#06B6D4",
+  cafe_sets: "#EB6A18",
+  gallery_sound: "#9333EA",
+  house_sessions: "#D97706"
+};
 
 export default function SeriesPage() {
-  const series = [
-    {
-      id: "empathy",
-      name: "Empathy Concerts",
-      tagline: "Memory needs melody",
-      description: "Bring familiar songs to senior homes and memory care. Residents sing. Families show up. The room changes.",
-      icon: Heart,
-      color: "#E9B949",
-      format: {
-        duration: "30–45 minutes",
-        performers: "2–6 performers",
-        volume: "Quiet to moderate volume"
-      },
-      goodFor: "Common rooms, small theaters, and activity spaces.",
-      benefits: [
-        "Curated familiar tunes with three difficulty stages",
-        "Simple run-of-show card for hosts",
-        "3 verified service hours per performer when completed"
-      ],
-      cta: "Run an Empathy Concert",
-      badge: "3 hours verified"
-    },
-    {
-      id: "pianotales",
-      name: "PianoTales",
-      tagline: "Storytime that sings",
-      description: "Twelve tiny pieces for ages 2–5 with books and simple narration. Music and story weave together.",
-      icon: BookOpen,
-      color: "#8B5CF6",
-      format: {
-        duration: "20–30 minutes",
-        performers: "1–3 performers + a reader",
-        volume: "Quiet volume, playful pacing"
-      },
-      goodFor: "Library story hours, children's rooms, early childhood centers.",
-      benefits: [
-        "Read-aloud cues tied to each piece",
-        "Printable handout for parents",
-        "Optional call-and-response moments"
-      ],
-      cta: "Book a PianoTales set"
-    },
-    {
-      id: "markets",
-      name: "Markets & Parks",
-      tagline: "Weekends that feel like home",
-      description: "Warm, welcoming sets from the 1980s to today. Families linger. Vendors smile.",
-      icon: ShoppingBag,
-      color: "#16A34A",
-      format: {
-        duration: "45–60 minutes",
-        performers: "2–6 performers",
-        volume: "Moderate outdoor volume"
-      },
-      goodFor: "Farmers markets, plazas, lawns.",
-      benefits: [
-        "Four themed collections of 12 songs",
-        "Weather and power checklist",
-        "PA-friendly backing options if needed"
-      ],
-      cta: "Play the Saturday market"
-    },
-    {
-      id: "hospitals",
-      name: "Hospitals",
-      tagline: "Lobbies and healing spaces",
-      description: "Calm, steady music for visitors, patients, and staff.",
-      icon: Building2,
-      color: "#DC2626",
-      format: {
-        duration: "30–45 minutes",
-        performers: "1–3 performers",
-        volume: "Low volume, low movement"
-      },
-      goodFor: "Lobbies, atriums, waiting areas.",
-      benefits: [
-        "Soothing repertoire with clear dynamic caps",
-        "Placement and timing guide to avoid peaks",
-        "Quick break cues for overhead announcements"
-      ],
-      cta: "Book a hospital set"
-    },
-    {
-      id: "schools",
-      name: "K–6 Schools",
-      tagline: "Assemblies and after-school",
-      description: "Short, interactive pieces that invite listening and simple rhythm play.",
-      icon: School,
-      color: "#2563EB",
-      format: {
-        duration: "25–35 minutes",
-        performers: "2–5 performers",
-        volume: "Classroom to multi-purpose room volume"
-      },
-      goodFor: "Assemblies, enrichment blocks, after-school.",
-      benefits: [
-        "Teacher handout with objectives and follow-ups",
-        "Two \"try this at home\" mini-activities",
-        "Optional Q&A script for students"
-      ],
-      cta: "Bring MusicUp to your school"
-    },
-    {
-      id: "playgrounds",
-      name: "Playgrounds",
-      tagline: "Pop-up music for families",
-      description: "Drop in, play a set, lift a weekend.",
-      icon: Trees,
-      color: "#06B6D4",
-      format: {
-        duration: "20–30 minutes",
-        performers: "1–3 performers",
-        volume: "Outdoor casual volume"
-      },
-      goodFor: "Shaded lawns, picnic areas, neighborhood parks.",
-      benefits: [
-        "Weather checklist and quick setup guide",
-        "Flexible sequencing for interruptions",
-        "Optional \"kids join for last song\" moment"
-      ],
-      cta: "Play a park set"
-    },
-    {
-      id: "coffee",
-      name: "Coffee Shops",
-      tagline: "Acoustic hours",
-      description: "Sets that fit service flow and conversation.",
-      icon: Coffee,
-      color: "#EB6A18",
-      format: {
-        duration: "30–45 minutes",
-        performers: "1–2 performers",
-        volume: "Quiet to moderate volume"
-      },
-      goodFor: "Corner stages, small house systems, upright pianos.",
-      benefits: [
-        "Timebox cards for baristas and hosts",
-        "Volume guidelines by seating distance",
-        "Optional tip jar signage file"
-      ],
-      cta: "Book a coffee hour"
-    },
-    {
-      id: "museums",
-      name: "Museums & Galleries",
-      tagline: "Quiet sets for art spaces",
-      description: "Music that respects the room and the work.",
-      icon: Palette,
-      color: "#9333EA",
-      format: {
-        duration: "20–30 minutes",
-        performers: "1–2 performers",
-        volume: "Low volume, minimal movement"
-      },
-      goodFor: "Galleries, sculpture halls, reading rooms.",
-      benefits: [
-        "Slow-arc sequencing that leaves space",
-        "Placement map to protect sightlines",
-        "Start/stop cues for guided talks"
-      ],
-      cta: "Schedule a gallery set"
-    },
-    {
-      id: "house",
-      name: "House Concerts",
-      tagline: "Living rooms, real listening",
-      description: "Intimate shows with a clear run-of-show and a simple host script.",
-      icon: Home,
-      color: "#D97706",
-      format: {
-        duration: "45–60 minutes",
-        performers: "1–4 performers",
-        volume: "Conversation-friendly volume"
-      },
-      goodFor: "Living rooms, clubhouses, community rooms.",
-      benefits: [
-        "Host intro and thank-you script",
-        "Seating and photo checklist",
-        "Optional intermission card"
-      ],
-      cta: "Host a house concert"
-    }
-  ];
+  const { data: seriesData, loading } = useSeries();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -309,81 +154,67 @@ export default function SeriesPage() {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Concert series you can run today</h2>
             <p className="text-xl text-gray-600 mb-12 text-center max-w-3xl mx-auto">
-              Nine series, each designed for a specific space. Find yours.
+              {seriesData.filter(s => s.is_active).length} series, each designed for a specific space. Find yours.
             </p>
 
-            <div className="space-y-8">
-              {series.map((s) => {
-                const Icon = s.icon;
-                return (
-                  <Card key={s.id} className="border-0 border-l-4 shadow-lg hover:shadow-xl transition-all" style={{ borderLeftColor: s.color }}>
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between gap-4 flex-wrap">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: s.color }}>
-                              <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
-                            </div>
-                            <div>
-                              <h3 className="text-xl md:text-2xl font-bold">{s.name}</h3>
-                              <p className="text-sm md:text-base text-gray-600 italic">{s.tagline}</p>
-                            </div>
-                          </div>
-                          <p className="text-base md:text-lg text-gray-700 mb-4">{s.description}</p>
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Loading series...</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {seriesData.filter(s => s.is_active).map((s) => {
+                  const Icon = seriesIcons[s.slug] || Music;
+                  const color = seriesColors[s.slug] || "#2563EB";
 
-                          {/* Format */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
-                            <div className="flex items-start gap-2">
-                              <Clock className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                              <span className="text-xs sm:text-sm text-gray-600">{s.format.duration}</span>
+                  return (
+                    <Card key={s.id} className="border-0 border-l-4 shadow-lg hover:shadow-xl transition-all" style={{ borderLeftColor: color }}>
+                      <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between gap-4 flex-wrap">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: color }}>
+                                <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
+                              </div>
+                              <div>
+                                <h3 className="text-xl md:text-2xl font-bold">{s.title}</h3>
+                                {s.tagline && <p className="text-sm md:text-base text-gray-600 italic">{s.tagline}</p>}
+                              </div>
                             </div>
-                            <div className="flex items-start gap-2">
-                              <Users className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                              <span className="text-xs sm:text-sm text-gray-600">{s.format.performers}</span>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <Volume2 className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                              <span className="text-xs sm:text-sm text-gray-600">{s.format.volume}</span>
-                            </div>
+                            {s.blurb && <p className="text-base md:text-lg text-gray-700 mb-4">{s.blurb}</p>}
+
+                            {/* Format */}
+                            {s.format && (
+                              <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                                <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-1">Format</p>
+                                <p className="text-xs sm:text-sm text-gray-600">{s.format}</p>
+                              </div>
+                            )}
+
+                            {/* What You Get */}
+                            {s.what_you_get && (
+                              <div className="mb-4">
+                                <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">What you get</p>
+                                <div className="flex items-start gap-2">
+                                  <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color }} />
+                                  <span className="text-xs sm:text-sm text-gray-600">{s.what_you_get}</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
 
-                          {/* Good For */}
-                          <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                            <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-1">Good for</p>
-                            <p className="text-xs sm:text-sm text-gray-600">{s.goodFor}</p>
-                          </div>
-
-                          {/* What You Get */}
-                          <div className="mb-4">
-                            <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">What you get</p>
-                            <ul className="space-y-2">
-                              {s.benefits.map((benefit, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                  <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: s.color }} />
-                                  <span className="text-xs sm:text-sm text-gray-600">{benefit}</span>
-                                </li>
-                              ))}
-                            </ul>
+                          <div className="flex flex-col gap-3 w-full sm:w-auto sm:min-w-[200px]">
+                            <Button asChild className="shadow-md w-full sm:w-auto" style={{ backgroundColor: color }}>
+                              <Link href="/signup">Get Started</Link>
+                            </Button>
                           </div>
                         </div>
-
-                        <div className="flex flex-col gap-3 w-full sm:w-auto sm:min-w-[200px]">
-                          {s.badge && (
-                            <div className="inline-flex items-center gap-2 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg w-fit">
-                              <Award className="h-4 w-4 text-yellow-600" />
-                              <span className="text-sm font-semibold text-yellow-700">{s.badge}</span>
-                            </div>
-                          )}
-                          <Button asChild className="shadow-md w-full sm:w-auto" style={{ backgroundColor: s.color }}>
-                            <Link href="/signup">{s.cta}</Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                );
-              })}
-            </div>
+                      </CardHeader>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </section>

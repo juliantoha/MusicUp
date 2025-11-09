@@ -60,12 +60,8 @@ export type Series = {
   description: string | null;
   tagline: string | null;
   blurb: string | null;
-  format_info: string | null;
-  duration_min: number | null;
-  duration_max: number | null;
-  performer_count_min: number | null;
-  performer_count_max: number | null;
-  service_hours_per_performer: number | null;
+  format: string | null;
+  what_you_get: string | null;
   is_active: boolean;
   created_at: string;
 };
