@@ -155,7 +155,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
       {/* Concert Header */}
       <Card className="p-6">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1">
             <h2 className="text-2xl font-bold mb-2">{concert.series?.name}</h2>
             <div className="space-y-1 text-gray-600">
               <p>
@@ -181,6 +181,32 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                 </p>
               )}
             </div>
+
+            {/* Venue Contact Info */}
+            {(concert.venue?.venue_contact_name || concert.venue?.venue_contact_email || concert.venue?.venue_contact_phone) && (
+              <div className="mt-4 pt-4 border-t">
+                <p className="text-sm font-semibold text-gray-700 mb-1">Venue Contact:</p>
+                <div className="space-y-0.5 text-sm text-gray-600">
+                  {concert.venue?.venue_contact_name && (
+                    <p>{concert.venue.venue_contact_name}</p>
+                  )}
+                  {concert.venue?.venue_contact_email && (
+                    <p>
+                      <a href={`mailto:${concert.venue.venue_contact_email}`} className="text-blue-600 hover:underline">
+                        {concert.venue.venue_contact_email}
+                      </a>
+                    </p>
+                  )}
+                  {concert.venue?.venue_contact_phone && (
+                    <p>
+                      <a href={`tel:${concert.venue.venue_contact_phone}`} className="text-blue-600 hover:underline">
+                        {concert.venue.venue_contact_phone}
+                      </a>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           <Badge>{concert.status}</Badge>
         </div>
