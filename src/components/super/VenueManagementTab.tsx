@@ -68,9 +68,9 @@ export function VenueManagementTab() {
                   {venue.city}, {venue.state}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">{venue.address}</p>
-                {venue.contact_name && (
+                {venue.venue_contact_name && (
                   <p className="text-xs text-gray-500 mt-2">
-                    Contact: {venue.contact_name}
+                    Contact: {venue.venue_contact_name}
                   </p>
                 )}
               </div>

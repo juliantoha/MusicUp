@@ -139,10 +139,10 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
               <p>
                 {venue.address}, {venue.city}, {venue.state} {venue.zip}
               </p>
-              {venue.contact_name && (
+              {venue.venue_contact_name && (
                 <p>
-                  <strong>Contact:</strong> {venue.contact_name}
-                  {venue.contact_email && ` (${venue.contact_email})`}
+                  <strong>Contact:</strong> {venue.venue_contact_name}
+                  {venue.venue_contact_email && ` (${venue.venue_contact_email})`}
                 </p>
               )}
             </div>

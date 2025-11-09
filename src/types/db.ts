@@ -24,10 +24,12 @@ export type Venue = {
   city: string;
   state: string;
   zip: string;
-  contact_name: string | null;
   contact_email: string | null;
-  contact_phone: string | null;
   notes: string | null;
+  is_active: boolean;
+  venue_contact_name: string | null;
+  venue_contact_email: string | null;
+  venue_contact_phone: string | null;
   created_at: string;
 };
 
@@ -192,10 +194,12 @@ export const venueSchema = z.object({
   city: z.string().min(1, "City is required"),
   state: z.string().length(2, "State must be 2 characters"),
   zip: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code"),
-  contact_name: z.string().nullable(),
   contact_email: z.string().email().nullable().or(z.literal("")),
-  contact_phone: z.string().nullable(),
   notes: z.string().nullable(),
+  is_active: z.boolean(),
+  venue_contact_name: z.string().min(1, "Venue contact name is required").nullable().or(z.literal("")),
+  venue_contact_email: z.string().email("Invalid email address").nullable().or(z.literal("")),
+  venue_contact_phone: z.string().nullable().or(z.literal("")),
   created_at: z.string(),
 });
 
@@ -276,6 +280,13 @@ export const serviceHourSchema = z.object({
 export const venueInsertSchema = venueSchema.omit({ id: true, created_at: true });
 export const venueUpdateSchema = venueInsertSchema.partial();
 
+// Schema specifically for updating venue contact info (used by venue admins)
+export const venueContactUpdateSchema = z.object({
+  venue_contact_name: z.string().min(1, "Venue contact name is required").nullable().or(z.literal("")),
+  venue_contact_email: z.string().email("Invalid email address").nullable().or(z.literal("")),
+  venue_contact_phone: z.string().nullable().or(z.literal("")),
+}).partial();
+
 export const seriesInsertSchema = seriesSchema.omit({ id: true, created_at: true });
 export const seriesUpdateSchema = seriesInsertSchema.partial();
 
@@ -303,6 +314,7 @@ export const serviceHourUpdateSchema = serviceHourInsertSchema.partial();
 
 export type VenueInsert = z.infer<typeof venueInsertSchema>;
 export type VenueUpdate = z.infer<typeof venueUpdateSchema>;
+export type VenueContactUpdate = z.infer<typeof venueContactUpdateSchema>;
 
 export type SeriesInsert = z.infer<typeof seriesInsertSchema>;
 export type SeriesUpdate = z.infer<typeof seriesUpdateSchema>;

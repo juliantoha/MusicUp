@@ -193,6 +193,32 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                 })}
                 {" PT"}
               </p>
+
+              {/* Venue Contact Info */}
+              {(concert.venue?.venue_contact_name || concert.venue?.venue_contact_email || concert.venue?.venue_contact_phone) && (
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm font-semibold text-gray-700 mb-1">Venue Contact:</p>
+                  <div className="space-y-0.5 text-sm text-gray-600">
+                    {concert.venue?.venue_contact_name && (
+                      <p>{concert.venue.venue_contact_name}</p>
+                    )}
+                    {concert.venue?.venue_contact_email && (
+                      <p>
+                        <a href={`mailto:${concert.venue.venue_contact_email}`} className="text-blue-600 hover:underline">
+                          {concert.venue.venue_contact_email}
+                        </a>
+                      </p>
+                    )}
+                    {concert.venue?.venue_contact_phone && (
+                      <p>
+                        <a href={`tel:${concert.venue.venue_contact_phone}`} className="text-blue-600 hover:underline">
+                          {concert.venue.venue_contact_phone}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <Badge>{concert.status}</Badge>

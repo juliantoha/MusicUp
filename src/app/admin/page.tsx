@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { withRole } from "@/lib/auth/withRole";
 import { ConcertsIHostTab } from "@/components/admin/ConcertsIHostTab";
 import { MyPerformancesTab } from "@/components/admin/MyPerformancesTab";
+import { VenueContactTab } from "@/components/admin/VenueContactTab";
 import { AdminMetrics } from "@/components/admin/AdminMetrics";
-import { Shield, Calendar, Users } from "lucide-react";
+import { Shield, Calendar, Users, Building2 } from "lucide-react";
 
 function AdminPage() {
   return (
@@ -36,7 +37,7 @@ function AdminPage() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="concerts" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 bg-white shadow-lg rounded-xl p-2 border-0">
+          <TabsList className="grid w-full grid-cols-3 bg-white shadow-lg rounded-xl p-2 border-0">
             <TabsTrigger value="concerts" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Concerts I Host</span>
@@ -46,6 +47,11 @@ function AdminPage() {
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">My Performances</span>
               <span className="sm:hidden">Perform</span>
+            </TabsTrigger>
+            <TabsTrigger value="venues" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Venue Contact</span>
+              <span className="sm:hidden">Venues</span>
             </TabsTrigger>
           </TabsList>
 
@@ -73,6 +79,20 @@ function AdminPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 <MyPerformancesTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="venues" className="space-y-4">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-xl">
+                <CardTitle className="text-2xl">Venue Contact Settings</CardTitle>
+                <CardDescription className="text-base">
+                  Manage contact information for venues you administer. This information is used for logistics confirmations and event coordination.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <VenueContactTab />
               </CardContent>
             </Card>
           </TabsContent>
