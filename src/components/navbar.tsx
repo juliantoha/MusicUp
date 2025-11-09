@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/performer", label: "Performer", roles: ["performer", "admin", "super_admin"] },
-  { href: "/admin", label: "Admin", roles: ["admin", "super_admin"] },
+  { href: "/admin", label: "Host", roles: ["admin", "super_admin"] },
   { href: "/super", label: "Super Admin", roles: ["super_admin"] },
 ];
 
@@ -156,24 +156,41 @@ export function Navbar() {
                 <div className="flex flex-col">
                   <span className="font-medium">{profile?.full_name || "User"}</span>
                   <span className="text-xs text-muted-foreground">{user.email}</span>
+                  <span className="text-xs text-muted-foreground capitalize mt-0.5">
+                    {profile?.role?.replace('_', ' ')} Role
+                  </span>
                 </div>
               </SelectItem>
 
-              {/* Mobile Navigation Links */}
-              <div className="md:hidden border-t my-1" />
-              {!isOnDashboard && (
-                <SelectItem value={getDashboardUrl()} className="md:hidden">
-                  <span className="flex items-center gap-2">
-                    <Home className="h-4 w-4" />
-                    Dashboard
-                  </span>
-                </SelectItem>
+              {/* Dashboard Switcher - Always visible for multi-role users */}
+              {visibleNavItems.length > 0 && (
+                <>
+                  <div className="border-t my-1" />
+                  <SelectItem value="dashboard-header" disabled className="text-xs font-semibold text-muted-foreground px-2 py-1.5">
+                    SWITCH DASHBOARD
+                  </SelectItem>
+                  {!isOnDashboard && (
+                    <SelectItem value={getDashboardUrl()}>
+                      <span className="flex items-center gap-2">
+                        <Home className="h-4 w-4" />
+                        {profile?.role === 'super_admin' ? 'Super Admin' : profile?.role === 'admin' ? 'Host Dashboard' : 'Performer Dashboard'}
+                      </span>
+                    </SelectItem>
+                  )}
+                  {visibleNavItems.map((item) => (
+                    <SelectItem key={item.href} value={item.href}>
+                      <span className="flex items-center gap-2">
+                        {item.href === '/performer' && '🎵'}
+                        {item.href === '/admin' && '🏛️'}
+                        {item.href === '/super' && '⚡'}
+                        <span className="ml-1">
+                          {item.href === '/admin' ? 'Host Dashboard' : item.label}
+                        </span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </>
               )}
-              {!isOnSettings && visibleNavItems.map((item) => (
-                <SelectItem key={item.href} value={item.href} className="md:hidden">
-                  {item.label}
-                </SelectItem>
-              ))}
 
               {/* Settings & Logout */}
               <div className="border-t my-1" />
