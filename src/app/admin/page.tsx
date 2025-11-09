@@ -15,15 +15,15 @@ function AdminPage() {
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
         <div className="mb-10">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] flex items-center justify-center shadow-lg">
+          <div className="flex items-start gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] flex items-center justify-center shadow-lg flex-shrink-0">
               <Shield className="h-7 w-7 text-white" />
             </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#06B6D4] to-[#0891b2] bg-clip-text text-transparent">
+            <div className="flex-1 overflow-visible">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#06B6D4] to-[#0891b2] bg-clip-text text-transparent mb-3 leading-tight">
                 Host Dashboard
               </h1>
-              <p className="text-lg text-gray-600 mt-1">
+              <p className="text-lg text-gray-600 leading-relaxed mt-2">
                 List concerts. Manage lineups. Complete checklists. Grant hours.
               </p>
             </div>
@@ -35,31 +35,57 @@ function AdminPage() {
           <AdminMetrics />
         </div>
 
-        {/* Main Tabs */}
+        {/* Main Tabs - Modern Redesign */}
         <Tabs defaultValue="concerts" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 bg-white shadow-lg rounded-xl p-2 border-0">
-            <TabsTrigger value="concerts" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Concerts I Host</span>
-              <span className="sm:hidden">Host</span>
+          <TabsList className="grid w-full grid-cols-3 gap-3 bg-transparent p-0 h-auto">
+            <TabsTrigger
+              value="concerts"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#06B6D4] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Calendar className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">
+                  <span className="hidden sm:inline">Concerts I Host</span>
+                  <span className="sm:hidden">Host</span>
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
-            <TabsTrigger value="performances" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">My Performances</span>
-              <span className="sm:hidden">Perform</span>
+
+            <TabsTrigger
+              value="performances"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#2563EB] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Users className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">
+                  <span className="hidden sm:inline">My Performances</span>
+                  <span className="sm:hidden">Perform</span>
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
-            <TabsTrigger value="venues" className="rounded-lg px-4 py-3.5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:text-white font-semibold flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Venue Contact</span>
-              <span className="sm:hidden">Venues</span>
+
+            <TabsTrigger
+              value="venues"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#EB6A18] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#EB6A18] data-[state=active]:to-[#c2410c] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Building2 className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">
+                  <span className="hidden sm:inline">Venue Contact</span>
+                  <span className="sm:hidden">Venues</span>
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="concerts" className="space-y-4">
             <Card className="border-0 shadow-xl">
               <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Manage your concerts</CardTitle>
-                <CardDescription className="text-base">
+                <CardTitle className="text-2xl text-gray-900">Manage your concerts</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   Upload photos. Mark attendance. Complete concerts to verify hours. Simple checklists that prove community impact.
                 </CardDescription>
               </CardHeader>
@@ -71,9 +97,9 @@ function AdminPage() {
 
           <TabsContent value="performances" className="space-y-4">
             <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Your performances</CardTitle>
-                <CardDescription className="text-base">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Your performances</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   Track your bookings and performance history. Admins can both host and perform.
                 </CardDescription>
               </CardHeader>
@@ -85,9 +111,9 @@ function AdminPage() {
 
           <TabsContent value="venues" className="space-y-4">
             <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-xl">
-                <CardTitle className="text-2xl">Venue Contact Settings</CardTitle>
-                <CardDescription className="text-base">
+              <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Venue Contact Settings</CardTitle>
+                <CardDescription className="text-base text-gray-700">
                   Manage contact information for venues you administer. This information is used for logistics confirmations and event coordination.
                 </CardDescription>
               </CardHeader>
