@@ -42,7 +42,7 @@ function SuperAdminPage() {
 
         {/* Main Tabs - Modern Redesign */}
         <Tabs defaultValue="venues" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 gap-3 bg-transparent p-0 h-auto">
+          <TabsList className="grid w-full grid-cols-2 gap-6 bg-transparent p-0 h-auto">
             <TabsTrigger
               value="venues"
               className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#8B5CF6] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:shadow-xl data-[state=active]:scale-105"

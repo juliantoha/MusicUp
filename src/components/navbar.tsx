@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Music, LogOut, User, Settings, Home } from "lucide-react";
+import { Music, LogOut, User, Settings, Home, Building2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -95,32 +95,9 @@ export function Navbar() {
           <span className="text-xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent hidden sm:inline">MusicUp</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-2 ml-auto">
-          {/* Always show Dashboard button if not on dashboard */}
-          {!isOnDashboard && (
-            <Button variant="ghost" asChild size="sm">
-              <Link href={getDashboardUrl()} className="flex items-center gap-2">
-                <Home className="h-4 w-4" />
-                Dashboard
-              </Link>
-            </Button>
-          )}
-          {/* Show other navigation items only if not on settings page */}
-          {!isOnSettings && visibleNavItems.map((item) => (
-            <Button
-              key={item.href}
-              variant="ghost"
-              asChild
-              size="sm"
-            >
-              <Link href={item.href}>{item.label}</Link>
-            </Button>
-          ))}
-        </div>
 
         {/* Mobile & Desktop User Menu */}
-        <div className="ml-auto md:ml-0">
+        <div className="ml-auto">
           <Select
             value={selectValue}
             onValueChange={(value) => {
@@ -180,12 +157,10 @@ export function Navbar() {
                   {visibleNavItems.map((item) => (
                     <SelectItem key={item.href} value={item.href}>
                       <span className="flex items-center gap-2">
-                        {item.href === '/performer' && '🎵'}
-                        {item.href === '/admin' && '🏛️'}
-                        {item.href === '/super' && '⚡'}
-                        <span className="ml-1">
-                          {item.href === '/admin' ? 'Host Dashboard' : item.label}
-                        </span>
+                        {item.href === '/performer' && <Music className="h-4 w-4" />}
+                        {item.href === '/admin' && <Building2 className="h-4 w-4" />}
+                        {item.href === '/super' && <Zap className="h-4 w-4" />}
+                        {item.href === '/admin' ? 'Host Dashboard' : item.label}
                       </span>
                     </SelectItem>
                   ))}
