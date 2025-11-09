@@ -192,6 +192,23 @@ export interface CompletionThankYouData {
   dashboardUrl: string;
 }
 
+export interface VenueReminderData {
+  venueContactName: string;
+  venueName: string;
+  venueAddress: string;
+  concertDate: string;
+  concertTime: string;
+  seriesName: string;
+  hostName: string;
+  hostEmail: string;
+  hostPhone: string | null;
+  performers: Array<{
+    name: string;
+    piece: string;
+    stage: string;
+  }>;
+}
+
 export function completionThankYouTemplate(data: CompletionThankYouData): string {
   return `
 <!DOCTYPE html>
@@ -237,6 +254,73 @@ export function completionThankYouTemplate(data: CompletionThankYouData): string
 
   <div style="text-align: center; padding: 20px; color: #6B7280; font-size: 12px;">
     <p>This is an automated message from MusicUp. Please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+  `.trim();
+}
+
+export function venueReminderTemplate(data: VenueReminderData): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upcoming Concert Reminder</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #EB6A18; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+    <h1 style="margin: 0; font-size: 24px;">🎵 Concert Reminder - 1 Week Away</h1>
+  </div>
+
+  <div style="background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+    <p style="margin-top: 0;">Dear ${data.venueContactName},</p>
+
+    <p>This is a friendly reminder that <strong>${data.seriesName}</strong> is scheduled at your venue in one week!</p>
+
+    <div style="background-color: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <h2 style="margin-top: 0; color: #EB6A18; font-size: 18px;">Event Details</h2>
+
+      <p style="margin: 10px 0;"><strong>Concert:</strong> ${data.seriesName}</p>
+      <p style="margin: 10px 0;"><strong>Venue:</strong> ${data.venueName}</p>
+      <p style="margin: 10px 0;"><strong>Address:</strong> ${data.venueAddress}</p>
+      <p style="margin: 10px 0;"><strong>Date:</strong> ${data.concertDate}</p>
+      <p style="margin: 10px 0;"><strong>Time:</strong> ${data.concertTime}</p>
+    </div>
+
+    <div style="background-color: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <h2 style="margin-top: 0; color: #EB6A18; font-size: 18px;">Performers</h2>
+
+      ${data.performers.map((performer, index) => `
+        <div style="padding: 10px 0; ${index > 0 ? 'border-top: 1px solid #e5e7eb;' : ''}">
+          <p style="margin: 5px 0;"><strong>${performer.name}</strong></p>
+          <p style="margin: 5px 0; color: #6B7280;">Performing: ${performer.piece}</p>
+          <p style="margin: 5px 0; color: #6B7280; font-size: 14px;">${performer.stage}</p>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="background-color: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <h2 style="margin-top: 0; color: #EB6A18; font-size: 18px;">Host Contact Information</h2>
+
+      <p style="margin: 10px 0;">If you have any questions or need to make changes, please contact:</p>
+      <p style="margin: 10px 0;"><strong>Name:</strong> ${data.hostName}</p>
+      <p style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:${data.hostEmail}" style="color: #EB6A18;">${data.hostEmail}</a></p>
+      ${data.hostPhone ? `<p style="margin: 10px 0;"><strong>Phone:</strong> ${data.hostPhone}</p>` : ''}
+    </div>
+
+    <div style="background-color: #FEF3C7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #F59E0B;">
+      <p style="margin: 0;"><strong>Note:</strong> Please ensure the performance space is set up and ready for the scheduled time. Thank you for hosting this event!</p>
+    </div>
+
+    <p style="margin-top: 20px;">We're looking forward to a wonderful performance at your venue!</p>
+
+    <p style="margin-bottom: 0;">Best regards,<br>The MusicUp Team</p>
+  </div>
+
+  <div style="text-align: center; padding: 20px; color: #6B7280; font-size: 12px;">
+    <p>This is an automated reminder from MusicUp. If you need assistance, please reply to ${data.hostEmail}.</p>
   </div>
 </body>
 </html>

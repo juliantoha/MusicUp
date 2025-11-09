@@ -6,12 +6,15 @@ import {
   bookingConfirmationTemplate,
   concertReminderTemplate,
   completionThankYouTemplate,
+  venueReminderTemplate,
   type BookingConfirmationData,
   type ConcertReminderData,
   type CompletionThankYouData,
+  type VenueReminderData,
 } from "./templates";
 import { email as copy } from "@/lib/copy";
 import { logEmailSent } from "@/lib/logging/actions";
+import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
 
 // Initialize Resend with API key from environment
 // Use a placeholder in development if key is missing to allow builds
@@ -382,6 +385,144 @@ export async function sendCompletionThankYouEmail(performerId: string, concertId
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendCompletionThankYouEmail:", error);
+    return { error: error.message };
+  }
+}
+
+/**
+ * Send 1-week reminder email to venue contact
+ */
+export async function sendVenueReminderEmail(concertId: string) {
+  try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("RESEND_API_KEY not configured, skipping email send");
+      return { error: "Email service not configured" };
+    }
+
+    const supabase = await createClient();
+
+    // Fetch concert with all related data including host and bookings
+    const { data: concert, error: concertError } = await supabase
+      .from("concerts")
+      .select(`
+        *,
+        venue:venue_id (
+          name,
+          address,
+          city,
+          state,
+          contact_name,
+          contact_email
+        ),
+        series:series_id (
+          title
+        ),
+        host:host_id (
+          full_name,
+          email,
+          phone
+        )
+      `)
+      .eq("id", concertId)
+      .single();
+
+    if (concertError || !concert) {
+      console.error("Error fetching concert for venue reminder:", concertError);
+      return { error: "Concert not found" };
+    }
+
+    const venue = concert.venue as any;
+    const series = concert.series as any;
+    const host = concert.host as any;
+
+    // Validate venue has contact email
+    if (!venue?.contact_email) {
+      console.warn(`Venue ${venue?.name} has no contact email, skipping reminder`);
+      return { error: "Venue contact email not found" };
+    }
+
+    // Fetch all bookings for this concert
+    const { data: bookings, error: bookingsError } = await supabase
+      .from("bookings")
+      .select(`
+        *,
+        profile:profile_id (
+          full_name,
+          email
+        ),
+        piece:piece_id (
+          title
+        )
+      `)
+      .eq("concert_id", concertId)
+      .eq("status", "booked");
+
+    if (bookingsError) {
+      console.error("Error fetching bookings for venue reminder:", bookingsError);
+      return { error: "Failed to fetch bookings" };
+    }
+
+    // Format performers list
+    const performers = (bookings || []).map((booking: any) => {
+      const profile = booking.profile;
+      const piece = booking.piece;
+      const stageName =
+        booking.stage === 1
+          ? "Stage 1"
+          : booking.stage === 2
+          ? "Stage 2"
+          : "Stage 3";
+
+      return {
+        name: profile?.full_name || profile?.email || "Unknown Performer",
+        piece: piece?.title || "Unknown Piece",
+        stage: stageName,
+      };
+    });
+
+    // Format date and time in Pacific Time
+    const concertDate = formatPacificDate(concert.starts_at);
+    const concertTime = formatPacificTimeRange(concert.starts_at, concert.ends_at);
+    const venueAddress = `${venue.address}, ${venue.city}, ${venue.state}`;
+
+    // Prepare email data
+    const emailData: VenueReminderData = {
+      venueContactName: venue.contact_name || "Venue Contact",
+      venueName: venue.name,
+      venueAddress,
+      concertDate,
+      concertTime,
+      seriesName: series?.title || "Concert",
+      hostName: host?.full_name || "MusicUp Team",
+      hostEmail: host?.email || "contact@musicup.com",
+      hostPhone: host?.phone || null,
+      performers,
+    };
+
+    // Send email
+    const { data: emailResult, error: emailError } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: venue.contact_email,
+      subject: `Upcoming Concert Reminder: ${series?.title || "Concert"} - 1 Week Away`,
+      html: venueReminderTemplate(emailData),
+    });
+
+    if (emailError) {
+      console.error("Error sending venue reminder email:", emailError);
+      return { error: emailError.message };
+    }
+
+    console.log("Venue reminder email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(venue.contact_email, "venue_reminder", undefined, concertId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
+    return { success: true, emailId: emailResult?.id };
+  } catch (error: any) {
+    console.error("Error in sendVenueReminderEmail:", error);
     return { error: error.message };
   }
 }

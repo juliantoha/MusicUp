@@ -12,6 +12,7 @@ export type Profile = {
   id: string;
   email: string;
   full_name: string | null;
+  phone: string | null;
   role: "performer" | "admin" | "super_admin";
   profile_photo_path: string | null;
   created_at: string;
@@ -81,6 +82,7 @@ export type Concert = {
   id: string;
   venue_id: string;
   series_id: string;
+  host_id: string | null;
   starts_at: string; // TIMESTAMPTZ - combined date and time
   ends_at: string; // TIMESTAMPTZ - combined date and time
   status: "scheduled" | "in_progress" | "completed" | "cancelled";
