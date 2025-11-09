@@ -146,7 +146,7 @@ export function Navbar() {
                   <SelectItem value="dashboard-header" disabled className="text-xs font-semibold text-muted-foreground px-2 py-1.5">
                     SWITCH DASHBOARD
                   </SelectItem>
-                  {!isOnDashboard && (
+                  {!isOnDashboard && !visibleNavItems.some(item => item.href === getDashboardUrl()) && (
                     <SelectItem value={getDashboardUrl()}>
                       <span className="flex items-center gap-2">
                         <Home className="h-4 w-4" />
