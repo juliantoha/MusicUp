@@ -242,10 +242,6 @@ export function completionThankYouTemplate(data: CompletionThankYouData): string
 </html>
   `.trim();
 }
-</body>
-</html>
-  `.trim();
-}
 
 export interface VenueContactNotificationData {
   contactName: string;
