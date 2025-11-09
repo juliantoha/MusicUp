@@ -10,7 +10,7 @@ import { ArrowLeft, Building2, Plus } from "lucide-react";
 import type { Venue } from "@/types/db";
 
 export function VenueManagementTab() {
-  const { data: venues, loading, mutate } = useVenues();
+  const { data: venues, loading, refetch } = useVenues();
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
@@ -25,7 +25,7 @@ export function VenueManagementTab() {
         <CreateVenueForm
           onSuccess={() => {
             setShowCreateForm(false);
-            mutate();
+            refetch();
           }}
           onCancel={() => setShowCreateForm(false)}
         />
