@@ -709,6 +709,7 @@ export function useVenueConcerts(venueId?: string): UseListResult<ConcertWithDet
 
 /**
  * Fetch upcoming concerts at a specific venue (for booking)
+ * Filters out concerts with invalid series-venue type combinations
  */
 export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWithDetails> {
   const [data, setData] = useState<ConcertWithDetails[]>([]);
@@ -733,7 +734,10 @@ export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWith
         .from("concerts")
         .select(`
           *,
-          venue:venue_id (*),
+          venue:venue_id (
+            *,
+            venue_type:venue_type_id (*)
+          ),
           series:series_id (*)
         `)
         .eq("venue_id", venueId)
@@ -742,7 +746,33 @@ export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWith
         .order("starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
-      setData(concerts || []);
+
+      // Filter concerts to only include those with valid series-venue type matches
+      // or concerts at venues without a type (backwards compatibility)
+      const validConcerts = await Promise.all(
+        (concerts || []).map(async (concert) => {
+          // If venue has no type, allow all series
+          if (!concert.venue?.venue_type_id) {
+            return concert;
+          }
+
+          // Check if this series-venue type combo is valid
+          const { data: mapping } = await supabase
+            .from("series_venue_types")
+            .select("id")
+            .eq("series_id", concert.series_id)
+            .eq("venue_type_id", concert.venue.venue_type_id)
+            .maybeSingle();
+
+          // Only include concerts with valid mappings
+          return mapping ? concert : null;
+        })
+      );
+
+      // Filter out null values (invalid concerts)
+      const filteredConcerts = validConcerts.filter((c): c is ConcertWithDetails => c !== null);
+
+      setData(filteredConcerts);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch upcoming concerts"));
     } finally {

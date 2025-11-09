@@ -3,10 +3,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Shield, Building2, Users, Sparkles } from "lucide-react";
+import { Shield, Building2, Users, Sparkles, Link2 } from "lucide-react";
 import { withRole } from "@/lib/auth/withRole";
 import { VenueManagementTab } from "@/components/super/VenueManagementTab";
 import { RoleToolsTab } from "@/components/super/RoleToolsTab";
+import { SeriesVenueTypeMappingsTab } from "@/components/super/SeriesVenueTypeMappingsTab";
 
 function SuperAdminPage() {
   return (
@@ -42,7 +43,7 @@ function SuperAdminPage() {
 
         {/* Main Tabs - Modern Redesign */}
         <Tabs defaultValue="venues" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 gap-6 bg-transparent p-0 h-auto">
+          <TabsList className="grid w-full grid-cols-3 gap-6 bg-transparent p-0 h-auto">
             <TabsTrigger
               value="venues"
               className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#8B5CF6] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:shadow-xl data-[state=active]:scale-105"
@@ -70,6 +71,20 @@ function SuperAdminPage() {
               </div>
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
             </TabsTrigger>
+
+            <TabsTrigger
+              value="mappings"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#16A34A] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#16A34A] data-[state=active]:to-[#15803d] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Link2 className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">
+                  <span className="hidden sm:inline">Series Mappings</span>
+                  <span className="sm:hidden">Mappings</span>
+                </span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="venues" className="space-y-4">
@@ -96,6 +111,20 @@ function SuperAdminPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 <RoleToolsTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="mappings" className="space-y-4">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Series ↔ Venue Type Mappings</CardTitle>
+                <CardDescription className="text-base text-gray-700">
+                  Control which concert series are appropriate for each venue type. Ensure Empathy is only at senior living, PianoTales at libraries/schools, etc.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <SeriesVenueTypeMappingsTab />
               </CardContent>
             </Card>
           </TabsContent>
