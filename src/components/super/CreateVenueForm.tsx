@@ -45,9 +45,9 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
     try {
       const result = await createVenue(formData as VenueInsert);
 
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(result.error);
-      } else if (result.success) {
+      } else if ("success" in result && result.success) {
         toast.success(`Venue "${result.venue?.name}" created successfully`);
         // Reset form
         setFormData({
