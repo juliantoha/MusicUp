@@ -75,6 +75,41 @@ export function useVenues(): UseListResult<Venue> {
 }
 
 /**
+ * Fetch all venue types
+ */
+export function useVenueTypes(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchVenueTypes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { data: venueTypes, error: fetchError } = await supabase
+        .from("venue_types")
+        .select("*")
+        .order("label");
+
+      if (fetchError) throw fetchError;
+      setData(venueTypes || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch venue types"));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchVenueTypes();
+  }, [fetchVenueTypes]);
+
+  return { data, loading, error, refetch: fetchVenueTypes };
+}
+
+/**
  * Fetch all series
  */
 export function useSeries(): UseListResult<Series> {

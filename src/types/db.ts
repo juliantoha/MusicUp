@@ -17,6 +17,14 @@ export type Profile = {
   created_at: string;
 };
 
+export type VenueType = {
+  id: string;
+  slug: string;
+  label: string;
+  description: string | null;
+  created_at: string;
+};
+
 export type Venue = {
   id: string;
   name: string;
@@ -27,10 +35,15 @@ export type Venue = {
   contact_email: string | null;
   notes: string | null;
   is_active: boolean;
+  venue_type_id: string | null;
   venue_contact_name: string | null;
   venue_contact_email: string | null;
   venue_contact_phone: string | null;
   created_at: string;
+};
+
+export type VenueWithType = Venue & {
+  venue_type: VenueType | null;
 };
 
 export type AdminsVenue = {
@@ -45,7 +58,27 @@ export type Series = {
   slug: string;
   title: string;
   description: string | null;
+  tagline: string | null;
+  blurb: string | null;
+  format_info: string | null;
+  duration_min: number | null;
+  duration_max: number | null;
+  performer_count_min: number | null;
+  performer_count_max: number | null;
+  service_hours_per_performer: number | null;
+  is_active: boolean;
   created_at: string;
+};
+
+export type SeriesVenueType = {
+  id: string;
+  series_id: string;
+  venue_type_id: string;
+  created_at: string;
+};
+
+export type SeriesWithVenueTypes = Series & {
+  venue_types: VenueType[];
 };
 
 export type Collection = {
@@ -197,6 +230,7 @@ export const venueSchema = z.object({
   contact_email: z.string().email().nullable().or(z.literal("")),
   notes: z.string().nullable(),
   is_active: z.boolean(),
+  venue_type_id: z.string().uuid().nullable(),
   venue_contact_name: z.string().min(1, "Venue contact name is required").nullable().or(z.literal("")),
   venue_contact_email: z.string().email("Invalid email address").nullable().or(z.literal("")),
   venue_contact_phone: z.string().nullable().or(z.literal("")),

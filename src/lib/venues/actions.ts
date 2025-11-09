@@ -230,7 +230,7 @@ export async function createVenue(venueData: VenueInsert) {
   const supabase = await createClient();
 
   // Create venue
-  const { data, error } = await supabase
+  const { data, error} = await supabase
     .from("venues")
     .insert({
       name: venueData.name,
@@ -241,6 +241,7 @@ export async function createVenue(venueData: VenueInsert) {
       contact_email: venueData.contact_email || null,
       notes: venueData.notes || null,
       is_active: venueData.is_active ?? true,
+      venue_type_id: venueData.venue_type_id || null,
       venue_contact_name: venueData.venue_contact_name || null,
       venue_contact_email: venueData.venue_contact_email || null,
       venue_contact_phone: venueData.venue_contact_phone || null,

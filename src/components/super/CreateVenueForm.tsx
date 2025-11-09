@@ -6,8 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { createVenue } from "@/lib/venues/actions";
+import { useVenueTypes } from "@/lib/hooks";
 import { Building2, Loader2, Plus } from "lucide-react";
 import type { VenueInsert } from "@/types/db";
 
@@ -17,6 +25,7 @@ interface CreateVenueFormProps {
 }
 
 export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
+  const { data: venueTypes, loading: loadingVenueTypes } = useVenueTypes();
   const [creating, setCreating] = useState(false);
   const [formData, setFormData] = useState<Partial<VenueInsert>>({
     name: "",
@@ -27,6 +36,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
     contact_email: "",
     notes: "",
     is_active: true,
+    venue_type_id: null,
     venue_contact_name: "",
     venue_contact_email: "",
     venue_contact_phone: "",
@@ -59,6 +69,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
           contact_email: "",
           notes: "",
           is_active: true,
+          venue_type_id: null,
           venue_contact_name: "",
           venue_contact_email: "",
           venue_contact_phone: "",
@@ -103,6 +114,29 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 disabled={creating}
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="venue_type_id">Venue Type</Label>
+              <Select
+                value={formData.venue_type_id || ""}
+                onValueChange={(value) => handleChange("venue_type_id", value || null)}
+                disabled={creating || loadingVenueTypes}
+              >
+                <SelectTrigger id="venue_type_id">
+                  <SelectValue placeholder="Select a venue type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {venueTypes.map((type) => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                Helps match the venue with appropriate series (e.g., Empathy Concerts for senior living)
+              </p>
             </div>
 
             <div className="space-y-2">
