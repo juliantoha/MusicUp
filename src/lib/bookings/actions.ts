@@ -37,6 +37,47 @@ export async function createBooking(data: CreateBookingData) {
   // Convert stage from "stage_1" format to integer 1, 2, or 3
   const stageNumber = pieceStage.stage === "stage_1" ? 1 : pieceStage.stage === "stage_2" ? 2 : 3;
 
+  // Validate series-venue type match
+  const { data: concert, error: concertError } = await supabase
+    .from("concerts")
+    .select(`
+      id,
+      series_id,
+      venue:venue_id (
+        id,
+        name,
+        venue_type_id
+      )
+    `)
+    .eq("id", data.concert_id)
+    .single();
+
+  if (concertError || !concert) {
+    console.error("Error fetching concert:", concertError);
+    return { error: "Concert not found" };
+  }
+
+  // If venue has a type, check if series is valid for that type
+  if (concert.venue && typeof concert.venue === 'object' && 'venue_type_id' in concert.venue && concert.venue.venue_type_id) {
+    const { data: seriesVenueType, error: matchError } = await supabase
+      .from("series_venue_types")
+      .select("id")
+      .eq("series_id", concert.series_id)
+      .eq("venue_type_id", concert.venue.venue_type_id)
+      .maybeSingle();
+
+    if (matchError) {
+      console.error("Error checking series-venue type match:", matchError);
+      return { error: "Failed to validate concert series" };
+    }
+
+    if (!seriesVenueType) {
+      return {
+        error: "This concert series is not designed for this venue type. Please contact the venue admin if you believe this is an error."
+      };
+    }
+  }
+
   // Check if booking already exists for this concert and piece/stage
   const { data: existingBooking } = await supabase
     .from("bookings")

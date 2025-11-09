@@ -153,6 +153,60 @@ export function useSeries(): UseListResult<Series> {
 }
 
 /**
+ * Fetch series with their valid venue type mappings
+ * Returns series with an array of venue_type_ids they're valid for
+ */
+export function useSeriesWithVenueTypes(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchSeriesWithVenueTypes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+
+      // Fetch all series
+      const { data: series, error: seriesError } = await supabase
+        .from("series")
+        .select("*")
+        .order("title");
+
+      if (seriesError) throw seriesError;
+
+      // Fetch all series-venue-type mappings
+      const { data: mappings, error: mappingsError } = await supabase
+        .from("series_venue_types")
+        .select("series_id, venue_type_id");
+
+      if (mappingsError) throw mappingsError;
+
+      // Combine data
+      const seriesWithVenueTypes = (series || []).map(s => ({
+        ...s,
+        venue_type_ids: (mappings || [])
+          .filter(m => m.series_id === s.id)
+          .map(m => m.venue_type_id)
+      }));
+
+      setData(seriesWithVenueTypes);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch series with venue types"));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSeriesWithVenueTypes();
+  }, [fetchSeriesWithVenueTypes]);
+
+  return { data, loading, error, refetch: fetchSeriesWithVenueTypes };
+}
+
+/**
  * Fetch collections for a specific series
  */
 export function useCollections(seriesId?: string): UseListResult<CollectionWithSeries> {
