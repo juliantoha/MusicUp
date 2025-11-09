@@ -103,7 +103,7 @@ export function RoleToolsTab() {
       if (result.error) {
         toast.error(result.error);
       } else if (result.success) {
-        toast.success(`${result.user?.email} has been granted admin access to ${result.venue?.name}`);
+        toast.success(`${result.user?.email} has been granted host access to ${result.venue?.name}`);
         setVenueAdminEmail("");
         setSelectedVenueId("");
       }
@@ -178,15 +178,15 @@ export function RoleToolsTab() {
           </CardContent>
         </Card>
 
-        {/* Grant Venue Admin */}
+        {/* Grant Host Role */}
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-blue-600" />
-              <CardTitle>Grant Venue Admin</CardTitle>
+              <CardTitle>Grant Host Role</CardTitle>
             </div>
             <CardDescription>
-              Give a user admin access to a specific venue. They will be able to manage concerts
+              Give a user the host (admin) role for a specific venue. They will be able to manage concerts
               and bookings for that venue.
             </CardDescription>
           </CardHeader>
@@ -206,7 +206,7 @@ export function RoleToolsTab() {
                   required
                 />
                 <p className="text-xs text-gray-500">
-                  If user is a performer, they will be promoted to admin role
+                  If user is a performer, they will be promoted to host (admin) role
                 </p>
               </div>
 
@@ -255,7 +255,7 @@ export function RoleToolsTab() {
                 ) : (
                   <>
                     <Building2 className="mr-2 h-4 w-4" />
-                    Grant Venue Admin Access
+                    Grant Host Access
                   </>
                 )}
               </Button>
@@ -274,7 +274,7 @@ export function RoleToolsTab() {
             <strong>Super Admin:</strong> Full system access, can manage all venues and users
           </div>
           <div>
-            <strong>Admin:</strong> Can manage concerts and bookings for assigned venues
+            <strong>Host (Admin):</strong> Can manage concerts and bookings for assigned venues
           </div>
           <div>
             <strong>Performer:</strong> Can book concerts and view their service hours

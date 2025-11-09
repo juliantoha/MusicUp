@@ -1,7 +1,40 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { venueContactUpdateSchema, type VenueContactUpdate } from "@/types/db";
+import { venueContactUpdateSchema, venueInsertSchema, type VenueContactUpdate, type VenueInsert } from "@/types/db";
+
+/**
+ * Helper to verify user is a super admin
+ * Returns userId if authorized, error otherwise
+ */
+async function verifySuperAdmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in" };
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { error: "Failed to fetch user profile" };
+  }
+
+  if (profile.role !== "super_admin") {
+    return { error: "Only super admins can perform this action" };
+  }
+
+  return { userId: user.id };
+}
 
 /**
  * Helper to verify user has permission to update a venue
@@ -177,4 +210,48 @@ export async function getVenueDetails(venueId: string) {
   }
 
   return { venue };
+}
+
+/**
+ * Create a new venue (super admin only)
+ * Includes venue contact information
+ */
+export async function createVenue(venueData: VenueInsert) {
+  // Verify super admin access
+  const verification = await verifySuperAdmin();
+  if ("error" in verification) return verification;
+
+  // Validate input
+  const validation = venueInsertSchema.safeParse(venueData);
+  if (!validation.success) {
+    return { error: "Invalid venue data", details: validation.error.issues };
+  }
+
+  const supabase = await createClient();
+
+  // Create venue
+  const { data, error } = await supabase
+    .from("venues")
+    .insert({
+      name: venueData.name,
+      address: venueData.address,
+      city: venueData.city,
+      state: venueData.state,
+      zip: venueData.zip,
+      contact_email: venueData.contact_email || null,
+      notes: venueData.notes || null,
+      is_active: venueData.is_active ?? true,
+      venue_contact_name: venueData.venue_contact_name || null,
+      venue_contact_email: venueData.venue_contact_email || null,
+      venue_contact_phone: venueData.venue_contact_phone || null,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating venue:", error);
+    return { error: error.message };
+  }
+
+  return { success: true, venue: data };
 }
