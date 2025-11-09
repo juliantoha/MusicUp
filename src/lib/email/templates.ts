@@ -242,3 +242,99 @@ export function completionThankYouTemplate(data: CompletionThankYouData): string
 </html>
   `.trim();
 }
+
+export interface VenueContactNotificationData {
+  contactName: string;
+  venueName: string;
+  seriesName: string;
+  concertDate: string;
+  concertTime: string;
+  venueAddress: string;
+  performerCount: number;
+  adminName?: string;
+  adminEmail?: string;
+  adminPhone?: string;
+  notes?: string | null;
+}
+
+export function venueContactNotificationTemplate(
+  data: VenueContactNotificationData
+): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Concert Scheduled at Your Venue</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: #0891B2; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+    <h1 style="margin: 0; font-size: 24px;">🎼 New Concert Scheduled at ${data.venueName}</h1>
+  </div>
+
+  <div style="background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+    <p style="margin-top: 0;">Hi ${data.contactName},</p>
+
+    <p>A new concert has been scheduled at your venue. Please review the details below and confirm the date, time, and room availability.</p>
+
+    <div style="background-color: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <h2 style="margin-top: 0; color: #0891B2; font-size: 18px;">Concert Details</h2>
+
+      <p style="margin: 10px 0;"><strong>Concert Series:</strong> ${data.seriesName}</p>
+      <p style="margin: 10px 0;"><strong>Date:</strong> ${data.concertDate}</p>
+      <p style="margin: 10px 0;"><strong>Time:</strong> ${data.concertTime}</p>
+      <p style="margin: 10px 0;"><strong>Expected Performers:</strong> ${data.performerCount} ${data.performerCount === 1 ? "performer" : "performers"}</p>
+    </div>
+
+    <div style="background-color: white; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <h2 style="margin-top: 0; color: #0891B2; font-size: 18px;">Venue Information</h2>
+
+      <p style="margin: 10px 0;"><strong>Venue:</strong> ${data.venueName}</p>
+      <p style="margin: 10px 0;"><strong>Address:</strong> ${data.venueAddress}</p>
+    </div>
+
+    ${
+      data.notes
+        ? `
+    <div style="background-color: #FEF3C7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #F59E0B;">
+      <h3 style="margin-top: 0; color: #92400E; font-size: 16px;">📝 Additional Notes</h3>
+      <p style="margin: 10px 0; color: #92400E;">${data.notes}</p>
+    </div>
+    `
+        : ""
+    }
+
+    <div style="background-color: #E0F2FE; padding: 15px; border-radius: 6px; margin: 20px 0;">
+      <h2 style="margin-top: 0; color: #0891B2; font-size: 18px;">Event Coordinator Contact</h2>
+
+      ${data.adminName ? `<p style="margin: 10px 0;"><strong>Name:</strong> ${data.adminName}</p>` : ""}
+      ${data.adminEmail ? `<p style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:${data.adminEmail}" style="color: #0891B2;">${data.adminEmail}</a></p>` : ""}
+      ${data.adminPhone ? `<p style="margin: 10px 0;"><strong>Phone:</strong> <a href="tel:${data.adminPhone}" style="color: #0891B2;">${data.adminPhone}</a></p>` : ""}
+
+      <p style="margin: 10px 0 0 0; font-size: 14px; color: #64748B;">Please contact the coordinator to confirm logistics and room setup.</p>
+    </div>
+
+    <div style="background-color: #FEF2F2; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #DC2626;">
+      <h3 style="margin-top: 0; color: #991B1B; font-size: 16px;">⚠️ Action Required</h3>
+      <p style="margin: 0; color: #991B1B;">Please confirm the following with the event coordinator:</p>
+      <ul style="color: #991B1B; margin: 10px 0;">
+        <li>Date and time availability</li>
+        <li>Room/space assignment</li>
+        <li>Any special setup requirements</li>
+        <li>Parking and access instructions for performers</li>
+      </ul>
+    </div>
+
+    <p style="margin-top: 20px;">Thank you for partnering with MusicUp to bring music to the community!</p>
+
+    <p style="margin-bottom: 0;">Best regards,<br>The MusicUp Team</p>
+  </div>
+
+  <div style="text-align: center; padding: 20px; color: #6B7280; font-size: 12px;">
+    <p>This is an automated message from MusicUp. Please reply to the event coordinator for any questions.</p>
+  </div>
+</body>
+</html>
+  `.trim();
+}
