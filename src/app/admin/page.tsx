@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { withRole } from "@/lib/auth/withRole";
 import { ConcertsIHostTab } from "@/components/admin/ConcertsIHostTab";
 import { MyPerformancesTab } from "@/components/admin/MyPerformancesTab";
+import { VenueContactTab } from "@/components/admin/VenueContactTab";
 
 function AdminPage() {
   return (
@@ -14,9 +15,10 @@ function AdminPage() {
       </div>
 
       <Tabs defaultValue="concerts" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="concerts">Concerts I Host</TabsTrigger>
           <TabsTrigger value="performances">My Performances</TabsTrigger>
+          <TabsTrigger value="venues">Venue Contact</TabsTrigger>
         </TabsList>
 
         <TabsContent value="concerts" className="space-y-4">
@@ -25,6 +27,10 @@ function AdminPage() {
 
         <TabsContent value="performances" className="space-y-4">
           <MyPerformancesTab />
+        </TabsContent>
+
+        <TabsContent value="venues" className="space-y-4">
+          <VenueContactTab />
         </TabsContent>
       </Tabs>
     </div>
