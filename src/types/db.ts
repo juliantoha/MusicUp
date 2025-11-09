@@ -194,7 +194,7 @@ export type BookingWithDetails = Booking & {
 };
 
 export type ConcertWithDetails = Concert & {
-  venue: Venue;
+  venue: VenueWithType;
   series: Series;
   bookings?: BookingWithDetails[];
 };

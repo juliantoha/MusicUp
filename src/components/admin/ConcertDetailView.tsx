@@ -22,6 +22,7 @@ import {
 import { CheckCircle2, XCircle, Upload, Camera, CheckCheck } from "lucide-react";
 import type { ConcertWithDetails } from "@/types/db";
 import { admin } from "@/lib/copy";
+import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
 
 interface ConcertDetailViewProps {
   concert: ConcertWithDetails;
@@ -159,9 +160,14 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
           <div>
             <h2 className="text-2xl font-bold mb-2">{concert.series?.title}</h2>
             <div className="space-y-1 text-gray-600">
-              <p>
-                <strong>Venue:</strong> {concert.venue?.name}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p>
+                  <strong>Venue:</strong> {concert.venue?.name}
+                </p>
+                {concert.venue?.venue_type && (
+                  <VenueTypeBadge venueType={concert.venue.venue_type} />
+                )}
+              </div>
               <p>
                 <strong>Address:</strong> {concert.venue?.address}, {concert.venue?.city},{" "}
                 {concert.venue?.state}

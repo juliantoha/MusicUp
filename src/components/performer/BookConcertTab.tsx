@@ -17,6 +17,7 @@ import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
 import { MapPin, Calendar, Music, Check } from "lucide-react";
 import type { Concert } from "@/types/db";
 import { booking as copy, emptyStates } from "@/lib/copy";
+import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
 
 const STEP_ICONS = [MapPin, Calendar, Music];
 
@@ -182,6 +183,14 @@ export function BookConcertTab() {
                 ))}
               </SelectContent>
             </Select>
+            {selectedVenueId && (() => {
+              const selectedVenue = venues.find(v => v.id === selectedVenueId);
+              return selectedVenue?.venue_type ? (
+                <div className="mt-2">
+                  <VenueTypeBadge venueType={selectedVenue.venue_type} showIcon />
+                </div>
+              ) : null;
+            })()}
             {venues.length === 0 && (
               <p className="text-sm text-gray-500">No venues available</p>
             )}

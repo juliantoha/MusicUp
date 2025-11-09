@@ -5,10 +5,18 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Building2, Save, Loader2 } from "lucide-react";
-import { getMyManagedVenues, updateVenueContact } from "@/lib/venues/actions";
-import type { Venue, VenueContactUpdate } from "@/types/db";
+import { Building2, Save, Loader2, Tag } from "lucide-react";
+import { getMyManagedVenues, updateVenue } from "@/lib/venues/actions";
+import { useVenueTypes } from "@/lib/hooks";
+import type { Venue } from "@/types/db";
 
 export function VenueContactTab() {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -106,7 +114,9 @@ interface VenueContactEditorProps {
 }
 
 function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
-  const [formData, setFormData] = useState<VenueContactUpdate>({
+  const { data: venueTypes, loading: loadingVenueTypes } = useVenueTypes();
+  const [formData, setFormData] = useState({
+    venue_type_id: venue.venue_type_id || null,
     venue_contact_name: venue.venue_contact_name || "",
     venue_contact_email: venue.venue_contact_email || "",
     venue_contact_phone: venue.venue_contact_phone || "",
@@ -117,6 +127,7 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
   // Reset form when venue changes
   useEffect(() => {
     setFormData({
+      venue_type_id: venue.venue_type_id || null,
       venue_contact_name: venue.venue_contact_name || "",
       venue_contact_email: venue.venue_contact_email || "",
       venue_contact_phone: venue.venue_contact_phone || "",
@@ -124,7 +135,7 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
     setHasChanges(false);
   }, [venue.id]);
 
-  const handleChange = (field: keyof VenueContactUpdate, value: string) => {
+  const handleChange = (field: string, value: string | null) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -134,9 +145,9 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
 
   const handleSave = async () => {
     setSaving(true);
-    const result = await updateVenueContact(venue.id, formData);
+    const result = await updateVenue(venue.id, formData);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
     } else {
       setHasChanges(false);
@@ -156,6 +167,33 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
           </h4>
           <p className="text-sm text-gray-600 mt-1">
             {venue.address}, {venue.city}, {venue.state} {venue.zip}
+          </p>
+        </div>
+
+        {/* Venue Type Selector */}
+        <div className="space-y-2">
+          <Label htmlFor="venue_type_id" className="flex items-center gap-2">
+            <Tag className="w-4 h-4" />
+            Venue Type
+          </Label>
+          <Select
+            value={formData.venue_type_id || ""}
+            onValueChange={(value) => handleChange("venue_type_id", value || null)}
+            disabled={loadingVenueTypes || saving}
+          >
+            <SelectTrigger id="venue_type_id">
+              <SelectValue placeholder="Select a venue type..." />
+            </SelectTrigger>
+            <SelectContent>
+              {venueTypes.map((type) => (
+                <SelectItem key={type.id} value={type.id}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-gray-500">
+            Helps match this venue with appropriate concert series (e.g., Empathy Concerts for senior living)
           </p>
         </div>
 
@@ -224,6 +262,7 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
             variant="outline"
             onClick={() => {
               setFormData({
+                venue_type_id: venue.venue_type_id || null,
                 venue_contact_name: venue.venue_contact_name || "",
                 venue_contact_email: venue.venue_contact_email || "",
                 venue_contact_phone: venue.venue_contact_phone || "",

@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useVenues } from "@/lib/hooks";
 import { VenueAdminPanel } from "./VenueAdminPanel";
 import { CreateVenueForm } from "./CreateVenueForm";
+import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
 import { ArrowLeft, Building2, Plus } from "lucide-react";
-import type { Venue } from "@/types/db";
+import type { VenueWithType } from "@/types/db";
 
 export function VenueManagementTab() {
   const { data: venues, loading, refetch } = useVenues();
-  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [selectedVenue, setSelectedVenue] = useState<VenueWithType | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   // Show create form
@@ -104,6 +105,11 @@ export function VenueManagementTab() {
               <Building2 className="w-5 h-5 text-blue-600 mt-1" />
               <div className="flex-1">
                 <h4 className="font-semibold mb-1">{venue.name}</h4>
+                {venue.venue_type && (
+                  <div className="mb-2">
+                    <VenueTypeBadge venueType={venue.venue_type} />
+                  </div>
+                )}
                 <p className="text-sm text-gray-600">
                   {venue.city}, {venue.state}
                 </p>

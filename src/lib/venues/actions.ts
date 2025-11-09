@@ -190,6 +190,46 @@ export async function updateVenueContact(
 }
 
 /**
+ * Update venue information including type and contact info
+ * Admins can update venues they manage, super admins can update any venue
+ */
+export async function updateVenue(
+  venueId: string,
+  updateData: Partial<{
+    venue_type_id: string | null;
+    venue_contact_name: string;
+    venue_contact_email: string;
+    venue_contact_phone: string;
+  }>
+) {
+  // Verify permissions
+  const verification = await verifyVenueUpdatePermission(venueId);
+  if ("error" in verification) return verification;
+
+  const supabase = await createClient();
+
+  // Update venue
+  const { data, error } = await supabase
+    .from("venues")
+    .update({
+      ...(updateData.venue_type_id !== undefined && { venue_type_id: updateData.venue_type_id || null }),
+      ...(updateData.venue_contact_name !== undefined && { venue_contact_name: updateData.venue_contact_name || null }),
+      ...(updateData.venue_contact_email !== undefined && { venue_contact_email: updateData.venue_contact_email || null }),
+      ...(updateData.venue_contact_phone !== undefined && { venue_contact_phone: updateData.venue_contact_phone || null }),
+    })
+    .eq("id", venueId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating venue:", error);
+    return { error: error.message };
+  }
+
+  return { success: true, venue: data };
+}
+
+/**
  * Get a single venue with all details (for admins only)
  */
 export async function getVenueDetails(venueId: string) {

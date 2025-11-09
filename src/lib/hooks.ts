@@ -40,10 +40,10 @@ interface UseListResult<T> {
 // ============================================================================
 
 /**
- * Fetch all venues
+ * Fetch all venues with venue type information
  */
-export function useVenues(): UseListResult<Venue> {
-  const [data, setData] = useState<Venue[]>([]);
+export function useVenues(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -55,7 +55,15 @@ export function useVenues(): UseListResult<Venue> {
       const supabase = createClient();
       const { data: venues, error: fetchError } = await supabase
         .from("venues")
-        .select("*")
+        .select(`
+          *,
+          venue_type:venue_type_id (
+            id,
+            slug,
+            label,
+            description
+          )
+        `)
         .order("name");
 
       if (fetchError) throw fetchError;
