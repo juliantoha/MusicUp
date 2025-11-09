@@ -330,41 +330,31 @@ ON CONFLICT (series_id, venue_type_id) DO NOTHING;
 -- Enable RLS on venue_types
 ALTER TABLE public.venue_types ENABLE ROW LEVEL SECURITY;
 
--- Anyone can view venue types
-CREATE POLICY "Anyone can view venue types"
+-- Anyone can read venue types
+CREATE POLICY "venue_types_read_all"
 ON public.venue_types
 FOR SELECT
 USING (true);
 
--- Super admins can manage venue types
-CREATE POLICY "Super admins can manage venue types"
+-- Only super admins can write venue types
+CREATE POLICY "venue_types_super_admin_write"
 ON public.venue_types
 FOR ALL
-USING (
-  EXISTS (
-    SELECT 1 FROM public.profiles
-    WHERE id = auth.uid()
-      AND role = 'super_admin'
-  )
-);
+USING (auth.jwt()->>'role' = 'super_admin')
+WITH CHECK (auth.jwt()->>'role' = 'super_admin');
 
 -- Enable RLS on series_venue_types
 ALTER TABLE public.series_venue_types ENABLE ROW LEVEL SECURITY;
 
--- Anyone can view series-venue type mappings
-CREATE POLICY "Anyone can view series venue type mappings"
+-- Anyone can read series-venue type mappings
+CREATE POLICY "series_venue_types_read_all"
 ON public.series_venue_types
 FOR SELECT
 USING (true);
 
--- Super admins can manage mappings
-CREATE POLICY "Super admins can manage series venue type mappings"
+-- Only super admins can write series-venue type mappings
+CREATE POLICY "series_venue_types_super_admin_write"
 ON public.series_venue_types
 FOR ALL
-USING (
-  EXISTS (
-    SELECT 1 FROM public.profiles
-    WHERE id = auth.uid()
-      AND role = 'super_admin'
-  )
-);
+USING (auth.jwt()->>'role' = 'super_admin')
+WITH CHECK (auth.jwt()->>'role' = 'super_admin');
