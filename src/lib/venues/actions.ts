@@ -131,7 +131,7 @@ export async function updateVenueContact(
   // Validate input
   const validation = venueContactUpdateSchema.safeParse(contactData);
   if (!validation.success) {
-    return { error: "Invalid venue contact data", details: validation.error.errors };
+    return { error: "Invalid venue contact data", details: validation.error.issues };
   }
 
   const supabase = await createClient();
