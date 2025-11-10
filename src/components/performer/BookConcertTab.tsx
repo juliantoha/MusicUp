@@ -202,7 +202,7 @@ export function BookConcertTab() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Select a Concert</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Choose a scheduled concert at {venues.find((v) => v.id === selectedVenueId)?.name}.
+                Choose a concert series that fits this venue. Only series appropriate for {venues.find((v) => v.id === selectedVenueId)?.name} are shown.
               </p>
             </div>
             {upcomingConcerts.length > 0 ? (
@@ -218,8 +218,11 @@ export function BookConcertTab() {
                     onClick={() => setSelectedConcert(concert)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
+                      <div className="flex-1">
                         <p className="font-medium">{concert.series?.title}</p>
+                        {concert.series?.tagline && (
+                          <p className="text-xs text-gray-500 italic mb-1">{concert.series.tagline}</p>
+                        )}
                         <p className="text-sm text-gray-600">
                           {formatPacificDate(concert.starts_at)}
                         </p>
@@ -228,7 +231,7 @@ export function BookConcertTab() {
                         </p>
                       </div>
                       {selectedConcert?.id === concert.id && (
-                        <div className="text-blue-600">✓</div>
+                        <div className="text-blue-600 flex-shrink-0">✓</div>
                       )}
                     </div>
                   </Card>

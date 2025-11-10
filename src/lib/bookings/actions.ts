@@ -73,7 +73,7 @@ export async function createBooking(data: CreateBookingData) {
 
     if (!seriesVenueType) {
       return {
-        error: "This concert series is not designed for this venue type. Please contact the venue admin if you believe this is an error."
+        error: "This concert series isn't available for this venue type. Choose a series that fits this room."
       };
     }
   }

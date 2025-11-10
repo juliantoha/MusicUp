@@ -11,11 +11,11 @@
 
 export const booking = {
   steps: {
-    labels: ["Choose Location", "Select Concert", "Pick Your Piece"],
+    labels: ["Where are you playing?", "Select Concert", "Pick your set and level"],
     descriptions: [
       "Find a venue near you",
-      "Choose your performance date",
-      "Select what you'd like to play",
+      "Choose a concert series that fits this venue",
+      "Select the piece and difficulty level",
     ],
   },
 

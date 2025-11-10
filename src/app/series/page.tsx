@@ -20,9 +20,11 @@ import {
   MapPin,
   CheckCircle,
   Clock,
-  Award
+  Award,
+  Tag
 } from "lucide-react";
-import { useSeries } from "@/lib/hooks";
+import { useSeries, useSeriesWithVenueTypes, useVenueTypes } from "@/lib/hooks";
+import { Badge } from "@/components/ui/badge";
 
 // Icon map for series slugs
 const seriesIcons: Record<string, any> = {
@@ -51,7 +53,8 @@ const seriesColors: Record<string, string> = {
 };
 
 export default function SeriesPage() {
-  const { data: seriesData, loading } = useSeries();
+  const { data: seriesData, loading } = useSeriesWithVenueTypes();
+  const { data: venueTypes } = useVenueTypes();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -198,6 +201,26 @@ export default function SeriesPage() {
                                 <div className="flex items-start gap-2">
                                   <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color }} />
                                   <span className="text-xs sm:text-sm text-gray-600">{s.what_you_get}</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Compatible Venue Types */}
+                            {s.venue_type_ids && s.venue_type_ids.length > 0 && (
+                              <div className="mb-4">
+                                <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                  <Tag className="h-3 w-3" />
+                                  Good for these venues
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {s.venue_type_ids.map((vtId: string) => {
+                                    const venueType = venueTypes.find(vt => vt.id === vtId);
+                                    return venueType ? (
+                                      <Badge key={vtId} variant="secondary" className="text-xs">
+                                        {venueType.label}
+                                      </Badge>
+                                    ) : null;
+                                  })}
                                 </div>
                               </div>
                             )}
