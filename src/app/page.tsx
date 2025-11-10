@@ -95,7 +95,7 @@ export default function Home() {
               <div className="inline-flex h-12 w-12 md:h-16 md:w-16 items-center justify-center">
                 <Logo className="w-full h-full text-white" />
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold font-sans">MusicUp</h1>
+              <h1 className="text-5xl md:text-7xl font-bold !font-sans">MusicUp</h1>
             </div>
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               Music Every Day
