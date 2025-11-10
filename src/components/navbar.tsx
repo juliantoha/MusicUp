@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, User, Settings, Home, Building2, Zap } from "lucide-react";
+import { Music, LogOut, User, Settings, Home, Building2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import {
