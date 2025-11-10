@@ -31,10 +31,16 @@ async function verifySuperAdmin() {
   const supabase = await createServerClient();
   const {
     data: { user },
+    error: authError
   } = await supabase.auth.getUser();
 
+  if (authError) {
+    console.error("Auth error in verifySuperAdmin:", authError);
+    throw new Error("Authentication error: " + authError.message);
+  }
+
   if (!user) {
-    throw new Error("Not authenticated");
+    throw new Error("Not authenticated - please log out and log back in");
   }
 
   const { data: profile, error } = await supabase
@@ -43,8 +49,13 @@ async function verifySuperAdmin() {
     .eq("id", user.id)
     .single();
 
-  if (error || !profile || profile.role !== "super_admin") {
-    throw new Error("Unauthorized: Super admin access required");
+  if (error) {
+    console.error("Profile lookup error:", error);
+    throw new Error("Could not verify permissions");
+  }
+
+  if (!profile || profile.role !== "super_admin") {
+    throw new Error(`Unauthorized: Super admin access required (current role: ${profile?.role || 'none'})`);
   }
 
   return user;
