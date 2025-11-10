@@ -1,10 +1,21 @@
--- Migration 013: Grant ilin@Oclef.com host and super admin roles
--- Purpose: Add ilin@Oclef.com as a host and super admin
+-- Migration 013: Verify and grant ilin@Oclef.com host and super admin roles
+-- Purpose: Manually verify email and add ilin@Oclef.com as a host and super admin
 -- Author: Claude Code
 -- Date: 2025-11-10
 
 -- ============================================================================
--- 1. UPDATE PROFILE TO SUPER ADMIN
+-- 1. MANUALLY VERIFY EMAIL
+-- ============================================================================
+
+-- Verify the email in auth.users table
+UPDATE auth.users
+SET
+  email_confirmed_at = COALESCE(email_confirmed_at, NOW()),
+  confirmed_at = COALESCE(confirmed_at, NOW())
+WHERE email = 'ilin@Oclef.com';
+
+-- ============================================================================
+-- 2. UPDATE PROFILE TO SUPER ADMIN
 -- ============================================================================
 
 UPDATE public.profiles
@@ -12,7 +23,7 @@ SET role = 'super_admin'
 WHERE email = 'ilin@Oclef.com';
 
 -- ============================================================================
--- 2. ADD AS HOST (if not already exists)
+-- 3. ADD AS HOST (if not already exists)
 -- ============================================================================
 
 INSERT INTO public.hosts (user_id, status)
@@ -26,8 +37,13 @@ WHERE email = 'ilin@Oclef.com'
   );
 
 -- ============================================================================
--- 3. VERIFY CHANGES
+-- 4. VERIFY CHANGES
 -- ============================================================================
+
+-- View the auth user verification status
+SELECT id, email, email_confirmed_at, confirmed_at
+FROM auth.users
+WHERE email = 'ilin@Oclef.com';
 
 -- View the updated profile
 SELECT id, email, role, created_at
