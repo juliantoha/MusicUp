@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
+import { Logo } from "@/components/Logo";
 
 export default function Home() {
   const router = useRouter();
@@ -43,8 +44,10 @@ export default function Home() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Music className="h-16 w-16 mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="inline-flex h-16 w-16 items-center justify-center">
+            <Logo className="w-full h-full text-primary" animate />
+          </div>
+          <p className="text-muted-foreground mt-4">Loading...</p>
         </div>
       </div>
     );
@@ -62,8 +65,8 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                <Music className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
+                <Logo className="w-full h-full text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
             </Link>
@@ -89,7 +92,9 @@ export default function Home() {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-5xl mx-auto text-center">
             <div className="mb-8 flex items-center justify-center gap-3">
-              <Music className="h-12 w-12 md:h-16 md:w-16" />
+              <div className="inline-flex h-12 w-12 md:h-16 md:w-16 items-center justify-center">
+                <Logo className="w-full h-full text-white" />
+              </div>
               <h1 className="text-5xl md:text-7xl font-bold">MusicUp</h1>
             </div>
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">

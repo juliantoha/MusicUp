@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Music, LogOut, User, Settings, Home, Building2, Zap } from "lucide-react";
+import { LogOut, User, Settings, Home, Building2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/Logo";
 import {
   Select,
   SelectContent,
@@ -89,8 +90,8 @@ export function Navbar() {
     <nav className="border-b bg-background">
       <div className="flex h-16 items-center px-4 container mx-auto gap-4">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-            <Music className="h-6 w-6 text-white" />
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
+            <Logo className="w-full h-full text-white" />
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent hidden sm:inline">MusicUp</span>
         </Link>

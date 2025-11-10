@@ -8,44 +8,44 @@ interface LogoProps {
 export function Logo({ className, animate = false }: LogoProps) {
   return (
     <svg
-      width="100"
-      height="100"
-      viewBox="0 0 100 100"
+      width="1000"
+      height="1000"
+      viewBox="0 0 1000 1000"
       xmlns="http://www.w3.org/2000/svg"
       className={cn(className)}
     >
       {/* Left bar */}
       <rect
-        x="14"
-        y="20"
-        width="16"
-        height="60"
-        rx="4"
-        ry="4"
+        x="160"
+        y="200"
+        width="120"
+        height="600"
+        rx="24"
+        ry="24"
         fill="currentColor"
         className={animate ? "animate-logo-bar-1" : ""}
       />
 
       {/* Middle bar */}
       <rect
-        x="42"
-        y="32"
-        width="16"
-        height="48"
-        rx="4"
-        ry="4"
+        x="400"
+        y="429"
+        width="120"
+        height="371"
+        rx="24"
+        ry="24"
         fill="currentColor"
         className={animate ? "animate-logo-bar-2" : ""}
       />
 
       {/* Right bar */}
       <rect
-        x="70"
-        y="20"
-        width="16"
-        height="60"
-        rx="4"
-        ry="4"
+        x="640"
+        y="200"
+        width="120"
+        height="600"
+        rx="24"
+        ry="24"
         fill="currentColor"
         className={animate ? "animate-logo-bar-3" : ""}
       />
