@@ -72,3 +72,30 @@ body {
 * {
   border-color: hsl(var(--border));
 }
+
+/* Logo Animation */
+@keyframes logo-bar-wave {
+  0%, 100% {
+    transform: scaleY(1);
+    transform-origin: center bottom;
+  }
+  50% {
+    transform: scaleY(0.7);
+    transform-origin: center bottom;
+  }
+}
+
+.animate-logo-bar-1 {
+  animation: logo-bar-wave 1.2s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-logo-bar-2 {
+  animation: logo-bar-wave 1.2s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.animate-logo-bar-3 {
+  animation: logo-bar-wave 1.2s ease-in-out infinite;
+  animation-delay: 0.4s;
+}

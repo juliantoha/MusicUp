@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useSeries, useSeriesWithVenueTypes, useVenueTypes } from "@/lib/hooks";
 import { Badge } from "@/components/ui/badge";
+import { Logo } from "@/components/Logo";
 
 // Icon map for series slugs
 const seriesIcons: Record<string, any> = {
@@ -65,8 +66,8 @@ export default function SeriesPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                <Music className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
+                <Logo className="w-full h-full text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
             </Link>
