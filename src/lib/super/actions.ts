@@ -164,7 +164,7 @@ export async function grantVenueAdmin(email: string, venueId: string) {
     const { data: existingAccess } = await adminClient
       .from("admins_venues")
       .select("id")
-      .eq("admin_id", profile.id)
+      .eq("profile_id", profile.id)
       .eq("venue_id", venueId)
       .single();
 
@@ -176,7 +176,7 @@ export async function grantVenueAdmin(email: string, venueId: string) {
     const { error: insertError } = await adminClient
       .from("admins_venues")
       .insert({
-        admin_id: profile.id,
+        profile_id: profile.id,
         venue_id: venueId,
       });
 
