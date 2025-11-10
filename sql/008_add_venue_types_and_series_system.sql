@@ -213,8 +213,8 @@ VALUES
     'Ambient performances for museums and galleries.'
   ),
   (
-    'house-sessions',
-    'House Sessions',
+    'house-concerts',
+    'House Concerts',
     'Living rooms, real listening.',
     'Intimate concerts with a clear arc and a simple script for non-musician hosts.',
     '45–60 minutes · 1–4 performers',
@@ -314,12 +314,12 @@ WHERE s.slug = 'gallery-sound'
   AND vt.slug IN ('museums_galleries')
 ON CONFLICT (series_id, venue_type_id) DO NOTHING;
 
--- House Sessions → House concerts, community centers, faith centers
+-- House Concerts → House concerts, community centers, faith centers
 INSERT INTO public.series_venue_types (series_id, venue_type_id)
 SELECT s.id, vt.id
 FROM public.series s
 CROSS JOIN public.venue_types vt
-WHERE s.slug = 'house-sessions'
+WHERE s.slug = 'house-concerts'
   AND vt.slug IN ('house_concerts', 'community_centers', 'faith_centers')
 ON CONFLICT (series_id, venue_type_id) DO NOTHING;
 

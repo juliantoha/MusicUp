@@ -107,8 +107,8 @@ VALUES
     'Ambient performances for museums and galleries'
   ),
   (
-    'house_sessions',
-    'House Sessions',
+    'house_concerts',
+    'House Concerts',
     'Living rooms, real listening.',
     'Intimate concerts with a clear arc and simple script for non-musician hosts.',
     '45–60 minutes · 1–4 performers',

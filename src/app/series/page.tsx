@@ -36,7 +36,8 @@ const seriesIcons: Record<string, any> = {
   playground_sessions: Trees,
   cafe_sets: Coffee,
   gallery_sound: Palette,
-  house_sessions: Home
+  house_concerts: Home,
+  music_in_the_park: MapPin
 };
 
 // Color map for series slugs
@@ -49,7 +50,8 @@ const seriesColors: Record<string, string> = {
   playground_sessions: "#06B6D4",
   cafe_sets: "#EB6A18",
   gallery_sound: "#9333EA",
-  house_sessions: "#D97706"
+  house_concerts: "#D97706",
+  music_in_the_park: "#10B981"
 };
 
 export default function SeriesPage() {
