@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
               <Logo className="w-full h-full text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+            <span className="text-2xl font-bold font-display bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent tracking-tight">MusicUp</span>
           </Link>
         </div>
       </nav>
@@ -51,8 +51,8 @@ export default function ForgotPasswordPage() {
           {!success ? (
             <>
               <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl text-center">Reset your password</CardTitle>
-                <CardDescription className="text-center">
+                <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Reset your password</CardTitle>
+                <CardDescription className="text-center font-light">
                   Enter your email and we&apos;ll send you a link to reset your password
                 </CardDescription>
               </CardHeader>
@@ -107,8 +107,8 @@ export default function ForgotPasswordPage() {
                     <CheckCircle className="h-8 w-8 text-green-600" />
                   </div>
                 </div>
-                <CardTitle className="text-2xl text-center">Check your email</CardTitle>
-                <CardDescription className="text-center">
+                <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Check your email</CardTitle>
+                <CardDescription className="text-center font-light">
                   We&apos;ve sent a password reset link to <strong>{email}</strong>
                 </CardDescription>
               </CardHeader>

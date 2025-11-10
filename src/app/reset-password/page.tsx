@@ -114,8 +114,8 @@ export default function ResetPasswordPage() {
         <div className="flex flex-1 items-center justify-center p-4 pt-24">
           <Card className="w-full max-w-md">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl text-center text-red-600">Invalid or Expired Link</CardTitle>
-              <CardDescription className="text-center">
+              <CardTitle className="text-3xl font-display font-bold text-center text-red-600 tracking-tight">Invalid or Expired Link</CardTitle>
+              <CardDescription className="text-center font-light">
                 This password reset link is invalid or has expired
               </CardDescription>
             </CardHeader>
@@ -149,7 +149,7 @@ export default function ResetPasswordPage() {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
               <Logo className="w-full h-full text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+            <span className="text-2xl font-bold font-display bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent tracking-tight">MusicUp</span>
           </Link>
         </div>
       </nav>
@@ -160,8 +160,8 @@ export default function ResetPasswordPage() {
           {!success ? (
             <>
               <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl text-center">Set new password</CardTitle>
-                <CardDescription className="text-center">
+                <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Set new password</CardTitle>
+                <CardDescription className="text-center font-light">
                   Enter your new password below
                 </CardDescription>
               </CardHeader>
@@ -236,8 +236,8 @@ export default function ResetPasswordPage() {
                     <CheckCircle className="h-8 w-8 text-green-600" />
                   </div>
                 </div>
-                <CardTitle className="text-2xl text-center">Password updated!</CardTitle>
-                <CardDescription className="text-center">
+                <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Password updated!</CardTitle>
+                <CardDescription className="text-center font-light">
                   Your password has been successfully updated. Redirecting you to sign in...
                 </CardDescription>
               </CardHeader>

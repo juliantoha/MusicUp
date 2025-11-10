@@ -62,7 +62,7 @@ export default function LoginPage() {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
               <Logo className="w-full h-full text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+            <span className="text-2xl font-bold font-display bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent tracking-tight">MusicUp</span>
           </Link>
         </div>
       </nav>
@@ -71,8 +71,8 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center p-4 pt-24">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-            <CardDescription className="text-center">Enter your credentials to sign in</CardDescription>
+            <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Welcome back</CardTitle>
+            <CardDescription className="text-center font-light">Enter your credentials to sign in</CardDescription>
           </CardHeader>
         <CardContent>
           {error && (

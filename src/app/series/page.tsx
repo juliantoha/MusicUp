@@ -69,7 +69,7 @@ export default function SeriesPage() {
               <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
                 <Logo className="w-full h-full text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
+              <span className="text-2xl font-bold font-display bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">MusicUp</span>
             </Link>
             <div className="flex items-center gap-4">
               <Button asChild variant="outline" className="border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white">
@@ -89,13 +89,13 @@ export default function SeriesPage() {
         <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-[#EB6A18] opacity-20 rounded-full blur-[120px]"></div>
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold mb-6">
+            <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium tracking-wide uppercase mb-6">
               Concert Series
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-[1.1] tracking-tight">
               Play the right set in the right room
             </h1>
-            <p className="text-xl md:text-2xl text-blue-50 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-blue-50 mb-8 leading-relaxed font-light">
               Short, ready-to-run concerts that fit real places. Pick a series, pick a set, show up. MusicUp handles the rest.
             </p>
           </div>
@@ -106,17 +106,17 @@ export default function SeriesPage() {
       <section className="py-20 md:py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">How series work</h2>
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-12 text-center tracking-tight">How series work</h2>
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-all">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center mb-4 shadow-lg">
                     <MapPin className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl">Choose a series that fits the room</CardTitle>
+                  <CardTitle className="text-xl font-semibold">Choose a series that fits the room</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 leading-relaxed">
                     Match your venue type to the right concert series. Each one is designed for specific spaces and audiences.
                   </p>
                 </CardContent>
@@ -127,10 +127,10 @@ export default function SeriesPage() {
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] flex items-center justify-center mb-4 shadow-lg">
                     <Music className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl">Select a prebuilt set</CardTitle>
+                  <CardTitle className="text-xl font-semibold">Select a prebuilt set</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 leading-relaxed">
                     Twelve pieces, three stages. PDFs and audio included. No hunting for repertoire.
                   </p>
                 </CardContent>
@@ -141,10 +141,10 @@ export default function SeriesPage() {
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center mb-4 shadow-lg">
                     <CheckCircle className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl">Book and perform</CardTitle>
+                  <CardTitle className="text-xl font-semibold">Book and perform</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 leading-relaxed">
                     Admins verify attendance and close the concert with a photo. For Empathy Concerts, 3 service hours are verified per performer.
                   </p>
                 </CardContent>
@@ -158,8 +158,8 @@ export default function SeriesPage() {
       <section className="py-20 md:py-24 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Concert series you can run today</h2>
-            <p className="text-xl text-gray-600 mb-12 text-center max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4 text-center tracking-tight">Concert series you can run today</h2>
+            <p className="text-xl text-gray-600 mb-12 text-center max-w-3xl mx-auto font-light leading-relaxed">
               {seriesData.filter(s => s.is_active).length} series, each designed for a specific space. Find yours.
             </p>
 
@@ -183,11 +183,11 @@ export default function SeriesPage() {
                                 <Icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
                               </div>
                               <div>
-                                <h3 className="text-xl md:text-2xl font-bold">{s.title}</h3>
-                                {s.tagline && <p className="text-sm md:text-base text-gray-600 italic">{s.tagline}</p>}
+                                <h3 className="text-xl md:text-2xl font-display font-bold tracking-tight">{s.title}</h3>
+                                {s.tagline && <p className="text-sm md:text-base text-gray-600 italic font-light">{s.tagline}</p>}
                               </div>
                             </div>
-                            {s.blurb && <p className="text-base md:text-lg text-gray-700 mb-4">{s.blurb}</p>}
+                            {s.blurb && <p className="text-base md:text-lg text-gray-700 mb-4 leading-relaxed">{s.blurb}</p>}
 
                             {/* Format */}
                             {s.format && (
@@ -249,7 +249,7 @@ export default function SeriesPage() {
       <section className="py-20 md:py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">Booking tips that save the day</h2>
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-8 text-center tracking-tight">Booking tips that save the day</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="border-l-4 border-l-[#2563EB] shadow-md">
                 <CardContent className="pt-6">
@@ -287,8 +287,8 @@ export default function SeriesPage() {
       <section className="py-20 md:py-24 bg-gradient-to-br from-[#2563EB] via-[#1e40af] to-[#06B6D4] text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to book your first concert?</h2>
-            <p className="text-xl text-blue-50 mb-10">
+            <h2 className="text-4xl md:text-6xl font-display font-bold mb-6 tracking-tight">Ready to book your first concert?</h2>
+            <p className="text-xl text-blue-50 mb-10 font-light leading-relaxed">
               Choose a series, find a venue, and start performing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

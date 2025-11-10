@@ -1,9 +1,27 @@
 import type { Metadata } from "next";
+import { Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { OrganizationStructuredData, ServiceStructuredData } from "@/components/structured-data";
+
+// Configure Montserrat with all weights
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+// Configure Playfair Display for elegant headings
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-playfair",
+  display: "swap",
+  style: ["normal", "italic"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://music-up-alpha.vercel.app'),
@@ -111,12 +129,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${montserrat.variable} ${playfairDisplay.variable}`}>
       <head>
         <OrganizationStructuredData />
         <ServiceStructuredData />
       </head>
-      <body className="antialiased">
+      <body className="antialiased font-sans">
         <AuthProvider>
           <Navbar />
           <main className="min-h-screen">{children}</main>
