@@ -8,10 +8,9 @@
 -- ============================================================================
 
 -- Verify the email in auth.users table
+-- Note: confirmed_at is a generated column and will be set automatically
 UPDATE auth.users
-SET
-  email_confirmed_at = COALESCE(email_confirmed_at, NOW()),
-  confirmed_at = COALESCE(confirmed_at, NOW())
+SET email_confirmed_at = COALESCE(email_confirmed_at, NOW())
 WHERE email = 'ilin@Oclef.com';
 
 -- ============================================================================
