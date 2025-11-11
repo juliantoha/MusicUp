@@ -213,7 +213,7 @@ export default function VenueContactDashboard() {
       if (bookingsError) {
         console.error("Error fetching bookings:", bookingsError);
       } else {
-        setConcertBookings(bookingsData || []);
+        setConcertBookings((bookingsData || []) as any);
       }
 
       // Fetch photos
@@ -226,7 +226,7 @@ export default function VenueContactDashboard() {
       if (photosError) {
         console.error("Error fetching photos:", photosError);
       } else {
-        setConcertPhotos(photosData || []);
+        setConcertPhotos((photosData || []) as any);
       }
     };
 
@@ -447,14 +447,14 @@ export default function VenueContactDashboard() {
                       <p className="text-muted-foreground text-sm">No performers booked yet</p>
                     ) : (
                       <div className="space-y-3">
-                        {concertBookings.map(booking => (
+                        {concertBookings.map((booking: any) => (
                           <div key={booking.id} className="border rounded-lg p-4">
                             <div className="flex items-start justify-between">
                               <div>
-                                <p className="font-medium">{booking.profile.full_name}</p>
-                                <p className="text-sm text-muted-foreground">{booking.profile.email}</p>
+                                <p className="font-medium">{booking.profile?.full_name || 'Unknown'}</p>
+                                <p className="text-sm text-muted-foreground">{booking.profile?.email}</p>
                                 <p className="text-sm mt-1">
-                                  <span className="font-medium">Piece:</span> {booking.piece.title}
+                                  <span className="font-medium">Piece:</span> {booking.piece?.title || 'N/A'}
                                 </p>
                                 <p className="text-sm">
                                   <span className="font-medium">Stage:</span> {booking.stage}
