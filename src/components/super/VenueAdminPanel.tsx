@@ -30,7 +30,12 @@ import {
   removeVenueAdmin,
   updateProfileRole,
 } from "@/lib/admin/actions";
-import { Search, UserPlus, Trash2, Shield, Building2 } from "lucide-react";
+import {
+  inviteVenueContact,
+  getVenueContacts,
+  removeVenueContact,
+} from "@/lib/super/actions";
+import { Search, UserPlus, Trash2, Shield, Building2, MapPin, Mail } from "lucide-react";
 import type { Venue, Profile } from "@/types/db";
 
 interface VenueAdminPanelProps {
@@ -46,8 +51,17 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
   const [selectedAdmin, setSelectedAdmin] = useState<string | null>(null);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
 
+  // Venue Contact state
+  const [venueContacts, setVenueContacts] = useState<any[]>([]);
+  const [loadingContacts, setLoadingContacts] = useState(true);
+  const [contactInviteEmail, setContactInviteEmail] = useState("");
+  const [invitingContact, setInvitingContact] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<string | null>(null);
+  const [showRemoveContactDialog, setShowRemoveContactDialog] = useState(false);
+
   useEffect(() => {
     loadAdmins();
+    loadVenueContacts();
   }, [venue.id]);
 
   const loadAdmins = async () => {
@@ -125,6 +139,65 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
   const confirmRemove = (mappingId: string) => {
     setSelectedAdmin(mappingId);
     setShowRemoveDialog(true);
+  };
+
+  // Venue Contact functions
+  const loadVenueContacts = async () => {
+    setLoadingContacts(true);
+    const result = await getVenueContacts(venue.id);
+    if ("contacts" in result && result.contacts) {
+      setVenueContacts(result.contacts);
+    } else if ("error" in result && result.error) {
+      toast.error(result.error);
+    }
+    setLoadingContacts(false);
+  };
+
+  const handleInviteContact = async () => {
+    if (!contactInviteEmail.trim()) {
+      toast.error("Please enter an email address");
+      return;
+    }
+
+    setInvitingContact(true);
+    const result = await inviteVenueContact(contactInviteEmail, venue.id);
+
+    if ("success" in result && result.success) {
+      toast.success(`Invitation sent to ${contactInviteEmail}`);
+      setContactInviteEmail("");
+      loadVenueContacts();
+
+      // Show the invitation token for testing (in production, this would be sent via email)
+      if ("invitation" in result && result.invitation) {
+        console.log("Invitation token (for testing):", result.invitation.token);
+        toast.info("Check console for invitation token (for testing)");
+      }
+    } else if ("error" in result && result.error) {
+      toast.error(result.error);
+    }
+
+    setInvitingContact(false);
+  };
+
+  const handleRemoveContact = async () => {
+    if (!selectedContact) return;
+
+    const result = await removeVenueContact(selectedContact);
+
+    if ("success" in result && result.success) {
+      toast.success("Venue contact removed");
+      loadVenueContacts();
+    } else if ("error" in result && result.error) {
+      toast.error(result.error);
+    }
+
+    setShowRemoveContactDialog(false);
+    setSelectedContact(null);
+  };
+
+  const confirmRemoveContact = (contactId: string) => {
+    setSelectedContact(contactId);
+    setShowRemoveContactDialog(true);
   };
 
   return (
@@ -296,7 +369,86 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
         </div>
       </Card>
 
-      {/* Remove Confirmation Dialog */}
+      {/* Venue Contacts Section */}
+      <Card className="p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <MapPin className="w-6 h-6 text-orange-600" />
+          <h3 className="text-xl font-semibold">Venue Contacts</h3>
+        </div>
+
+        {loadingContacts ? (
+          <p className="text-gray-500 mb-4">Loading venue contacts...</p>
+        ) : venueContacts.length === 0 ? (
+          <div className="text-center py-6 text-gray-500 mb-4 bg-gray-50 rounded-lg">
+            <p>No venue contacts assigned yet.</p>
+            <p className="text-sm mt-1">Invite someone using the form below.</p>
+          </div>
+        ) : (
+          <div className="space-y-3 mb-6">
+            {venueContacts.map((contact: any) => {
+              const profile = contact.profile;
+              return (
+                <Card key={contact.id} className="p-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium">{profile?.full_name || "Unknown"}</p>
+                        <Badge
+                          variant={contact.status === "active" ? "default" : "secondary"}
+                        >
+                          {contact.status}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">{profile?.email}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Invited: {new Date(contact.invited_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => confirmRemoveContact(contact.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="space-y-4 border-t pt-4">
+          <h4 className="font-medium flex items-center gap-2">
+            <Mail className="w-5 h-5 text-orange-600" />
+            Invite Venue Contact
+          </h4>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter email address..."
+              value={contactInviteEmail}
+              onChange={(e) => setContactInviteEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleInviteContact()}
+            />
+            <Button onClick={handleInviteContact} disabled={invitingContact}>
+              <Mail className="w-4 h-4 mr-2" />
+              {invitingContact ? "Sending..." : "Send Invite"}
+            </Button>
+          </div>
+
+          <div className="bg-orange-50 p-4 rounded-lg text-sm text-orange-800">
+            <p className="font-medium mb-1">About Venue Contacts:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Venue contacts can view all concerts at their assigned venue</li>
+              <li>They can see performer details, bookings, and concert photos</li>
+              <li>They have read-only access and cannot schedule or cancel concerts</li>
+              <li>If the email doesn't exist in the system, they'll need to sign up first</li>
+            </ul>
+          </div>
+        </div>
+      </Card>
+
+      {/* Remove Admin Confirmation Dialog */}
       <AlertDialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -309,6 +461,23 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleRemoveAdmin}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Remove Venue Contact Confirmation Dialog */}
+      <AlertDialog open={showRemoveContactDialog} onOpenChange={setShowRemoveContactDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Venue Contact</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this venue contact? They will lose access to view
+              concerts and information for this venue.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemoveContact}>Remove</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
