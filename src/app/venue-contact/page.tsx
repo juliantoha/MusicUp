@@ -185,7 +185,7 @@ export default function VenueContactDashboard() {
         return;
       }
 
-      setHostContacts(data || []);
+      setHostContacts((data || []) as any);
     };
 
     fetchHosts();
@@ -298,16 +298,16 @@ export default function VenueContactDashboard() {
                 <CardContent>
                   <h3 className="text-sm font-semibold mb-2">Host Contacts:</h3>
                   <div className="space-y-2">
-                    {hostContacts.map((host, idx) => (
+                    {hostContacts.map((host: any, idx: number) => (
                       <div key={idx} className="flex items-center gap-4 text-sm">
                         <div className="flex items-center gap-1">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          <span>{host.profile.full_name}</span>
+                          <span>{host.profile?.full_name || 'Unknown'}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Mail className="h-4 w-4 text-muted-foreground" />
-                          <a href={`mailto:${host.profile.email}`} className="text-primary hover:underline">
-                            {host.profile.email}
+                          <a href={`mailto:${host.profile?.email}`} className="text-primary hover:underline">
+                            {host.profile?.email}
                           </a>
                         </div>
                       </div>
