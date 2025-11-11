@@ -12,7 +12,7 @@ export type Profile = {
   id: string;
   email: string;
   full_name: string | null;
-  role: "performer" | "admin" | "super_admin";
+  role: "performer" | "admin" | "super_admin" | "venue_contact";
   profile_photo_path: string | null;
   created_at: string;
 };
@@ -212,7 +212,7 @@ export const profileSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
   full_name: z.string().nullable(),
-  role: z.enum(["performer", "admin", "super_admin"]),
+  role: z.enum(["performer", "admin", "super_admin", "venue_contact"]),
   created_at: z.string(),
 });
 
