@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Music, LogOut, User, Settings, Home, Building2, Zap } from "lucide-react";
+import { Music, LogOut, User, Settings, Home, Building2, Zap, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import {
@@ -20,6 +20,7 @@ import { createClient } from "@/lib/supabase/client";
 const navItems = [
   { href: "/performer", label: "Performer", roles: ["performer", "admin", "super_admin"] },
   { href: "/admin", label: "Host", roles: ["admin", "super_admin"] },
+  { href: "/venue-contact", label: "Venue Contact", roles: ["venue_contact"] },
   { href: "/super", label: "Super Admin", roles: ["super_admin"] },
 ];
 
@@ -68,11 +69,12 @@ export function Navbar() {
     if (!profile?.role) return "/performer";
     if (profile.role === "super_admin") return "/super";
     if (profile.role === "admin") return "/admin";
+    if (profile.role === "venue_contact") return "/venue-contact";
     return "/performer";
   };
 
   // Check if we're on a dashboard page
-  const isOnDashboard = pathname === "/performer" || pathname === "/admin" || pathname === "/super";
+  const isOnDashboard = pathname === "/performer" || pathname === "/admin" || pathname === "/super" || pathname === "/venue-contact";
 
   // Check if we're on settings page
   const isOnSettings = pathname === "/settings";
@@ -151,7 +153,7 @@ export function Navbar() {
                     <SelectItem value={getDashboardUrl()}>
                       <span className="flex items-center gap-2">
                         <Home className="h-4 w-4" />
-                        {profile?.role === 'super_admin' ? 'Super Admin' : profile?.role === 'admin' ? 'Host Dashboard' : 'Performer Dashboard'}
+                        {profile?.role === 'super_admin' ? 'Super Admin' : profile?.role === 'admin' ? 'Host Dashboard' : profile?.role === 'venue_contact' ? 'Venue Contact' : 'Performer Dashboard'}
                       </span>
                     </SelectItem>
                   )}
@@ -160,6 +162,7 @@ export function Navbar() {
                       <span className="flex items-center gap-2">
                         {item.href === '/performer' && <Music className="h-4 w-4" />}
                         {item.href === '/admin' && <Building2 className="h-4 w-4" />}
+                        {item.href === '/venue-contact' && <MapPin className="h-4 w-4" />}
                         {item.href === '/super' && <Zap className="h-4 w-4" />}
                         {item.href === '/admin' ? 'Host Dashboard' : item.label}
                       </span>
