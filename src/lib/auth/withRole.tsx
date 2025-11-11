@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-type Role = "performer" | "admin" | "super_admin";
+type Role = "performer" | "admin" | "super_admin" | "venue_contact";
 
 export function withRole(Component: React.ComponentType, allowedRoles: Role[]) {
   return function ProtectedComponent(props: any) {
