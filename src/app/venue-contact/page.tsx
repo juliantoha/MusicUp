@@ -113,10 +113,10 @@ export default function VenueContactDashboard() {
         return;
       }
 
-      const venueList = data?.map(vc => vc.venue).filter(Boolean) || [];
+      const venueList = (data?.map(vc => vc.venue).filter(Boolean) || []) as any[];
       setVenues(venueList);
 
-      if (venueList.length > 0) {
+      if (venueList.length > 0 && venueList[0]?.id) {
         setSelectedVenueId(venueList[0].id);
       }
     };
