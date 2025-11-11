@@ -152,11 +152,11 @@ export default function VenueContactDashboard() {
       }
 
       const now = new Date();
-      const upcoming = data?.filter(c => new Date(c.starts_at) >= now && c.status === "scheduled") || [];
-      const past = data?.filter(c => new Date(c.starts_at) < now || c.status === "completed") || [];
+      const upcoming = (data?.filter(c => new Date(c.starts_at) >= now && c.status === "scheduled") || []) as any[];
+      const past = (data?.filter(c => new Date(c.starts_at) < now || c.status === "completed") || []) as any[];
 
-      setUpcomingConcerts(upcoming);
-      setPastConcerts(past);
+      setUpcomingConcerts(upcoming as Concert[]);
+      setPastConcerts(past as Concert[]);
       setLoadingData(false);
     };
 
@@ -343,12 +343,12 @@ export default function VenueContactDashboard() {
                   <Card
                     key={concert.id}
                     className="cursor-pointer hover:shadow-lg transition-shadow"
-                    onClick={() => setSelectedConcert(concert)}
+                    onClick={() => setSelectedConcert(concert as any)}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-xl">{concert.series.title}</CardTitle>
+                          <CardTitle className="text-xl">{(concert.series as any)?.title || 'Concert'}</CardTitle>
                           <CardDescription className="flex items-center gap-4 mt-2">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
@@ -382,12 +382,12 @@ export default function VenueContactDashboard() {
                   <Card
                     key={concert.id}
                     className="cursor-pointer hover:shadow-lg transition-shadow"
-                    onClick={() => setSelectedConcert(concert)}
+                    onClick={() => setSelectedConcert(concert as any)}
                   >
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-xl">{concert.series.title}</CardTitle>
+                          <CardTitle className="text-xl">{(concert.series as any)?.title || 'Concert'}</CardTitle>
                           <CardDescription className="flex items-center gap-4 mt-2">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
@@ -415,7 +415,7 @@ export default function VenueContactDashboard() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-2xl">{selectedConcert.series.title}</CardTitle>
+                      <CardTitle className="text-2xl">{(selectedConcert.series as any)?.title || 'Concert Details'}</CardTitle>
                       <CardDescription className="flex items-center gap-4 mt-2">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
