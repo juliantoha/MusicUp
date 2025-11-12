@@ -4,8 +4,8 @@ export function OrganizationStructuredData() {
     "@type": "Organization",
     "name": "MusicUp",
     "alternateName": "MusicUp by Oclef",
-    "url": "https://music-up-alpha.vercel.app",
-    "logo": "https://music-up-alpha.vercel.app/logo.png",
+    "url": "https://www.musicup.co",
+    "logo": "https://www.musicup.co/logo.png",
     "description": "Ready-to-run concert series for real places. Connect performers with libraries, senior homes, markets, and community spaces.",
     "foundingDate": "2024",
     "founder": {

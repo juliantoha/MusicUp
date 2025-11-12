@@ -24,7 +24,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://music-up-alpha.vercel.app'),
+  metadataBase: new URL('https://www.musicup.co'),
   title: {
     default: "MusicUp - Music Every Day | Concerts for Libraries, Senior Homes & Community Spaces",
     template: "%s | MusicUp"
@@ -54,13 +54,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://music-up-alpha.vercel.app",
+    url: "https://www.musicup.co",
     siteName: "MusicUp",
     title: "MusicUp - Music Every Day | Concert Series for Community Spaces",
     description: "Short, ready-to-run concerts that fit real places. Pick a series, pick a set, show up. MusicUp handles the rest.",
     images: [
       {
-        url: "/og-image.png", // You'll need to create this image
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "MusicUp - Music Every Day",
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MusicUp - Music Every Day",
     description: "Connect performers with community spaces. Libraries, senior homes, markets, and more.",
-    creator: "@musicup", // Update with actual Twitter handle
+    creator: "@musicup",
     images: ["/og-image.png"],
   },
 
