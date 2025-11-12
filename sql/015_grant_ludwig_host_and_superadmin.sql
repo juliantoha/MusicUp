@@ -22,18 +22,14 @@ SET role = 'super_admin'
 WHERE email = 'ludwig@oclef.com';
 
 -- ============================================================================
--- 3. ADD AS HOST (if not already exists)
+-- 3. ADD AS HOST (Admin role already grants host privileges)
 -- ============================================================================
 
-INSERT INTO public.hosts (user_id, status)
-SELECT id, 'active'
-FROM public.profiles
-WHERE email = 'ludwig@oclef.com'
-  AND NOT EXISTS (
-    SELECT 1
-    FROM public.hosts
-    WHERE user_id = (SELECT id FROM public.profiles WHERE email = 'ludwig@oclef.com')
-  );
+-- Note: In MusicUp, "Host" is a UI label for the "admin" role.
+-- Super admins automatically have host privileges for all venues.
+-- To grant venue-specific host access, admins need entries in admins_venues table.
+-- Since ludwig@oclef.com is being made a super_admin, they already have full access.
+-- No additional entries in admins_venues are needed.
 
 -- ============================================================================
 -- 4. VERIFY CHANGES
@@ -49,8 +45,5 @@ SELECT id, email, full_name, role, created_at
 FROM public.profiles
 WHERE email = 'ludwig@oclef.com';
 
--- View the host record
-SELECT h.id, h.user_id, h.status, p.email, p.full_name
-FROM public.hosts h
-JOIN public.profiles p ON h.user_id = p.id
-WHERE p.email = 'ludwig@oclef.com';
+-- Note: Super admins automatically have host (admin) privileges for all venues
+-- No need to check admins_venues table for super_admin role
