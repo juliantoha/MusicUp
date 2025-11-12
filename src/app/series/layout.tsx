@@ -24,20 +24,11 @@ export const metadata: Metadata = {
     description: "9 ready-to-run concert series for libraries, senior homes, markets, schools, and community spaces. Each with curated repertoire and clear format guidelines.",
     url: "https://www.musicup.co/series",
     type: "website",
-    images: [
-      {
-        url: "/og-series.png",
-        width: 1200,
-        height: 630,
-        alt: "MusicUp Concert Series - 9 formats for community spaces",
-      }
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Concert Series - Play the right set in the right room",
     description: "9 ready-to-run concert formats: Empathy Concerts, PianoTales, Markets & more. Sheet music and format guides included.",
-    images: ["/og-series.png"],
   },
   alternates: {
     canonical: "https://www.musicup.co/series",

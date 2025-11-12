@@ -97,7 +97,7 @@ Test Open Graph tags using:
 Enter `https://www.musicup.co` and verify:
 - Correct title appears
 - Description is accurate
-- Image displays (once you add `/public/og-image.png`)
+- Auto-generated image displays correctly
 
 ### 3. Sitemap & Robots
 - Visit `https://www.musicup.co/sitemap.xml`
@@ -110,30 +110,21 @@ If you're using Google Search Console:
 2. Submit the new sitemap: `https://www.musicup.co/sitemap.xml`
 3. Monitor for any crawl errors
 
-## 📸 Open Graph Images (TODO)
+## 📸 Open Graph Images (Auto-Generated)
 
-The application references the following Open Graph images that don't exist yet:
+The application now automatically generates Open Graph images at build time using Next.js's built-in image generation:
 
-1. **Main OG Image**: `/public/og-image.png` (1200x630px)
-   - Used for homepage and general sharing
-   - Should feature the MusicUp logo and tagline
+1. **Main OG Image**: `src/app/opengraph-image.tsx`
+   - Auto-generated at 1200x630px
+   - Features MusicUp logo, tagline, and description
+   - Uses brand colors (orange gradient: #EB6A18 to #c2410c)
 
-2. **Series OG Image**: `/public/og-series.png` (1200x630px)
-   - Used for `/series` page
-   - Should showcase the concert series
+2. **Series OG Image**: `src/app/series/opengraph-image.tsx`
+   - Auto-generated at 1200x630px
+   - Showcases the 9 concert series
+   - Includes series names with emoji icons
 
-You can create these images using:
-- [Canva](https://www.canva.com) (easiest)
-- Figma
-- Photoshop
-- [OG Image Generator](https://og-playground.vercel.app/)
-
-### Recommended OG Image Specs:
-- **Size**: 1200x630px (Facebook/LinkedIn) or 1200x600px (Twitter)
-- **Format**: PNG or JPG
-- **File size**: < 1MB
-- **Text**: Large, readable even at small sizes
-- **Colors**: Match your brand (orange gradient: #EB6A18 to #c2410c)
+These images are dynamically created during the build process and served at `/opengraph-image` and `/series/opengraph-image` respectively. No manual image creation needed!
 
 ## 🚀 Deployment Checklist
 
@@ -147,7 +138,7 @@ After making all configuration changes:
 - [ ] Verified social media sharing shows correct metadata
 - [ ] Checked sitemap.xml uses new domain
 - [ ] Checked robots.txt uses new domain
-- [ ] Created and uploaded Open Graph images (optional but recommended)
+- [x] Open Graph images are auto-generated at build time
 - [ ] Updated DNS records if needed
 - [ ] Tested all major user flows on production
 

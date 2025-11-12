@@ -58,15 +58,6 @@ export const metadata: Metadata = {
     siteName: "MusicUp",
     title: "MusicUp - Music Every Day | Concert Series for Community Spaces",
     description: "Short, ready-to-run concerts that fit real places. Pick a series, pick a set, show up. MusicUp handles the rest.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "MusicUp - Music Every Day",
-        type: "image/png",
-      }
-    ],
   },
 
   // Twitter Card
@@ -75,7 +66,6 @@ export const metadata: Metadata = {
     title: "MusicUp - Music Every Day",
     description: "Connect performers with community spaces. Libraries, senior homes, markets, and more.",
     creator: "@musicup",
-    images: ["/og-image.png"],
   },
 
   // Robots
