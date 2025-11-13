@@ -19,122 +19,50 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #EB6A18 0%, #c2410c 100%)',
-          padding: '80px',
+          background: 'white',
         }}
       >
-        {/* Main Content */}
-        <div
+        {/* Logo */}
+        <svg
+          width="200"
+          height="200"
+          viewBox="0 0 1000 1000"
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(255, 255, 255, 0.98)',
-            borderRadius: '32px',
-            padding: '80px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
-            width: '100%',
-            height: '100%',
+            marginBottom: '40px',
           }}
         >
-          {/* Logo/Icon Circle */}
-          <div
-            style={{
-              width: '140px',
-              height: '140px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #EB6A18 0%, #c2410c 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '40px',
-              boxShadow: '0 10px 25px -5px rgba(235, 106, 24, 0.5)',
-            }}
-          >
-            <div
-              style={{
-                fontSize: '80px',
-                color: 'white',
-              }}
-            >
-              🎵
-            </div>
-          </div>
+          {/* Left bar */}
+          <rect x="160" y="200" width="120" height="600" rx="24" ry="24" fill="#000000" />
+          {/* Middle bar */}
+          <rect x="400" y="429" width="120" height="371" rx="24" ry="24" fill="#000000" />
+          {/* Right bar */}
+          <rect x="640" y="200" width="120" height="600" rx="24" ry="24" fill="#000000" />
+        </svg>
 
-          {/* Title */}
-          <div
-            style={{
-              fontSize: '72px',
-              fontWeight: 900,
-              background: 'linear-gradient(135deg, #EB6A18 0%, #c2410c 100%)',
-              backgroundClip: 'text',
-              color: 'transparent',
-              marginBottom: '20px',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            MusicUp
-          </div>
+        {/* Wordmark */}
+        <div
+          style={{
+            fontSize: '80px',
+            fontWeight: 700,
+            color: '#000000',
+            fontFamily: 'Montserrat',
+            letterSpacing: '-0.02em',
+            marginBottom: '24px',
+          }}
+        >
+          MusicUp
+        </div>
 
-          {/* Tagline */}
-          <div
-            style={{
-              fontSize: '42px',
-              color: '#1f2937',
-              marginBottom: '32px',
-              fontWeight: 600,
-            }}
-          >
-            Music Every Day
-          </div>
-
-          {/* Description */}
-          <div
-            style={{
-              fontSize: '28px',
-              color: '#6b7280',
-              textAlign: 'center',
-              maxWidth: '800px',
-              lineHeight: 1.4,
-            }}
-          >
-            Connect performers with libraries, senior homes, markets, and community spaces
-          </div>
-
-          {/* Bottom accent */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '16px',
-              marginTop: '48px',
-            }}
-          >
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #EB6A18 0%, #c2410c 100%)',
-                padding: '12px 32px',
-                borderRadius: '12px',
-                fontSize: '24px',
-                color: 'white',
-                fontWeight: 600,
-              }}
-            >
-              Verified Service Hours
-            </div>
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #EB6A18 0%, #c2410c 100%)',
-                padding: '12px 32px',
-                borderRadius: '12px',
-                fontSize: '24px',
-                color: 'white',
-                fontWeight: 600,
-              }}
-            >
-              Sheet Music Included
-            </div>
-          </div>
+        {/* Tagline */}
+        <div
+          style={{
+            fontSize: '36px',
+            color: '#6b7280',
+            fontFamily: 'Montserrat',
+            fontWeight: 500,
+          }}
+        >
+          Music Every Day
         </div>
       </div>
     ),
