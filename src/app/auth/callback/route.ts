@@ -9,6 +9,13 @@ export async function GET(request: Request) {
   const type = requestUrl.searchParams.get("type");
   const origin = requestUrl.origin;
 
+  console.log("Auth callback received:", {
+    hasCode: !!code,
+    type,
+    error,
+    url: requestUrl.toString()
+  });
+
   // If there's an error from Supabase, redirect to login with error message
   if (error) {
     console.error("Auth callback error:", error, error_description);
@@ -20,14 +27,20 @@ export async function GET(request: Request) {
   // Exchange the code for a session
   if (code) {
     const supabase = await createClient();
-    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    const { error: exchangeError, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (exchangeError) {
-      console.error("Error exchanging code for session:", exchangeError);
+      console.error("Error exchanging code for session:", {
+        message: exchangeError.message,
+        status: exchangeError.status,
+        name: exchangeError.name,
+      });
       return NextResponse.redirect(
         `${origin}/login?error=${encodeURIComponent("Failed to authenticate. Please try again.")}`
       );
     }
+
+    console.log("Code exchanged successfully, session created");
 
     // Check the type parameter to determine the flow
     // type=recovery means this is a password reset
