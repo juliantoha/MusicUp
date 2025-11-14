@@ -16,9 +16,9 @@ INSERT INTO public.venues (
   contact_email,
   is_active,
   notes,
-  venue_type
+  venue_type_id
 )
-VALUES (
+SELECT
   'Village Square Branch Library',
   '4001 Evergreen Village Square',
   'San Jose',
@@ -27,8 +27,9 @@ VALUES (
   'victor.luu@sjlibrary.org',
   true,
   'Contact: Victor Luu, Venue Contact',
-  'library'
-)
+  vt.id
+FROM public.venue_types vt
+WHERE vt.slug = 'libraries'
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -42,7 +43,8 @@ ON CONFLICT DO NOTHING;
 --   v.state,
 --   v.zip,
 --   v.contact_email,
---   v.venue_type,
+--   vt.label as venue_type,
 --   v.notes
 -- FROM venues v
+-- LEFT JOIN venue_types vt ON v.venue_type_id = vt.id
 -- WHERE v.name = 'Village Square Branch Library';
