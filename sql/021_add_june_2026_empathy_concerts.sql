@@ -13,16 +13,14 @@ INSERT INTO public.concerts (
   venue_id,
   starts_at,
   ends_at,
-  status,
-  title
+  status
 )
 SELECT
   s.id,
   v.id,
   '2026-06-13 10:30:00-08'::timestamptz,
   '2026-06-13 11:00:00-08'::timestamptz,
-  'scheduled',
-  'Empathy Concert - June (San Jose) - Morning Session'
+  'scheduled'
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
@@ -35,16 +33,14 @@ INSERT INTO public.concerts (
   venue_id,
   starts_at,
   ends_at,
-  status,
-  title
+  status
 )
 SELECT
   s.id,
   v.id,
   '2026-06-13 11:00:00-08'::timestamptz,
   '2026-06-13 11:30:00-08'::timestamptz,
-  'scheduled',
-  'Empathy Concert - June (San Jose) - Late Morning Session'
+  'scheduled'
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
@@ -57,16 +53,14 @@ INSERT INTO public.concerts (
   venue_id,
   starts_at,
   ends_at,
-  status,
-  title
+  status
 )
 SELECT
   s.id,
   v.id,
   '2026-06-13 16:00:00-08'::timestamptz,
   '2026-06-13 16:30:00-08'::timestamptz,
-  'scheduled',
-  'Empathy Concert - June (Pleasanton)'
+  'scheduled'
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
@@ -79,7 +73,7 @@ ON CONFLICT DO NOTHING;
 
 -- Verify concerts
 -- SELECT
---   c.title,
+--   s.title as series,
 --   v.name as venue,
 --   c.starts_at AT TIME ZONE 'America/Los_Angeles' as start_time,
 --   c.ends_at AT TIME ZONE 'America/Los_Angeles' as end_time,
