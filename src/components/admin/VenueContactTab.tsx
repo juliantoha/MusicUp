@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Building2, Save, Loader2, Tag } from "lucide-react";
-import { getMyManagedVenues, updateVenue } from "@/lib/venues/actions";
+import { Building2, Save, Loader2, Tag, Camera, Upload, MapPin, X } from "lucide-react";
+import { getMyManagedVenues, updateVenue, uploadVenuePhoto } from "@/lib/venues/actions";
 import { useVenueTypes } from "@/lib/hooks";
+import { VenueLocationMap } from "@/components/VenueLocationMap";
 import type { Venue } from "@/types/db";
 
 export function VenueContactTab() {
@@ -131,6 +133,15 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
   });
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [uploadingInterior, setUploadingInterior] = useState(false);
+  const [uploadingExterior, setUploadingExterior] = useState(false);
+  const [interiorPhotoUrl, setInteriorPhotoUrl] = useState(venue.interior_photo_url || "");
+  const [exteriorPhotoUrl, setExteriorPhotoUrl] = useState(venue.exterior_photo_url || "");
+  const [latitude, setLatitude] = useState(venue.latitude?.toString() || "");
+  const [longitude, setLongitude] = useState(venue.longitude?.toString() || "");
+  const [savingLocation, setSavingLocation] = useState(false);
+  const interiorInputRef = useRef<HTMLInputElement>(null);
+  const exteriorInputRef = useRef<HTMLInputElement>(null);
 
   // Reset form when venue changes
   useEffect(() => {
@@ -140,8 +151,12 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
       venue_contact_email: venue.venue_contact_email || "",
       venue_contact_phone: venue.venue_contact_phone || "",
     });
+    setInteriorPhotoUrl(venue.interior_photo_url || "");
+    setExteriorPhotoUrl(venue.exterior_photo_url || "");
+    setLatitude(venue.latitude?.toString() || "");
+    setLongitude(venue.longitude?.toString() || "");
     setHasChanges(false);
-  }, [venue.id]);
+  }, [venue.id, venue.interior_photo_url, venue.exterior_photo_url, venue.latitude, venue.longitude]);
 
   const handleChange = (field: string, value: string | null) => {
     setFormData((prev) => ({
@@ -262,6 +277,238 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
               Optional: Phone number for urgent coordination
             </p>
           </div>
+        </div>
+
+        {/* Venue Photos */}
+        <div className="space-y-4">
+          <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+            <Camera className="w-4 h-4" />
+            Venue Photos
+          </Label>
+          <p className="text-xs text-gray-500 -mt-2">
+            Upload photos of the venue interior and exterior. These are shown to performers when booking.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Exterior Photo */}
+            <div className="space-y-2">
+              <Label className="text-sm">Exterior Photo</Label>
+              <input
+                ref={exteriorInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploadingExterior(true);
+                  const fd = new FormData();
+                  fd.append("venue_id", venue.id);
+                  fd.append("photo_type", "exterior");
+                  fd.append("file", file);
+                  const result = await uploadVenuePhoto(fd);
+                  if ("error" in result && result.error) {
+                    toast.error(result.error);
+                  } else if (result.url) {
+                    setExteriorPhotoUrl(result.url);
+                    toast.success("Exterior photo uploaded");
+                    onUpdate();
+                  }
+                  setUploadingExterior(false);
+                  if (exteriorInputRef.current) exteriorInputRef.current.value = "";
+                }}
+              />
+              {exteriorPhotoUrl ? (
+                <div className="relative group rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                  <Image
+                    src={exteriorPhotoUrl}
+                    alt="Venue exterior"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => exteriorInputRef.current?.click()}
+                      disabled={uploadingExterior}
+                    >
+                      {uploadingExterior ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Upload className="w-4 h-4 mr-1" />}
+                      Replace
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => exteriorInputRef.current?.click()}
+                  disabled={uploadingExterior}
+                  className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 transition-colors flex flex-col items-center justify-center gap-2"
+                >
+                  {uploadingExterior ? (
+                    <Loader2 className="w-8 h-8 text-gray-300 animate-spin" />
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-gray-300" />
+                      <span className="text-xs text-gray-500">Upload exterior photo</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Interior Photo */}
+            <div className="space-y-2">
+              <Label className="text-sm">Interior Photo</Label>
+              <input
+                ref={interiorInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploadingInterior(true);
+                  const fd = new FormData();
+                  fd.append("venue_id", venue.id);
+                  fd.append("photo_type", "interior");
+                  fd.append("file", file);
+                  const result = await uploadVenuePhoto(fd);
+                  if ("error" in result && result.error) {
+                    toast.error(result.error);
+                  } else if (result.url) {
+                    setInteriorPhotoUrl(result.url);
+                    toast.success("Interior photo uploaded");
+                    onUpdate();
+                  }
+                  setUploadingInterior(false);
+                  if (interiorInputRef.current) interiorInputRef.current.value = "";
+                }}
+              />
+              {interiorPhotoUrl ? (
+                <div className="relative group rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                  <Image
+                    src={interiorPhotoUrl}
+                    alt="Venue interior"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => interiorInputRef.current?.click()}
+                      disabled={uploadingInterior}
+                    >
+                      {uploadingInterior ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Upload className="w-4 h-4 mr-1" />}
+                      Replace
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => interiorInputRef.current?.click()}
+                  disabled={uploadingInterior}
+                  className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 transition-colors flex flex-col items-center justify-center gap-2"
+                >
+                  {uploadingInterior ? (
+                    <Loader2 className="w-8 h-8 text-gray-300 animate-spin" />
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-gray-300" />
+                      <span className="text-xs text-gray-500">Upload interior photo</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Venue Location */}
+        <div className="space-y-4">
+          <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Location
+          </Label>
+          <p className="text-xs text-gray-500 -mt-2">
+            Optionally add coordinates for a precise map pin. Leave blank to use the address.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="latitude">Latitude</Label>
+              <Input
+                id="latitude"
+                type="number"
+                step="any"
+                placeholder="e.g. 37.7749"
+                className="h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors"
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="longitude">Longitude</Label>
+              <Input
+                id="longitude"
+                type="number"
+                step="any"
+                placeholder="e.g. -122.4194"
+                className="h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors"
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
+              />
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={savingLocation}
+            onClick={async () => {
+              setSavingLocation(true);
+              const lat = latitude ? parseFloat(latitude) : null;
+              const lng = longitude ? parseFloat(longitude) : null;
+              if (latitude && (isNaN(lat!) || lat! < -90 || lat! > 90)) {
+                toast.error("Latitude must be between -90 and 90");
+                setSavingLocation(false);
+                return;
+              }
+              if (longitude && (isNaN(lng!) || lng! < -180 || lng! > 180)) {
+                toast.error("Longitude must be between -180 and 180");
+                setSavingLocation(false);
+                return;
+              }
+              const result = await updateVenue(venue.id, { latitude: lat, longitude: lng });
+              if ("error" in result && result.error) {
+                toast.error(result.error);
+              } else {
+                toast.success("Location updated");
+                onUpdate();
+              }
+              setSavingLocation(false);
+            }}
+          >
+            {savingLocation ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
+            Save Location
+          </Button>
+
+          {/* Map Preview */}
+          <VenueLocationMap
+            address={venue.address}
+            city={venue.city}
+            state={venue.state}
+            zip={venue.zip}
+            latitude={latitude ? parseFloat(latitude) : venue.latitude}
+            longitude={longitude ? parseFloat(longitude) : venue.longitude}
+            venueName={venue.name}
+          />
         </div>
 
         {/* Privacy Notice */}

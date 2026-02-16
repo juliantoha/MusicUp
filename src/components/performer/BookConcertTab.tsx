@@ -14,10 +14,12 @@ import { toast } from "sonner";
 import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
 import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
-import { MapPin, Calendar, Music, Check, Loader2, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { MapPin, Calendar, Music, Check, Loader2, ChevronLeft, ChevronRight, RotateCcw, ImageIcon } from "lucide-react";
+import Image from "next/image";
 import type { Concert } from "@/types/db";
 import { booking as copy, emptyStates } from "@/lib/copy";
 import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
+import { VenueLocationMap } from "@/components/VenueLocationMap";
 
 const STEP_ICONS = [MapPin, Calendar, Music];
 
@@ -179,12 +181,75 @@ export function BookConcertTab() {
               </SelectContent>
             </Select>
             {selectedVenueId && (() => {
-              const selectedVenue = venues.find(v => v.id === selectedVenueId);
-              return selectedVenue?.venue_type ? (
-                <div className="mt-2">
-                  <VenueTypeBadge venueType={selectedVenue.venue_type} showIcon />
+              const selectedVenue = venues.find((v: any) => v.id === selectedVenueId);
+              if (!selectedVenue) return null;
+
+              const hasPhotos = selectedVenue.exterior_photo_url || selectedVenue.interior_photo_url;
+
+              return (
+                <div className="mt-4 space-y-4">
+                  {selectedVenue.venue_type && (
+                    <VenueTypeBadge venueType={selectedVenue.venue_type} showIcon />
+                  )}
+
+                  {/* Venue Photos */}
+                  {hasPhotos && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        Venue Photos
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {selectedVenue.exterior_photo_url && (
+                          <div className="space-y-1">
+                            <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                              <Image
+                                src={selectedVenue.exterior_photo_url}
+                                alt={`${selectedVenue.name} exterior`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 50vw, 25vw"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500 text-center">Exterior</p>
+                          </div>
+                        )}
+                        {selectedVenue.interior_photo_url && (
+                          <div className="space-y-1">
+                            <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                              <Image
+                                src={selectedVenue.interior_photo_url}
+                                alt={`${selectedVenue.name} interior`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 50vw, 25vw"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500 text-center">Interior</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Venue Location Map */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5" />
+                      Location
+                    </p>
+                    <VenueLocationMap
+                      address={selectedVenue.address}
+                      city={selectedVenue.city}
+                      state={selectedVenue.state}
+                      zip={selectedVenue.zip}
+                      latitude={selectedVenue.latitude}
+                      longitude={selectedVenue.longitude}
+                      venueName={selectedVenue.name}
+                    />
+                  </div>
                 </div>
-              ) : null;
+              );
             })()}
             {venues.length === 0 && (
               <div className="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">

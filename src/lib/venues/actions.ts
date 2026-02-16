@@ -3,6 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { venueContactUpdateSchema, venueInsertSchema, type VenueContactUpdate, type VenueInsert } from "@/types/db";
 
+const VENUE_PHOTOS_BUCKET = "venue_photos";
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
+
 /**
  * Helper to verify user is a super admin
  * Returns userId if authorized, error otherwise
@@ -200,6 +203,10 @@ export async function updateVenue(
     venue_contact_name: string;
     venue_contact_email: string;
     venue_contact_phone: string;
+    interior_photo_url: string | null;
+    exterior_photo_url: string | null;
+    latitude: number | null;
+    longitude: number | null;
   }>
 ) {
   // Verify permissions
@@ -208,15 +215,21 @@ export async function updateVenue(
 
   const supabase = await createClient();
 
+  // Build update payload from provided fields
+  const payload: Record<string, any> = {};
+  if (updateData.venue_type_id !== undefined) payload.venue_type_id = updateData.venue_type_id || null;
+  if (updateData.venue_contact_name !== undefined) payload.venue_contact_name = updateData.venue_contact_name || null;
+  if (updateData.venue_contact_email !== undefined) payload.venue_contact_email = updateData.venue_contact_email || null;
+  if (updateData.venue_contact_phone !== undefined) payload.venue_contact_phone = updateData.venue_contact_phone || null;
+  if (updateData.interior_photo_url !== undefined) payload.interior_photo_url = updateData.interior_photo_url || null;
+  if (updateData.exterior_photo_url !== undefined) payload.exterior_photo_url = updateData.exterior_photo_url || null;
+  if (updateData.latitude !== undefined) payload.latitude = updateData.latitude;
+  if (updateData.longitude !== undefined) payload.longitude = updateData.longitude;
+
   // Update venue
   const { data, error } = await supabase
     .from("venues")
-    .update({
-      ...(updateData.venue_type_id !== undefined && { venue_type_id: updateData.venue_type_id || null }),
-      ...(updateData.venue_contact_name !== undefined && { venue_contact_name: updateData.venue_contact_name || null }),
-      ...(updateData.venue_contact_email !== undefined && { venue_contact_email: updateData.venue_contact_email || null }),
-      ...(updateData.venue_contact_phone !== undefined && { venue_contact_phone: updateData.venue_contact_phone || null }),
-    })
+    .update(payload)
     .eq("id", venueId)
     .select()
     .single();
@@ -295,4 +308,67 @@ export async function createVenue(venueData: VenueInsert) {
   }
 
   return { success: true, venue: data };
+}
+
+/**
+ * Upload a venue photo (interior or exterior)
+ * Saves the file to Supabase storage and updates the venue record
+ */
+export async function uploadVenuePhoto(formData: FormData) {
+  const venueId = formData.get("venue_id") as string;
+  const photoType = formData.get("photo_type") as "interior" | "exterior";
+  const file = formData.get("file") as File;
+
+  if (!venueId || !photoType || !file) {
+    return { error: "Missing required fields" };
+  }
+
+  if (!file.type.startsWith("image/")) {
+    return { error: "File must be an image" };
+  }
+
+  if (file.size > MAX_PHOTO_SIZE) {
+    return { error: "File size must be less than 5MB" };
+  }
+
+  // Verify permissions
+  const verification = await verifyVenueUpdatePermission(venueId);
+  if ("error" in verification) return verification;
+
+  const supabase = await createClient();
+
+  // Generate storage path
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const storagePath = `venue_${venueId}/${photoType}.${ext}`;
+
+  // Upload file (upsert to replace existing)
+  const { error: uploadError } = await supabase.storage
+    .from(VENUE_PHOTOS_BUCKET)
+    .upload(storagePath, file, { upsert: true });
+
+  if (uploadError) {
+    console.error("Error uploading venue photo:", uploadError);
+    return { error: uploadError.message };
+  }
+
+  // Get public URL
+  const { data: urlData } = supabase.storage
+    .from(VENUE_PHOTOS_BUCKET)
+    .getPublicUrl(storagePath);
+
+  const photoUrl = urlData.publicUrl;
+
+  // Update the venue record
+  const column = photoType === "interior" ? "interior_photo_url" : "exterior_photo_url";
+  const { error: updateError } = await supabase
+    .from("venues")
+    .update({ [column]: photoUrl })
+    .eq("id", venueId);
+
+  if (updateError) {
+    console.error("Error updating venue photo URL:", updateError);
+    return { error: updateError.message };
+  }
+
+  return { success: true, url: photoUrl };
 }

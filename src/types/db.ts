@@ -39,6 +39,10 @@ export type Venue = {
   venue_contact_name: string | null;
   venue_contact_email: string | null;
   venue_contact_phone: string | null;
+  interior_photo_url: string | null;
+  exterior_photo_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
   created_at: string;
 };
 
@@ -230,6 +234,10 @@ export const venueSchema = z.object({
   venue_contact_name: z.string().min(1, "Venue contact name is required").nullable().or(z.literal("")),
   venue_contact_email: z.string().email("Invalid email address").nullable().or(z.literal("")),
   venue_contact_phone: z.string().nullable().or(z.literal("")),
+  interior_photo_url: z.string().url().nullable().or(z.literal("")),
+  exterior_photo_url: z.string().url().nullable().or(z.literal("")),
+  latitude: z.number().min(-90).max(90).nullable(),
+  longitude: z.number().min(-180).max(180).nullable(),
   created_at: z.string(),
 });
 
