@@ -11,19 +11,19 @@ import { SeriesVenueTypeMappingsTab } from "@/components/super/SeriesVenueTypeMa
 
 function SuperAdminPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pt-16">
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-10">
+        <div className="mb-8">
           <div className="flex items-start gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#7c3aed] flex items-center justify-center shadow-lg flex-shrink-0">
-              <Shield className="h-7 w-7 text-white" />
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#7c3aed] flex items-center justify-center shadow-lg flex-shrink-0">
+              <Shield className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 overflow-visible">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#7c3aed] bg-clip-text text-transparent mb-3 leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#7c3aed] bg-clip-text text-transparent mb-2 leading-tight">
                 System Admin
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed mt-2">
+              <p className="text-base text-gray-500 leading-relaxed">
                 Manage venues. Assign roles. Scale the system.
               </p>
             </div>
@@ -31,13 +31,13 @@ function SuperAdminPage() {
         </div>
 
         {/* Alert */}
-        <Alert className="mb-10 border-0 border-l-4 border-l-[#8B5CF6] bg-gradient-to-r from-purple-50 to-white shadow-lg">
+        <Alert className="mb-8 border border-purple-100 border-l-4 border-l-[#8B5CF6] bg-gradient-to-r from-purple-50/80 to-white shadow-sm">
           <div className="h-8 w-8 rounded-lg bg-[#8B5CF6]/10 flex items-center justify-center">
             <Sparkles className="h-4 w-4 text-[#8B5CF6]" />
           </div>
-          <AlertTitle className="text-lg font-bold">Full System Access</AlertTitle>
-          <AlertDescription className="text-base text-gray-600">
-            Add new venues, create series, assign hosts, and manage venue contacts. One scalable model powers every city.
+          <AlertTitle className="text-base font-bold">Full System Access</AlertTitle>
+          <AlertDescription className="text-sm text-gray-500">
+            Add new venues, create series, assign hosts, and manage venue contacts.
           </AlertDescription>
         </Alert>
 
@@ -88,11 +88,11 @@ function SuperAdminPage() {
           </TabsList>
 
           <TabsContent value="venues" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Manage venues across all cities</CardTitle>
-                <CardDescription className="text-base text-gray-700">
-                  Add new venues to the network. Set venue contact information. Upload venue photos. Activate concerts in new cities with repeatable infrastructure.
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-purple-50/80 to-pink-50/50 rounded-t-xl border-b border-purple-100/50">
+                <CardTitle className="text-xl text-gray-900">Manage venues across all cities</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
+                  Add new venues to the network. Set venue contact info. Activate concerts in new cities.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
@@ -102,11 +102,11 @@ function SuperAdminPage() {
           </TabsContent>
 
           <TabsContent value="tools" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">User and role management</CardTitle>
-                <CardDescription className="text-base text-gray-700">
-                  Assign admins as hosts to specific venues. Grant or revoke performer access. Control permissions and role assignments across the entire system.
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-cyan-50/80 to-blue-50/50 rounded-t-xl border-b border-cyan-100/50">
+                <CardTitle className="text-xl text-gray-900">User and role management</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
+                  Assign admins as hosts to specific venues. Grant or revoke performer access.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
@@ -116,11 +116,11 @@ function SuperAdminPage() {
           </TabsContent>
 
           <TabsContent value="mappings" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Series ↔ Venue Type Mappings</CardTitle>
-                <CardDescription className="text-base text-gray-700">
-                  Control which concert series are appropriate for each venue type. Ensure Empathy is only at senior living, PianoTales at libraries/schools, etc.
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-green-50/80 to-emerald-50/50 rounded-t-xl border-b border-green-100/50">
+                <CardTitle className="text-xl text-gray-900">Series / Venue Type Mappings</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
+                  Control which concert series are appropriate for each venue type.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">

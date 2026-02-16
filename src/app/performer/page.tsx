@@ -11,19 +11,19 @@ import { Music, Calendar, Award } from "lucide-react";
 
 function PerformerPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pt-16">
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-10">
+        <div className="mb-8">
           <div className="flex items-start gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg flex-shrink-0">
-              <Music className="h-7 w-7 text-white" />
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg flex-shrink-0">
+              <Music className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 overflow-visible">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563EB] to-[#06B6D4] bg-clip-text text-transparent mb-3 leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-gradient-blue mb-2 leading-tight">
                 Music up your city
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed mt-2">
+              <p className="text-base text-gray-500 leading-relaxed">
                 Book concerts. Perform live. Track your hours. All in one place.
               </p>
             </div>
@@ -31,49 +31,43 @@ function PerformerPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid sm:grid-cols-3 gap-6 mb-10">
-          <Card className="group border-0 border-l-4 border-l-[#2563EB] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-blue-50/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <div className="grid sm:grid-cols-3 gap-4 mb-8">
+          <Card className="group border border-gray-100 shadow-sm card-hover bg-white">
+            <CardContent className="pt-5 pb-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-9 w-9 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
                   <Calendar className="h-4 w-4 text-[#2563EB]" />
                 </div>
-                Upcoming Concerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-[#2563EB] mb-1">0</div>
-              <p className="text-sm text-gray-600">Book your first performance</p>
+                <span className="text-sm font-medium text-gray-500">Upcoming</span>
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-0.5">0</div>
+              <p className="text-xs text-gray-400">Book your first performance</p>
             </CardContent>
           </Card>
 
-          <Card className="group border-0 border-l-4 border-l-[#06B6D4] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-cyan-50/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-[#06B6D4]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <Card className="group border border-gray-100 shadow-sm card-hover bg-white">
+            <CardContent className="pt-5 pb-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-9 w-9 rounded-xl bg-[#06B6D4]/10 flex items-center justify-center">
                   <Music className="h-4 w-4 text-[#06B6D4]" />
                 </div>
-                Past Performances
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-[#06B6D4] mb-1">0</div>
-              <p className="text-sm text-gray-600">Your performance history</p>
+                <span className="text-sm font-medium text-gray-500">Performances</span>
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-0.5">0</div>
+              <p className="text-xs text-gray-400">Your performance history</p>
             </CardContent>
           </Card>
 
-          <Card className="group border-0 border-l-4 border-l-[#EB6A18] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-orange-50/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-[#EB6A18]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <Card className="group border border-gray-100 shadow-sm card-hover bg-white">
+            <CardContent className="pt-5 pb-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-9 w-9 rounded-xl bg-[#EB6A18]/10 flex items-center justify-center">
                   <Award className="h-4 w-4 text-[#EB6A18]" />
                 </div>
-                Service Hours
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-[#EB6A18] mb-1">0</div>
-              <p className="text-sm text-gray-600">Verified hours earned</p>
+                <span className="text-sm font-medium text-gray-500">Service Hours</span>
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-0.5">0</div>
+              <p className="text-xs text-gray-400">Verified hours earned</p>
             </CardContent>
           </Card>
         </div>
@@ -127,10 +121,10 @@ function PerformerPage() {
           </TabsList>
 
           <TabsContent value="book" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Find a concert near you</CardTitle>
-                <CardDescription className="text-base text-gray-700">
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-cyan-50/50 rounded-t-xl border-b border-blue-100/50">
+                <CardTitle className="text-xl text-gray-900">Find a concert near you</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
                   Browse available concerts in your city. Choose your location, date, and repertoire.
                 </CardDescription>
               </CardHeader>
@@ -141,10 +135,10 @@ function PerformerPage() {
           </TabsContent>
 
           <TabsContent value="manage" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Your bookings</CardTitle>
-                <CardDescription className="text-base text-gray-700">
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-cyan-50/80 to-blue-50/50 rounded-t-xl border-b border-cyan-100/50">
+                <CardTitle className="text-xl text-gray-900">Your bookings</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
                   View upcoming performances and manage your bookings. Cancel at least 48 hours in advance.
                 </CardDescription>
               </CardHeader>
@@ -155,10 +149,10 @@ function PerformerPage() {
           </TabsContent>
 
           <TabsContent value="info" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Service hours tracker</CardTitle>
-                <CardDescription className="text-base text-gray-700">
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-orange-50/80 to-amber-50/50 rounded-t-xl border-b border-orange-100/50">
+                <CardTitle className="text-xl text-gray-900">Service hours tracker</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
                   MusicUp verifies 3 hours per Empathy Concert. Export your hours for school or community service requirements.
                 </CardDescription>
               </CardHeader>
@@ -169,10 +163,10 @@ function PerformerPage() {
           </TabsContent>
 
           <TabsContent value="library" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Music library</CardTitle>
-                <CardDescription className="text-base text-gray-700">
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-purple-50/80 to-violet-50/50 rounded-t-xl border-b border-purple-100/50">
+                <CardTitle className="text-xl text-gray-900">Music library</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
                   Access sheet music, audio references, and practice resources. Every piece has PDF and audio included.
                 </CardDescription>
               </CardHeader>
