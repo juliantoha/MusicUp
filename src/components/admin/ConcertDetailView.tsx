@@ -23,6 +23,7 @@ import { CheckCircle2, XCircle, Upload, Camera, CheckCheck, Loader2, MapPin, Cal
 import type { ConcertWithDetails } from "@/types/db";
 import { admin } from "@/lib/copy";
 import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
+import { VenueLocationMap } from "@/components/VenueLocationMap";
 
 interface ConcertDetailViewProps {
   concert: ConcertWithDetails;
@@ -249,6 +250,20 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                 )}
               </div>
             )}
+          {/* Venue Map */}
+          {concert.venue && (
+            <div className="mt-4">
+              <VenueLocationMap
+                address={concert.venue.address}
+                city={concert.venue.city}
+                state={concert.venue.state}
+                zip={concert.venue.zip}
+                latitude={concert.venue.latitude}
+                longitude={concert.venue.longitude}
+                venueName={concert.venue.name}
+              />
+            </div>
+          )}
           </div>
         </div>
       </Card>
