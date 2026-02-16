@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { Mail, CheckCircle2, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +13,41 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/Logo";
 
+function PageWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex min-h-screen flex-col relative">
+      {/* Branded background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50/40 -z-10" />
+      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-[#2563EB]/5 rounded-full blur-[120px] -z-10" />
+      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-[#06B6D4]/5 rounded-full blur-[100px] -z-10" />
+
+      {/* Navigation Header */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
+        <div className="container mx-auto px-4 py-3">
+          <Link href="/" className="flex items-center gap-2 group w-fit">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
+              <Logo className="w-full h-full text-white" />
+            </div>
+            <span className="text-2xl font-bold text-gradient-orange tracking-tight">MusicUp</span>
+          </Link>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="flex flex-1 items-center justify-center p-4 pt-24">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [signupSuccess, setSignupSuccess] = useState(false);
@@ -71,33 +101,6 @@ export default function SignupPage() {
       setResendingEmail(false);
     }
   };
-
-  // Branded background wrapper
-  const PageWrapper = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex min-h-screen flex-col relative">
-      {/* Branded background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50/40 -z-10" />
-      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-[#2563EB]/5 rounded-full blur-[120px] -z-10" />
-      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-[#06B6D4]/5 rounded-full blur-[100px] -z-10" />
-
-      {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
-        <div className="container mx-auto px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 group w-fit">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
-              <Logo className="w-full h-full text-white" />
-            </div>
-            <span className="text-2xl font-bold text-gradient-orange tracking-tight">MusicUp</span>
-          </Link>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <div className="flex flex-1 items-center justify-center p-4 pt-24">
-        {children}
-      </div>
-    </div>
-  );
 
   // Show success state after signup
   if (signupSuccess) {
@@ -219,31 +222,51 @@ export default function SignupPage() {
             <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors"
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <div className="space-y-2">
             <label htmlFor="confirmPassword" className="text-sm font-medium">
               Confirm Password
             </label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              minLength={6}
-              className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors"
-            />
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={6}
+                className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <Button type="submit" className="w-full h-11 text-base font-semibold shadow-md hover:shadow-lg transition-all" disabled={loading}>
             {loading ? (
