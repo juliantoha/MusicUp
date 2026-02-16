@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle, Eye, EyeOff } from "lucide-react";
+import { CheckCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,21 +24,12 @@ export default function ResetPasswordPage() {
   const [validSession, setValidSession] = useState<boolean | null>(null);
   const router = useRouter();
 
-  // Check if user has a valid session from the email link
   useEffect(() => {
     const checkSession = async () => {
       const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        setValidSession(false);
-      } else {
-        setValidSession(true);
-      }
+      const { data: { session } } = await supabase.auth.getSession();
+      setValidSession(!!session);
     };
-
     checkSession();
   }, []);
 
@@ -57,22 +48,14 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    if (!validatePassword()) {
-      return;
-    }
+    if (!validatePassword()) return;
 
     setLoading(true);
-
     try {
       await updatePassword(password);
       setSuccess(true);
       toast.success("Password updated successfully!");
-
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+      setTimeout(() => router.push("/login"), 2000);
     } catch (err: any) {
       setError(err.message || "Failed to update password");
       toast.error("Failed to update password");
@@ -81,6 +64,30 @@ export default function ResetPasswordPage() {
     }
   };
 
+  // Branded background wrapper
+  const PageShell = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex min-h-screen flex-col relative">
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50/40 -z-10" />
+      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-[#2563EB]/5 rounded-full blur-[120px] -z-10" />
+      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-[#06B6D4]/5 rounded-full blur-[100px] -z-10" />
+
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
+        <div className="container mx-auto px-4 py-3">
+          <Link href="/" className="flex items-center gap-2 group w-fit">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
+              <Logo className="w-full h-full text-white" />
+            </div>
+            <span className="text-2xl font-bold text-gradient-orange tracking-tight">MusicUp</span>
+          </Link>
+        </div>
+      </nav>
+
+      <div className="flex flex-1 items-center justify-center p-4 pt-24">
+        {children}
+      </div>
+    </div>
+  );
+
   if (validSession === null) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -88,7 +95,7 @@ export default function ResetPasswordPage() {
           <div className="inline-flex h-16 w-16 items-center justify-center">
             <Logo className="w-full h-full text-primary" animate />
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-sm text-gray-500">Loading...</p>
         </div>
       </div>
     );
@@ -96,160 +103,134 @@ export default function ResetPasswordPage() {
 
   if (validSession === false) {
     return (
-      <div className="flex min-h-screen flex-col">
-        {/* Navigation Header */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
-          <div className="container mx-auto px-4 py-4">
-            <Link href="/" className="flex items-center gap-2 group w-fit">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
-                <Logo className="w-full h-full text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent">
-                MusicUp
-              </span>
-            </Link>
-          </div>
-        </nav>
-
-        <div className="flex flex-1 items-center justify-center p-4 pt-24">
-          <Card className="w-full max-w-md">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-3xl font-display font-bold text-center text-red-600 tracking-tight">Invalid or Expired Link</CardTitle>
-              <CardDescription className="text-center font-light">
-                This password reset link is invalid or has expired
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert variant="destructive">
-                <AlertDescription>
-                  Password reset links expire after a certain time for security reasons. Please request a new one.
-                </AlertDescription>
-              </Alert>
-              <Button asChild className="w-full">
-                <Link href="/forgot-password">Request new reset link</Link>
-              </Button>
-              <div className="text-center">
-                <Link href="/login" className="text-sm text-muted-foreground hover:text-primary">
-                  Back to sign in
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <PageShell>
+        <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm animate-fade-in-up">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-3xl font-display font-bold text-center text-red-600 tracking-tight">Invalid or Expired Link</CardTitle>
+            <CardDescription className="text-center text-gray-500">
+              This password reset link is invalid or has expired
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert variant="destructive">
+              <AlertDescription>
+                Password reset links expire after a certain time for security reasons. Please request a new one.
+              </AlertDescription>
+            </Alert>
+            <Button asChild className="w-full h-11 text-base font-semibold shadow-md hover:shadow-lg transition-all">
+              <Link href="/forgot-password">Request new reset link</Link>
+            </Button>
+            <div className="text-center">
+              <Link href="/login" className="text-sm text-gray-500 hover:text-[#2563EB] transition-colors">
+                Back to sign in
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </PageShell>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-2 group w-fit">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
-              <Logo className="w-full h-full text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent tracking-tight">MusicUp</span>
-          </Link>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <div className="flex flex-1 items-center justify-center p-4 pt-24">
-        <Card className="w-full max-w-md">
-          {!success ? (
-            <>
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Set new password</CardTitle>
-                <CardDescription className="text-center font-light">
-                  Enter your new password below
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {error && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="password" className="text-sm font-medium">
-                      New Password
-                    </label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        autoFocus
-                        minLength={8}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Must be at least 8 characters
-                    </p>
+    <PageShell>
+      <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 backdrop-blur-sm animate-fade-in-up">
+        {!success ? (
+          <>
+            <CardHeader className="space-y-1 pb-4">
+              <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Set new password</CardTitle>
+              <CardDescription className="text-center text-gray-500">
+                Enter your new password below
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-medium">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      autoFocus
+                      minLength={8}
+                      className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium">
-                      Confirm New Password
-                    </label>
-                    <div className="relative">
-                      <Input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        minLength={8}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Updating password..." : "Update password"}
-                  </Button>
-                </form>
-              </CardContent>
-            </>
-          ) : (
-            <>
-              <CardHeader className="space-y-1">
-                <div className="flex justify-center mb-4">
-                  <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  <p className="text-xs text-gray-400">Must be at least 8 characters</p>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="confirmPassword" className="text-sm font-medium">
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
-                <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Password updated!</CardTitle>
-                <CardDescription className="text-center font-light">
-                  Your password has been successfully updated. Redirecting you to sign in...
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full">
-                  <Link href="/login">Go to sign in</Link>
+                <Button type="submit" className="w-full h-11 text-base font-semibold shadow-md hover:shadow-lg transition-all" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    "Update password"
+                  )}
                 </Button>
-              </CardContent>
-            </>
-          )}
-        </Card>
-      </div>
-    </div>
+              </form>
+            </CardContent>
+          </>
+        ) : (
+          <>
+            <CardHeader className="space-y-1 flex flex-col items-center pb-4">
+              <div className="h-16 w-16 rounded-full bg-green-50 flex items-center justify-center mb-2">
+                <CheckCircle className="h-9 w-9 text-green-600" />
+              </div>
+              <CardTitle className="text-3xl font-display font-bold text-center tracking-tight">Password updated!</CardTitle>
+              <CardDescription className="text-center text-gray-500">
+                Your password has been successfully updated. Redirecting you to sign in...
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full h-11 text-base font-semibold shadow-md hover:shadow-lg transition-all">
+                <Link href="/login">Go to sign in</Link>
+              </Button>
+            </CardContent>
+          </>
+        )}
+      </Card>
+    </PageShell>
   );
 }
