@@ -137,8 +137,14 @@ export default function LibraryPage() {
       }
     });
 
+    // Filter to only show Empathy Concerts series for now
+    const allSeries = Array.from(seriesMap.values());
+    const filteredSeries = allSeries.filter((s: any) =>
+      s.title?.toLowerCase() === 'empathy' || s.slug === 'empathy'
+    );
+
     return {
-      series: Array.from(seriesMap.values()),
+      series: filteredSeries,
       collections: Array.from(collectionsMap.values()),
     };
   }, [pieceStages]);
