@@ -18,8 +18,8 @@ INSERT INTO public.concerts (
 SELECT
   s.id,
   v.id,
-  '2026-03-14 10:30:00-08'::timestamptz,
-  '2026-03-14 11:00:00-08'::timestamptz,
+  '2026-03-14 10:30:00-07'::timestamptz,
+  '2026-03-14 11:00:00-07'::timestamptz,
   'scheduled'
 FROM public.series s
 CROSS JOIN public.venues v
@@ -38,8 +38,8 @@ INSERT INTO public.concerts (
 SELECT
   s.id,
   v.id,
-  '2026-03-14 11:00:00-08'::timestamptz,
-  '2026-03-14 11:30:00-08'::timestamptz,
+  '2026-03-14 11:00:00-07'::timestamptz,
+  '2026-03-14 11:30:00-07'::timestamptz,
   'scheduled'
 FROM public.series s
 CROSS JOIN public.venues v
@@ -58,8 +58,8 @@ INSERT INTO public.concerts (
 SELECT
   s.id,
   v.id,
-  '2026-03-14 16:00:00-08'::timestamptz,
-  '2026-03-14 16:30:00-08'::timestamptz,
+  '2026-03-14 16:00:00-07'::timestamptz,
+  '2026-03-14 16:30:00-07'::timestamptz,
   'scheduled'
 FROM public.series s
 CROSS JOIN public.venues v
