@@ -108,17 +108,35 @@ export function InformationTab() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-green-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600">All-Time Total</p>
-            <p className="text-3xl font-bold text-green-600">{allTimeTotal.toFixed(1)}</p>
+          <div className="bg-white border border-green-100 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-8 w-8 rounded-lg bg-green-50 flex items-center justify-center">
+                <Clock className="w-4 h-4 text-green-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-500">All-Time Total</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{allTimeTotal.toFixed(1)}</p>
+            <p className="text-xs text-gray-400">Verified hours</p>
           </div>
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Pending Hours</p>
-            <p className="text-3xl font-bold text-yellow-600">{pendingHours.toFixed(1)}</p>
+          <div className="bg-white border border-amber-100 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                <Clock className="w-4 h-4 text-amber-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-500">Pending</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{pendingHours.toFixed(1)}</p>
+            <p className="text-xs text-gray-400">Awaiting verification</p>
           </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Total Concerts</p>
-            <p className="text-3xl font-bold text-blue-600">{pastConcerts.length}</p>
+          <div className="bg-white border border-blue-100 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Music2 className="w-4 h-4 text-blue-600" />
+              </div>
+              <span className="text-sm font-medium text-gray-500">Concerts</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{pastConcerts.length}</p>
+            <p className="text-xs text-gray-400">Total performances</p>
           </div>
         </div>
 
@@ -135,11 +153,11 @@ export function InformationTab() {
 
               return (
                 <div key={year} className="space-y-3">
-                  <div className="flex items-center justify-between bg-gray-100 px-4 py-2 rounded-lg">
-                    <h5 className="font-semibold text-lg">{year}</h5>
+                  <div className="flex items-center justify-between bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl">
+                    <h5 className="font-bold text-lg text-gray-900">{year}</h5>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Year Total</p>
-                      <p className="text-xl font-bold text-blue-600">{yearTotal.toFixed(1)} hours</p>
+                      <p className="text-xs text-gray-400 uppercase tracking-wider">Year Total</p>
+                      <p className="text-xl font-bold text-gray-900">{yearTotal.toFixed(1)} <span className="text-sm font-medium text-gray-400">hours</span></p>
                     </div>
                   </div>
 

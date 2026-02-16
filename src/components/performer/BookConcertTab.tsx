@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
 import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
-import { MapPin, Calendar, Music, Check } from "lucide-react";
+import { MapPin, Calendar, Music, Check, Loader2, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import type { Concert } from "@/types/db";
 import { booking as copy, emptyStates } from "@/lib/copy";
 import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
@@ -104,75 +104,70 @@ export function BookConcertTab() {
 
   return (
     <div className="space-y-6">
-      {/* Stepper - Mobile-First Design */}
-      <div className="flex items-start md:items-center justify-between gap-2">
+      {/* Stepper */}
+      <div className="relative flex items-start justify-between gap-0">
+        {/* Connector line behind circles */}
+        <div className="absolute top-6 md:top-7 left-0 right-0 flex items-center px-[3rem] md:px-[4rem]" aria-hidden="true">
+          <div className="w-full h-0.5 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#2563EB] transition-all duration-500 ease-out"
+              style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
+            />
+          </div>
+        </div>
+
         {STEPS.map((step, index) => {
           const Icon = STEP_ICONS[index];
           const isActive = index === currentStep;
           const isCompleted = index < currentStep;
 
           return (
-            <div key={step} className="flex items-center flex-1">
-              <div className="flex flex-col items-center flex-1">
-                <div
-                  className={`relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border-2 transition-all ${
-                    isCompleted
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : isActive
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-background text-muted-foreground"
-                  }`}
-                  aria-current={isActive ? "step" : undefined}
-                  aria-label={`Step ${index + 1}: ${step}`}
-                >
-                  {/* Step Number Badge */}
-                  <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                    isCompleted || isActive
-                      ? "bg-primary text-white shadow-md"
-                      : "bg-gray-300 text-gray-600"
-                  }`}>
-                    {index + 1}
-                  </div>
-                  {/* Icon */}
-                  {isCompleted ? (
-                    <Check className="w-6 h-6 md:w-7 md:h-7" aria-hidden="true" />
-                  ) : (
-                    <Icon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
-                  )}
-                </div>
-                <span
-                  className={`mt-2 text-xs md:text-sm font-medium text-center transition-colors ${
-                    isActive || isCompleted ? "text-primary" : "text-muted-foreground"
-                  }`}
-                >
-                  {step}
-                </span>
+            <div key={step} className="relative z-10 flex flex-col items-center flex-1">
+              <div
+                className={`relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl border-2 transition-all duration-300 ${
+                  isCompleted
+                    ? "border-[#2563EB] bg-[#2563EB] text-white shadow-md shadow-blue-200"
+                    : isActive
+                    ? "border-[#2563EB] bg-blue-50 text-[#2563EB] shadow-md shadow-blue-100"
+                    : "border-gray-200 bg-white text-gray-400"
+                }`}
+                aria-current={isActive ? "step" : undefined}
+                aria-label={`Step ${index + 1}: ${step}`}
+              >
+                {isCompleted ? (
+                  <Check className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+                ) : (
+                  <Icon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+                )}
               </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={`h-0.5 w-full max-w-[2rem] md:max-w-[4rem] mx-1 md:mx-4 transition-colors ${
-                    index < currentStep ? "bg-primary" : "bg-border"
-                  }`}
-                  aria-hidden="true"
-                />
-              )}
+              <span
+                className={`mt-2.5 text-xs md:text-sm font-medium text-center transition-colors duration-300 ${
+                  isCompleted
+                    ? "text-[#2563EB]"
+                    : isActive
+                    ? "text-gray-900 font-semibold"
+                    : "text-gray-400"
+                }`}
+              >
+                {step}
+              </span>
             </div>
           );
         })}
       </div>
 
       {/* Step Content */}
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100 shadow-sm">
         {currentStep === 0 && (
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Choose a Venue</h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Choose a Venue</h3>
+              <p className="text-sm text-gray-500">
                 Select the location where you'd like to perform.
               </p>
             </div>
             <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
                 <SelectValue placeholder="Select venue" />
               </SelectTrigger>
               <SelectContent>
@@ -192,7 +187,10 @@ export function BookConcertTab() {
               ) : null;
             })()}
             {venues.length === 0 && (
-              <p className="text-sm text-gray-500">No venues available</p>
+              <div className="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                <MapPin className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                <p className="text-sm text-gray-500">No venues available</p>
+              </div>
             )}
           </div>
         )}
@@ -200,66 +198,76 @@ export function BookConcertTab() {
         {currentStep === 1 && (
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Select a Concert</h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Select a Concert</h3>
+              <p className="text-sm text-gray-500">
                 Choose a concert series that fits this venue. Only series appropriate for {venues.find((v) => v.id === selectedVenueId)?.name} are shown.
               </p>
             </div>
             {upcomingConcerts.length > 0 ? (
               <div className="space-y-2">
                 {upcomingConcerts.map((concert) => (
-                  <Card
+                  <div
                     key={concert.id}
-                    className={`p-4 cursor-pointer transition-colors ${
+                    className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                       selectedConcert?.id === concert.id
-                        ? "border-blue-600 bg-blue-50"
-                        : "hover:border-gray-400"
+                        ? "border-[#2563EB] bg-blue-50/60 shadow-sm"
+                        : "border-gray-100 bg-white hover:border-gray-300 hover:shadow-sm"
                     }`}
                     onClick={() => setSelectedConcert(concert)}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <p className="font-medium">{concert.series?.title}</p>
+                        <p className="font-semibold text-gray-900">{concert.series?.title}</p>
                         {concert.series?.tagline && (
-                          <p className="text-xs text-gray-500 italic mb-1">{concert.series.tagline}</p>
+                          <p className="text-xs text-gray-500 italic mt-0.5">{concert.series.tagline}</p>
                         )}
-                        <p className="text-sm text-gray-600">
-                          {formatPacificDate(concert.starts_at)}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {formatPacificTimeRange(concert.starts_at, concert.ends_at)}
-                        </p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-sm text-gray-600 flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                            {formatPacificDate(concert.starts_at)}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {formatPacificTimeRange(concert.starts_at, concert.ends_at)}
+                          </span>
+                        </div>
                       </div>
-                      {selectedConcert?.id === concert.id && (
-                        <div className="text-blue-600 flex-shrink-0">✓</div>
-                      )}
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                        selectedConcert?.id === concert.id
+                          ? "border-[#2563EB] bg-[#2563EB]"
+                          : "border-gray-300 bg-white"
+                      }`}>
+                        {selectedConcert?.id === concert.id && (
+                          <Check className="w-3.5 h-3.5 text-white" />
+                        )}
+                      </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>{emptyStates.noConcerts.message}</p>
-                <p className="text-sm mt-2">{emptyStates.noConcerts.hint}</p>
+              <div className="text-center py-10 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                <Calendar className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                <p className="text-sm font-medium text-gray-600">{emptyStates.noConcerts.message}</p>
+                <p className="text-xs text-gray-400 mt-1">{emptyStates.noConcerts.hint}</p>
               </div>
             )}
           </div>
         )}
 
         {currentStep === 2 && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Pick Your Piece</h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Pick Your Piece</h3>
+              <p className="text-sm text-gray-500">
                 Choose the song and difficulty level you'd like to perform.
               </p>
             </div>
 
             {/* Series Select - Auto-populated from concert */}
             <div>
-              <label className="block text-sm font-medium mb-2">Series</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Series</label>
               <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId} disabled>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 border-gray-200 bg-gray-50/80 transition-colors">
                   <SelectValue>
                     {seriesList.find(s => s.id === selectedSeriesId)?.title || "Select series"}
                   </SelectValue>
@@ -277,9 +285,9 @@ export function BookConcertTab() {
             {/* Collection Select */}
             {selectedSeriesId && (
               <div>
-                <label className="block text-sm font-medium mb-2">Collection</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Collection</label>
                 <Select value={selectedCollectionId} onValueChange={setSelectedCollectionId}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
                     <SelectValue placeholder="Select collection" />
                   </SelectTrigger>
                   <SelectContent>
@@ -296,9 +304,9 @@ export function BookConcertTab() {
             {/* Piece Select */}
             {selectedCollectionId && (
               <div>
-                <label className="block text-sm font-medium mb-2">Piece</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Piece</label>
                 <Select value={selectedPieceId} onValueChange={setSelectedPieceId}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
                     <SelectValue placeholder="Select piece" />
                   </SelectTrigger>
                   <SelectContent>
@@ -316,9 +324,9 @@ export function BookConcertTab() {
             {/* Stage Select */}
             {selectedPieceId && (
               <div>
-                <label className="block text-sm font-medium mb-2">Difficulty Level</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Difficulty Level</label>
                 <Select value={selectedStageId} onValueChange={setSelectedStageId}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
                     <SelectValue>
                       {selectedStageId
                         ? (() => {
@@ -353,23 +361,39 @@ export function BookConcertTab() {
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <div>
           {currentStep > 0 && (
-            <Button variant="outline" onClick={handleBack}>
+            <Button variant="outline" onClick={handleBack} className="h-10 border-gray-200">
+              <ChevronLeft className="w-4 h-4 mr-1" />
               Back
             </Button>
           )}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleReset}>
+          <Button variant="ghost" onClick={handleReset} size="sm" className="h-10 text-gray-500 hover:text-gray-700">
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
             Reset
           </Button>
           {currentStep < STEPS.length - 1 ? (
-            <Button onClick={handleNext}>Next</Button>
+            <Button onClick={handleNext} className="h-10 shadow-md hover:shadow-lg transition-all">
+              Next
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={!canSubmit || isSubmitting}>
-              {isSubmitting ? "Booking..." : "Book Concert"}
+            <Button
+              onClick={handleSubmit}
+              disabled={!canSubmit || isSubmitting}
+              className="h-10 shadow-md hover:shadow-lg transition-all"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Booking...
+                </>
+              ) : (
+                "Book Concert"
+              )}
             </Button>
           )}
         </div>

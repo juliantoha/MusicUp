@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import { getPieceStageSignedUrl } from "@/lib/storage/actions";
 import { toast } from "sonner";
-import { Search, Download, Music, Star, Library as LibraryIcon } from "lucide-react";
+import { Search, Download, Music, Star, Library as LibraryIcon, X } from "lucide-react";
 
 interface PieceStageData {
   id: string;
@@ -106,12 +106,6 @@ export default function LibraryPage() {
 
   const fetchBookedPieceStages = async () => {
     if (!user) return;
-
-    const supabase = createClient();
-    const today = new Date().toISOString();
-
-    // For now, show booked pieces as empty since we need to restructure this
-    // to work with the new schema where bookings link to pieces+stage, not piece_stages
     setBookedPieceStages([]);
   };
 
@@ -125,7 +119,6 @@ export default function LibraryPage() {
       const collection = ps.piece?.collection;
 
       if (serie && !seriesMap.has(serie.id)) {
-        // Format series title for display (capitalize first letter)
         seriesMap.set(serie.id, {
           ...serie,
           displayName: serie.title.charAt(0).toUpperCase() + serie.title.slice(1)
@@ -137,7 +130,6 @@ export default function LibraryPage() {
       }
     });
 
-    // Filter to only show Empathy Concerts series for now
     const allSeries = Array.from(seriesMap.values());
     const filteredSeries = allSeries.filter((s: any) =>
       s.title?.toLowerCase() === 'empathy' || s.slug === 'empathy'
@@ -159,37 +151,25 @@ export default function LibraryPage() {
   const filteredPieceStages = useMemo(() => {
     let filtered = [...pieceStages];
 
-    // Text search
     if (searchText) {
       const search = searchText.toLowerCase();
       filtered = filtered.filter((ps: any) => {
         const title = ps.piece?.title?.toLowerCase() || "";
         const composer = ps.piece?.composer?.toLowerCase() || "";
-        const series = ps.piece?.collection?.series?.title?.toLowerCase() || "";
+        const seriesTitle = ps.piece?.collection?.series?.title?.toLowerCase() || "";
         const collection = ps.piece?.collection?.title?.toLowerCase() || "";
-
-        return (
-          title.includes(search) ||
-          composer.includes(search) ||
-          series.includes(search) ||
-          collection.includes(search)
-        );
+        return title.includes(search) || composer.includes(search) || seriesTitle.includes(search) || collection.includes(search);
       });
     }
 
-    // Series filter
     if (selectedSeriesId !== "all") {
-      filtered = filtered.filter(
-        (ps: any) => ps.piece?.collection?.series?.id === selectedSeriesId
-      );
+      filtered = filtered.filter((ps: any) => ps.piece?.collection?.series?.id === selectedSeriesId);
     }
 
-    // Collection filter
     if (selectedCollectionId !== "all") {
       filtered = filtered.filter((ps: any) => ps.piece?.collection?.id === selectedCollectionId);
     }
 
-    // Stage filter
     if (selectedStage !== "all") {
       filtered = filtered.filter((ps) => ps.stage === parseInt(selectedStage));
     }
@@ -206,12 +186,8 @@ export default function LibraryPage() {
       if (!pieceId) return;
 
       if (!groups.has(pieceId)) {
-        groups.set(pieceId, {
-          piece: ps.piece,
-          stages: [],
-        });
+        groups.set(pieceId, { piece: ps.piece, stages: [] });
       }
-
       groups.get(pieceId).stages.push(ps);
     });
 
@@ -220,7 +196,6 @@ export default function LibraryPage() {
 
   const handleDownload = async (pieceStageId: string, isBooked: boolean) => {
     if (isBooked && user) {
-      // Use signed URL for booked pieces
       const result = await getPieceStageSignedUrl(pieceStageId, "score");
       if ("error" in result && result.error) {
         toast.error(result.error);
@@ -228,7 +203,6 @@ export default function LibraryPage() {
         window.open(result.signedUrl, "_blank");
       }
     } else {
-      // Use public URL for library browsing
       const ps = pieceStages.find((p) => p.id === pieceStageId);
       if (ps?.score_url) {
         window.open(ps.score_url, "_blank");
@@ -240,7 +214,6 @@ export default function LibraryPage() {
 
   const handlePlayAudio = async (pieceStageId: string, isBooked: boolean) => {
     if (isBooked && user) {
-      // Use signed URL for booked pieces
       const result = await getPieceStageSignedUrl(pieceStageId, "audio");
       if ("error" in result && result.error) {
         toast.error(result.error);
@@ -248,7 +221,6 @@ export default function LibraryPage() {
         window.open(result.signedUrl, "_blank");
       }
     } else {
-      // Use public URL for library browsing
       const ps = pieceStages.find((p) => p.id === pieceStageId);
       if (ps?.audio_url) {
         window.open(ps.audio_url, "_blank");
@@ -259,11 +231,11 @@ export default function LibraryPage() {
   };
 
   const getStageName = (stage: number) => {
-    return stage === 1
-      ? "Stage 1 - Beginner"
-      : stage === 2
-      ? "Stage 2 - Intermediate"
-      : "Stage 3 - Advanced";
+    return stage === 1 ? "Stage 1 - Beginner" : stage === 2 ? "Stage 2 - Intermediate" : "Stage 3 - Advanced";
+  };
+
+  const getStageColor = (stage: number) => {
+    return stage === 1 ? "bg-green-50 text-green-700 border-green-200" : stage === 2 ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50 text-red-700 border-red-200";
   };
 
   const handleReset = () => {
@@ -273,247 +245,254 @@ export default function LibraryPage() {
     setSelectedStage("all");
   };
 
+  const hasActiveFilters = searchText || selectedSeriesId !== "all" || selectedCollectionId !== "all" || selectedStage !== "all";
+
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="flex justify-center py-12">
-          <p className="text-gray-500">Loading library...</p>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pt-16">
+        <div className="container mx-auto p-6 max-w-7xl">
+          <div className="flex justify-center py-20">
+            <div className="text-center">
+              <div className="h-10 w-10 mx-auto mb-4 skeleton rounded-full" />
+              <div className="h-4 w-32 mx-auto skeleton" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <LibraryIcon className="w-8 h-8 text-blue-600" />
-          <h1 className="text-3xl font-bold">Music Library</h1>
-        </div>
-        <p className="text-gray-600">Browse and discover pieces from our collection</p>
-      </div>
-
-      {/* Quick Access - Booked Pieces */}
-      {user && bookedPieceStages.length > 0 && (
-        <Card className="p-6 mb-6 bg-blue-50 border-blue-200">
-          <div className="flex items-center gap-2 mb-4">
-            <Star className="w-5 h-5 text-blue-600" />
-            <h2 className="text-xl font-semibold text-blue-900">Quick Access - Your Booked Pieces</h2>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pt-16">
+      <div className="container mx-auto p-4 md:p-6 max-w-7xl">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-start gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#7c3aed] flex items-center justify-center shadow-lg flex-shrink-0">
+              <LibraryIcon className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#7c3aed] bg-clip-text text-transparent mb-1">Music Library</h1>
+              <p className="text-gray-500">Browse and discover pieces from our collection</p>
+            </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {bookedPieceStages.map((ps: any) => (
-              <Card key={ps.id} className="p-4 bg-white border-blue-300">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold text-lg">{ps.piece?.title}</h3>
-                    {ps.piece?.composer && (
-                      <p className="text-sm text-gray-600">{ps.piece.composer}</p>
+        {/* Quick Access - Booked Pieces */}
+        {user && bookedPieceStages.length > 0 && (
+          <Card className="p-5 mb-6 bg-gradient-to-r from-blue-50/80 to-cyan-50/50 border border-blue-100">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
+                <Star className="w-4 h-4 text-[#2563EB]" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">Your Booked Pieces</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {bookedPieceStages.map((ps: any) => (
+                <Card key={ps.id} className="p-4 bg-white border border-blue-100 card-hover">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="font-semibold">{ps.piece?.title}</h3>
+                      {ps.piece?.composer && (
+                        <p className="text-sm text-gray-500">{ps.piece.composer}</p>
+                      )}
+                    </div>
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${getStageColor(ps.stage)}`}>
+                      {getStageName(ps.stage)}
+                    </span>
+                  </div>
+
+                  <div className="text-sm text-gray-500 mb-3">
+                    <p>{new Date(ps.booking.concert.scheduled_date).toLocaleDateString()} &middot; {ps.booking.concert.venue?.name}</p>
+                  </div>
+
+                  <div className="flex gap-2 flex-wrap">
+                    {ps.score_url && (
+                      <Button variant="outline" size="sm" onClick={() => handleDownload(ps.id, true)} className="text-xs">
+                        <Download className="w-3.5 h-3.5 mr-1.5" />
+                        PDF
+                      </Button>
+                    )}
+                    {ps.audio_url && (
+                      <Button variant="outline" size="sm" onClick={() => handlePlayAudio(ps.id, true)} className="text-xs">
+                        <Music className="w-3.5 h-3.5 mr-1.5" />
+                        Listen
+                      </Button>
                     )}
                   </div>
-                  <Badge variant="default">{getStageName(ps.stage)}</Badge>
+                </Card>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Filters */}
+        <Card className="p-5 mb-6 border border-gray-100 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            {/* Search */}
+            <div className="md:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search pieces, composers..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="pl-10 h-10 bg-gray-50/50 border-gray-200 focus:border-[#8B5CF6] transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Series Filter */}
+            <div>
+              <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId}>
+                <SelectTrigger className="h-10 bg-gray-50/50 border-gray-200">
+                  <SelectValue placeholder="All Series" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Series</SelectItem>
+                  {series.map((s: any) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.displayName || s.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Collection Filter */}
+            <div>
+              <Select
+                value={selectedCollectionId}
+                onValueChange={setSelectedCollectionId}
+                disabled={selectedSeriesId !== "all" && filteredCollections.length === 0}
+              >
+                <SelectTrigger className="h-10 bg-gray-50/50 border-gray-200">
+                  <SelectValue placeholder="All Collections" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Collections</SelectItem>
+                  {filteredCollections.map((c: any) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Stage Filter */}
+            <div>
+              <Select value={selectedStage} onValueChange={setSelectedStage}>
+                <SelectTrigger className="h-10 bg-gray-50/50 border-gray-200">
+                  <SelectValue placeholder="All Stages" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Stages</SelectItem>
+                  <SelectItem value="1">Stage 1 - Beginner</SelectItem>
+                  <SelectItem value="2">Stage 2 - Intermediate</SelectItem>
+                  <SelectItem value="3">Stage 3 - Advanced</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="mt-3 flex justify-between items-center">
+            <p className="text-sm text-gray-500">
+              {groupedPieces.length} piece{groupedPieces.length !== 1 ? "s" : ""} found
+            </p>
+            {hasActiveFilters && (
+              <Button variant="ghost" size="sm" onClick={handleReset} className="text-gray-500 hover:text-gray-700 gap-1.5">
+                <X className="w-3.5 h-3.5" />
+                Clear filters
+              </Button>
+            )}
+          </div>
+        </Card>
+
+        {/* Library Grid */}
+        {groupedPieces.length === 0 ? (
+          <Card className="p-16 border border-gray-100">
+            <div className="text-center">
+              <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-gray-50 flex items-center justify-center">
+                <LibraryIcon className="w-8 h-8 text-gray-300" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">No pieces found</h3>
+              <p className="text-sm text-gray-500 mb-4">Try adjusting your filters or search terms.</p>
+              {hasActiveFilters && (
+                <Button variant="outline" size="sm" onClick={handleReset}>
+                  Clear all filters
+                </Button>
+              )}
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {groupedPieces.map(({ piece, stages }: any) => (
+              <Card key={piece.id} className="border border-gray-100 shadow-sm card-hover overflow-hidden">
+                {/* Card header */}
+                <div className="px-5 pt-5 pb-3">
+                  <h3 className="font-semibold text-lg text-gray-900 mb-0.5">{piece.title}</h3>
+                  {piece.composer && <p className="text-sm text-gray-500">{piece.composer}</p>}
+                  {piece.year_composed && (
+                    <p className="text-xs text-gray-400 mt-0.5">Composed {piece.year_composed}</p>
+                  )}
                 </div>
 
-                <div className="text-sm text-gray-600 mb-3">
-                  <p>
-                    <strong>Concert:</strong>{" "}
-                    {new Date(ps.booking.concert.scheduled_date).toLocaleDateString()}
-                  </p>
-                  <p>
-                    <strong>Venue:</strong> {ps.booking.concert.venue?.name}
-                  </p>
+                <div className="px-5 pb-2">
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <span className="font-medium text-gray-500">
+                      {piece.collection?.series?.title
+                        ? piece.collection.series.title.charAt(0).toUpperCase() + piece.collection.series.title.slice(1)
+                        : "N/A"}
+                    </span>
+                    <span>&middot;</span>
+                    <span>{piece.collection?.title}</span>
+                  </div>
                 </div>
 
-                <div className="flex gap-2 flex-wrap">
-                  {ps.score_url && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDownload(ps.id, true)}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download PDF
-                    </Button>
-                  )}
-                  {ps.audio_url && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePlayAudio(ps.id, true)}
-                    >
-                      <Music className="w-4 h-4 mr-2" />
-                      Listen
-                    </Button>
-                  )}
+                <div className="px-5 pb-5 pt-2 space-y-2">
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Available Stages</p>
+                  {stages.map((stage: any) => (
+                    <div key={stage.id} className="rounded-xl bg-gray-50/80 border border-gray-100 p-3">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${getStageColor(stage.stage)}`}>
+                          {getStageName(stage.stage)}
+                        </span>
+                      </div>
+                      {stage.notes && (
+                        <p className="text-xs text-gray-500 mb-2 leading-relaxed">{stage.notes}</p>
+                      )}
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => stage.score_url && handleDownload(stage.id, false)}
+                          disabled={!stage.score_url}
+                          className="text-xs h-8 gap-1.5"
+                        >
+                          <Download className="w-3 h-3" />
+                          PDF
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => stage.audio_url && handlePlayAudio(stage.id, false)}
+                          disabled={!stage.audio_url}
+                          className="text-xs h-8 gap-1.5"
+                        >
+                          <Music className="w-3 h-3" />
+                          Listen
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </Card>
             ))}
           </div>
-        </Card>
-      )}
-
-      {/* Filters */}
-      <Card className="p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {/* Search */}
-          <div className="md:col-span-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search pieces, composers..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          {/* Series Filter */}
-          <div>
-            <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Series" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Series</SelectItem>
-                {series.map((s: any) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.displayName || s.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Collection Filter */}
-          <div>
-            <Select
-              value={selectedCollectionId}
-              onValueChange={setSelectedCollectionId}
-              disabled={selectedSeriesId !== "all" && filteredCollections.length === 0}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All Collections" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Collections</SelectItem>
-                {filteredCollections.map((c: any) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Stage Filter */}
-          <div>
-            <Select value={selectedStage} onValueChange={setSelectedStage}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Stages" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Stages</SelectItem>
-                <SelectItem value="1">Stage 1 - Beginner</SelectItem>
-                <SelectItem value="2">Stage 2 - Intermediate</SelectItem>
-                <SelectItem value="3">Stage 3 - Advanced</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="mt-4 flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            {groupedPieces.length} piece{groupedPieces.length !== 1 ? "s" : ""} found
-          </p>
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            Reset Filters
-          </Button>
-        </div>
-      </Card>
-
-      {/* Library Grid */}
-      {groupedPieces.length === 0 ? (
-        <Card className="p-12">
-          <div className="text-center text-gray-500">
-            <LibraryIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-semibold mb-2">No Pieces Found</h3>
-            <p className="text-sm">Try adjusting your filters or search terms.</p>
-          </div>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {groupedPieces.map(({ piece, stages }: any) => (
-            <Card key={piece.id} className="p-4">
-              <div className="mb-3">
-                <h3 className="font-semibold text-lg mb-1">{piece.title}</h3>
-                {piece.composer && <p className="text-sm text-gray-600">{piece.composer}</p>}
-                {piece.year_composed && (
-                  <p className="text-xs text-gray-500">Composed: {piece.year_composed}</p>
-                )}
-              </div>
-
-              <div className="mb-3">
-                <p className="text-sm text-gray-600">
-                  <strong>Series:</strong> {piece.collection?.series?.title ?
-                    piece.collection.series.title.charAt(0).toUpperCase() + piece.collection.series.title.slice(1) :
-                    'N/A'}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Collection:</strong> {piece.collection?.title}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Available Stages:</p>
-                {stages.map((stage: any) => (
-                  <Card key={stage.id} className="p-3 bg-gray-50">
-                    <div className="flex justify-between items-center mb-2">
-                      <Badge variant="secondary">{getStageName(stage.stage)}</Badge>
-                    </div>
-                    {stage.notes && (
-                      <p className="text-xs text-gray-600 mb-2">{stage.notes}</p>
-                    )}
-                    <div className="flex gap-2 flex-wrap">
-                      {stage.score_url ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDownload(stage.id, false)}
-                        >
-                          <Download className="w-3 h-3 mr-1" />
-                          PDF
-                        </Button>
-                      ) : (
-                        <Button variant="outline" size="sm" disabled>
-                          <Download className="w-3 h-3 mr-1" />
-                          PDF
-                        </Button>
-                      )}
-                      {stage.audio_url ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handlePlayAudio(stage.id, false)}
-                        >
-                          <Music className="w-3 h-3 mr-1" />
-                          Listen
-                        </Button>
-                      ) : (
-                        <Button variant="outline" size="sm" disabled>
-                          <Music className="w-3 h-3 mr-1" />
-                          Listen
-                        </Button>
-                      )}
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
