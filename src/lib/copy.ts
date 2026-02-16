@@ -26,7 +26,7 @@ export const booking = {
   },
 
   success: {
-    created: "Concert booked successfully! 🎵",
+    created: "Concert booked successfully!",
     updated: "Booking updated successfully",
     cancelled: "Booking cancelled",
   },
@@ -145,17 +145,17 @@ export const admin = {
 
 export const email = {
   bookingConfirmation: {
-    subject: (pieceName: string) => `🎵 Concert Booking Confirmed - ${pieceName}`,
+    subject: (pieceName: string) => `Concert Booking Confirmed - ${pieceName}`,
     preheader: "Your performance has been confirmed! Here are the details.",
   },
 
   concertReminder: {
-    subject: (concertTime: string) => `⏰ Concert Reminder - Tomorrow at ${concertTime}`,
+    subject: (concertTime: string) => `Concert Reminder - Tomorrow at ${concertTime}`,
     preheader: "Your concert is coming up soon. Time to practice!",
   },
 
   completionThankYou: {
-    subject: "🎉 Thank You for Performing - 3 Hours Credited!",
+    subject: "Thank You for Performing - 3 Hours Credited!",
     preheader: "Great job on your performance! Your service hours have been added.",
   },
 

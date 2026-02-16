@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSeries, useVenueTypes } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import { Check, X, Lightbulb, AlertTriangle } from "lucide-react";
 import type { Series, VenueType } from "@/types/db";
 
 interface SeriesVenueTypeMapping {
@@ -167,8 +167,9 @@ export function SeriesVenueTypeMappingsTab() {
 
       <Card className="p-4 bg-blue-50 border-blue-200">
         <div className="flex items-start gap-3">
+          <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-blue-900">
-            <p className="font-semibold mb-1">💡 How this works</p>
+            <p className="font-semibold mb-1">How this works</p>
             <ul className="space-y-1 text-blue-800">
               <li>• Green checkmark = Series is allowed at this venue type</li>
               <li>• Gray X = Series is not available for this venue type</li>
@@ -181,8 +182,9 @@ export function SeriesVenueTypeMappingsTab() {
 
       <Card className="p-4 bg-amber-50 border-amber-200">
         <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-amber-900">
-            <p className="font-semibold mb-1">⚠️ Current Mappings Summary</p>
+            <p className="font-semibold mb-1">Current Mappings Summary</p>
             <div className="space-y-1 text-amber-800">
               {series.filter(s => s.is_active).map((s) => {
                 const count = mappings.filter((m) => m.series_id === s.id).length;

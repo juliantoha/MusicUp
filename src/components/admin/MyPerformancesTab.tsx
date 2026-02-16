@@ -40,7 +40,7 @@ export function MyPerformancesTab() {
   if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-6xl mb-4">🎵</div>
+        <Music className="w-16 h-16 mx-auto mb-4 text-gray-400" />
         <h3 className="text-lg font-semibold mb-2">No Upcoming Performances</h3>
         <p className="text-gray-600 mb-4">
           You don't have any concerts booked as a performer.
