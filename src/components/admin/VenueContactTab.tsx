@@ -308,7 +308,7 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
                   const result = await uploadVenuePhoto(fd);
                   if ("error" in result && result.error) {
                     toast.error(result.error);
-                  } else if (result.url) {
+                  } else if ("url" in result && result.url) {
                     setExteriorPhotoUrl(result.url);
                     toast.success("Exterior photo uploaded");
                     onUpdate();
@@ -378,7 +378,7 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
                   const result = await uploadVenuePhoto(fd);
                   if ("error" in result && result.error) {
                     toast.error(result.error);
-                  } else if (result.url) {
+                  } else if ("url" in result && result.url) {
                     setInteriorPhotoUrl(result.url);
                     toast.success("Interior photo uploaded");
                     onUpdate();
