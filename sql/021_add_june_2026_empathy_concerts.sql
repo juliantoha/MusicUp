@@ -7,7 +7,7 @@
 -- ADD JUNE 2026 EMPATHY CONCERTS
 -- ============================================================================
 
--- Concert 1: Oakmont San Jose - June 13, 2026 at 10:30 AM PT
+-- Concert 1: Oakmont of Silver Creek - June 13, 2026 at 10:30 AM PT
 INSERT INTO public.concerts (
   series_id,
   venue_id,
@@ -24,10 +24,10 @@ SELECT
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
-  AND v.name = 'Oakmont San Jose'
+  AND v.name = 'Oakmont of Silver Creek'
 ON CONFLICT DO NOTHING;
 
--- Concert 2: Oakmont San Jose - June 13, 2026 at 11:00 AM PT
+-- Concert 2: Oakmont of Silver Creek - June 13, 2026 at 11:00 AM PT
 INSERT INTO public.concerts (
   series_id,
   venue_id,
@@ -44,7 +44,7 @@ SELECT
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
-  AND v.name = 'Oakmont San Jose'
+  AND v.name = 'Oakmont of Silver Creek'
 ON CONFLICT DO NOTHING;
 
 -- Concert 3: Ivy Park Pleasanton - June 13, 2026 at 4:00 PM PT

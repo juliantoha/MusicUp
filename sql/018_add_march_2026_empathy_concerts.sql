@@ -4,35 +4,10 @@
 -- Date: 2025-11-14
 
 -- ============================================================================
--- 1. ADD OAKMONT SAN JOSE VENUE (if not exists)
+-- ADD MARCH 2026 EMPATHY CONCERTS
 -- ============================================================================
 
-INSERT INTO public.venues (
-  name,
-  address,
-  city,
-  state,
-  zip,
-  is_active,
-  venue_type_id
-)
-SELECT
-  'Oakmont San Jose',
-  '3544 San Felipe Rd',
-  'San Jose',
-  'CA',
-  '95135',
-  true,
-  vt.id
-FROM public.venue_types vt
-WHERE vt.slug = 'senior_living'
-ON CONFLICT DO NOTHING;
-
--- ============================================================================
--- 2. ADD MARCH 2026 EMPATHY CONCERTS
--- ============================================================================
-
--- Concert 1: Oakmont San Jose - March 14, 2026 at 10:30 AM PT
+-- Concert 1: Oakmont of Silver Creek - March 14, 2026 at 10:30 AM PT
 INSERT INTO public.concerts (
   series_id,
   venue_id,
@@ -49,10 +24,10 @@ SELECT
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
-  AND v.name = 'Oakmont San Jose'
+  AND v.name = 'Oakmont of Silver Creek'
 ON CONFLICT DO NOTHING;
 
--- Concert 2: Oakmont San Jose - March 14, 2026 at 11:00 AM PT
+-- Concert 2: Oakmont of Silver Creek - March 14, 2026 at 11:00 AM PT
 INSERT INTO public.concerts (
   series_id,
   venue_id,
@@ -69,7 +44,7 @@ SELECT
 FROM public.series s
 CROSS JOIN public.venues v
 WHERE s.slug = 'empathy'
-  AND v.name = 'Oakmont San Jose'
+  AND v.name = 'Oakmont of Silver Creek'
 ON CONFLICT DO NOTHING;
 
 -- Concert 3: Ivy Park Pleasanton - March 14, 2026 at 4:00 PM PT
