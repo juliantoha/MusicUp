@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
 import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
-import { MapPin, Calendar, Music, Check, Loader2, ChevronLeft, ChevronRight, RotateCcw, ImageIcon } from "lucide-react";
+import { MapPin, Calendar, Music, Check, Loader2, ChevronLeft, ChevronRight, RotateCcw, User } from "lucide-react";
 import Image from "next/image";
 import type { Concert } from "@/types/db";
 import { booking as copy, emptyStates } from "@/lib/copy";
@@ -188,65 +188,87 @@ export function BookConcertTab() {
 
               return (
                 <div className="mt-4 space-y-4">
-                  {selectedVenue.venue_type && (
-                    <VenueTypeBadge venueType={selectedVenue.venue_type} showIcon />
-                  )}
-
-                  {/* Venue Photos */}
-                  {hasPhotos && (
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                        <ImageIcon className="w-3.5 h-3.5" />
-                        Venue Photos
-                      </p>
-                      <div className="grid grid-cols-2 gap-3">
-                        {selectedVenue.exterior_photo_url && (
-                          <div className="space-y-1">
-                            <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                  {/* Venue Detail Card */}
+                  <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+                    {/* Photos + Map Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+                      {/* Venue Photos */}
+                      {hasPhotos && (
+                        <div className={`grid ${selectedVenue.exterior_photo_url && selectedVenue.interior_photo_url ? "grid-cols-2" : "grid-cols-1"} ${hasPhotos ? "md:col-span-2" : ""}`}>
+                          {selectedVenue.exterior_photo_url && (
+                            <div className="relative aspect-[4/3]">
                               <Image
                                 src={selectedVenue.exterior_photo_url}
                                 alt={`${selectedVenue.name} exterior`}
                                 fill
                                 className="object-cover"
-                                sizes="(max-width: 768px) 50vw, 25vw"
+                                sizes="(max-width: 768px) 50vw, 33vw"
                               />
+                              <span className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-md">
+                                Exterior
+                              </span>
                             </div>
-                            <p className="text-xs text-gray-500 text-center">Exterior</p>
-                          </div>
-                        )}
-                        {selectedVenue.interior_photo_url && (
-                          <div className="space-y-1">
-                            <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                          )}
+                          {selectedVenue.interior_photo_url && (
+                            <div className="relative aspect-[4/3]">
                               <Image
                                 src={selectedVenue.interior_photo_url}
                                 alt={`${selectedVenue.name} interior`}
                                 fill
                                 className="object-cover"
-                                sizes="(max-width: 768px) 50vw, 25vw"
+                                sizes="(max-width: 768px) 50vw, 33vw"
                               />
+                              <span className="absolute bottom-2 left-2 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-md">
+                                Interior
+                              </span>
                             </div>
-                            <p className="text-xs text-gray-500 text-center">Interior</p>
-                          </div>
-                        )}
+                          )}
+                        </div>
+                      )}
+
+                      {/* Map */}
+                      <div className={hasPhotos ? "md:col-span-1" : "md:col-span-3"}>
+                        <VenueLocationMap
+                          address={selectedVenue.address}
+                          city={selectedVenue.city}
+                          state={selectedVenue.state}
+                          zip={selectedVenue.zip}
+                          latitude={selectedVenue.latitude}
+                          longitude={selectedVenue.longitude}
+                          venueName={selectedVenue.name}
+                          className="h-full [&>div]:rounded-none [&>div]:border-0 [&>div>div]:rounded-none [&_iframe]:h-full [&_iframe]:min-h-[160px]"
+                        />
                       </div>
                     </div>
-                  )}
 
-                  {/* Venue Location Map */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
-                      Location
-                    </p>
-                    <VenueLocationMap
-                      address={selectedVenue.address}
-                      city={selectedVenue.city}
-                      state={selectedVenue.state}
-                      zip={selectedVenue.zip}
-                      latitude={selectedVenue.latitude}
-                      longitude={selectedVenue.longitude}
-                      venueName={selectedVenue.name}
-                    />
+                    {/* Venue Info Bar */}
+                    <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {selectedVenue.address}, {selectedVenue.city}, {selectedVenue.state} {selectedVenue.zip}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {selectedVenue.venue_type && (
+                              <VenueTypeBadge venueType={selectedVenue.venue_type} />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Host Info */}
+                      {selectedVenue.venue_contact_name && (
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="text-right">
+                            <p className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Host</p>
+                            <p className="text-sm font-medium text-gray-700">{selectedVenue.venue_contact_name}</p>
+                          </div>
+                          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <User className="w-4 h-4 text-blue-600" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
