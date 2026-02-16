@@ -11,19 +11,19 @@ import { Shield, Calendar, Users, Building2 } from "lucide-react";
 
 function AdminPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pt-16">
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-10">
+        <div className="mb-8">
           <div className="flex items-start gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] flex items-center justify-center shadow-lg flex-shrink-0">
-              <Shield className="h-7 w-7 text-white" />
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#06B6D4] to-[#0891b2] flex items-center justify-center shadow-lg flex-shrink-0">
+              <Shield className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 overflow-visible">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#06B6D4] to-[#0891b2] bg-clip-text text-transparent mb-3 leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#06B6D4] to-[#0891b2] bg-clip-text text-transparent mb-2 leading-tight">
                 Host Dashboard
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed mt-2">
+              <p className="text-base text-gray-500 leading-relaxed">
                 List concerts. Manage lineups. Complete checklists. Grant hours.
               </p>
             </div>
@@ -82,11 +82,11 @@ function AdminPage() {
           </TabsList>
 
           <TabsContent value="concerts" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Manage your concerts</CardTitle>
-                <CardDescription className="text-base text-gray-700">
-                  Upload photos. Mark attendance. Complete concerts to verify hours. Simple checklists that prove community impact.
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-cyan-50/80 to-blue-50/50 rounded-t-xl border-b border-cyan-100/50">
+                <CardTitle className="text-xl text-gray-900">Manage your concerts</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
+                  Upload photos. Mark attendance. Complete concerts to verify hours.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
@@ -96,10 +96,10 @@ function AdminPage() {
           </TabsContent>
 
           <TabsContent value="performances" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Your performances</CardTitle>
-                <CardDescription className="text-base text-gray-700">
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-50/80 to-cyan-50/50 rounded-t-xl border-b border-blue-100/50">
+                <CardTitle className="text-xl text-gray-900">Your performances</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
                   Track your bookings and performance history. Admins can both host and perform.
                 </CardDescription>
               </CardHeader>
@@ -110,11 +110,11 @@ function AdminPage() {
           </TabsContent>
 
           <TabsContent value="venues" className="space-y-4">
-            <Card className="border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 rounded-t-xl">
-                <CardTitle className="text-2xl text-gray-900">Venue Contact Settings</CardTitle>
-                <CardDescription className="text-base text-gray-700">
-                  Manage contact information for venues you administer. This information is used for logistics confirmations and event coordination.
+            <Card className="border border-gray-100 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-orange-50/80 to-amber-50/50 rounded-t-xl border-b border-orange-100/50">
+                <CardTitle className="text-xl text-gray-900">Venue Contact Settings</CardTitle>
+                <CardDescription className="text-sm text-gray-500">
+                  Manage contact information for venues you administer.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">

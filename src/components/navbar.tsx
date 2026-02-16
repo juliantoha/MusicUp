@@ -89,15 +89,14 @@ export function Navbar() {
   });
 
   return (
-    <nav className="border-b bg-background">
-      <div className="flex h-16 items-center px-4 container mx-auto gap-4">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
+    <nav className="border-b border-gray-200/60 bg-white/80 backdrop-blur-lg sticky top-0 z-50 transition-shadow">
+      <div className="flex h-14 items-center px-4 container mx-auto gap-4">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-md p-1.5">
             <Logo className="w-full h-full text-white" />
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-[#EB6A18] to-[#c2410c] bg-clip-text text-transparent hidden sm:inline">MusicUp</span>
+          <span className="text-lg font-bold text-gradient-orange hidden sm:inline">MusicUp</span>
         </Link>
-
 
         {/* Mobile & Desktop User Menu */}
         <div className="ml-auto">
@@ -114,16 +113,18 @@ export function Navbar() {
               }
             }}
           >
-            <SelectTrigger className="w-[140px] sm:w-[180px]">
+            <SelectTrigger className="w-[140px] sm:w-[180px] border-gray-200 bg-white/60 hover:bg-white transition-colors">
               <div className="flex items-center gap-2 overflow-hidden">
                 {photoUrl ? (
                   <img
                     src={photoUrl}
                     alt="Profile"
-                    className="h-6 w-6 rounded-full object-cover flex-shrink-0"
+                    className="h-6 w-6 rounded-full object-cover flex-shrink-0 ring-1 ring-gray-200"
                   />
                 ) : (
-                  <User className="h-4 w-4 flex-shrink-0" />
+                  <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <User className="h-3.5 w-3.5 text-gray-500" />
+                  </div>
                 )}
                 <span className="truncate text-sm">
                   {profile?.full_name?.split(' ')[0] || user.email?.split('@')[0] || "Account"}
