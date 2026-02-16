@@ -40,7 +40,7 @@ export function MyPerformancesTab() {
   if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-6xl mb-4">🎵</div>
+        <Music className="w-16 h-16 mx-auto mb-4 text-gray-400" />
         <h3 className="text-lg font-semibold mb-2">No Upcoming Performances</h3>
         <p className="text-gray-600 mb-4">
           You don't have any concerts booked as a performer.
@@ -64,8 +64,8 @@ export function MyPerformancesTab() {
 
       {bookings.map((booking) => {
         const concert = booking.concert;
-        const piece = booking.piece_stage?.piece;
-        const stage = booking.piece_stage;
+        const piece = booking.piece;
+        const stage = booking.stage;
 
         return (
           <Card key={booking.id} className="p-4">
@@ -73,7 +73,7 @@ export function MyPerformancesTab() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <h4 className="font-semibold">{piece?.title || "Unknown Piece"}</h4>
-                  <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
+                  <Badge variant={booking.status === "booked" ? "default" : "secondary"}>
                     {booking.status}
                   </Badge>
                 </div>
@@ -83,58 +83,51 @@ export function MyPerformancesTab() {
                   </p>
                   <p>
                     <strong>Difficulty:</strong>{" "}
-                    {stage?.stage === "stage_1" && "Stage 1 - Beginner"}
-                    {stage?.stage === "stage_2" && "Stage 2 - Intermediate"}
-                    {stage?.stage === "stage_3" && "Stage 3 - Advanced"}
+                    {stage === 1 && "Stage 1"}
+                    {stage === 2 && "Stage 2"}
+                    {stage === 3 && "Stage 3"}
                   </p>
                   <p>
-                    <strong>Concert:</strong> {concert?.series?.name}
+                    <strong>Concert:</strong> {concert?.series?.title}
                   </p>
                   <p>
                     <strong>Venue:</strong> {concert?.venue?.name}
                   </p>
                   <p>
                     <strong>Date:</strong>{" "}
-                    {concert?.scheduled_date &&
-                      new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                    {concert?.starts_at &&
+                      new Date(concert.starts_at).toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
                         month: "long",
                         day: "numeric",
+                        timeZone: "America/Los_Angeles",
                       })}
                   </p>
-                  {concert?.start_time && (
-                    <p>
-                      <strong>Time:</strong> {concert.start_time}
-                      {concert.end_time && ` - ${concert.end_time}`}
-                    </p>
-                  )}
+                  <p>
+                    <strong>Time:</strong>{" "}
+                    {concert?.starts_at &&
+                      new Date(concert.starts_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                        timeZone: "America/Los_Angeles",
+                      })}
+                    {concert?.ends_at && " - "}
+                    {concert?.ends_at &&
+                      new Date(concert.ends_at).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                        timeZone: "America/Los_Angeles",
+                      })}
+                    {concert?.ends_at && " PT"}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 flex-wrap">
-              {stage?.score_url && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDownloadScore(booking.piece_stage_id)}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download Sheet Music
-                </Button>
-              )}
-              {stage?.audio_url && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePlayAudio(booking.piece_stage_id)}
-                >
-                  <Music className="w-4 h-4 mr-2" />
-                  Listen to Song
-                </Button>
-              )}
-            </div>
+            {/* Note: Sheet music and audio links moved to library section */}
           </Card>
         );
       })}

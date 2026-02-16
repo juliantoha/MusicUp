@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -13,9 +13,15 @@ import {
 import { toast } from "sonner";
 import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
+import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
+import { MapPin, Calendar, Music, Check } from "lucide-react";
 import type { Concert } from "@/types/db";
+import { booking as copy, emptyStates } from "@/lib/copy";
+import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
 
-const STEPS = ["Choose Location", "Select Concert", "Pick Your Piece"];
+const STEP_ICONS = [MapPin, Calendar, Music];
+
+const STEPS = copy.steps.labels;
 
 export function BookConcertTab() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -34,13 +40,20 @@ export function BookConcertTab() {
   const { data: pieces } = usePieces(selectedCollectionId);
   const { data: stages } = useStages(selectedPieceId);
 
+  // Auto-populate series when concert is selected
+  useEffect(() => {
+    if (selectedConcert?.series_id) {
+      setSelectedSeriesId(selectedConcert.series_id);
+    }
+  }, [selectedConcert]);
+
   const handleNext = () => {
     if (currentStep === 0 && !selectedVenueId) {
-      toast.error("Please select a venue");
+      toast.error(copy.validation.selectVenue);
       return;
     }
     if (currentStep === 1 && !selectedConcert) {
-      toast.error("Please select a concert");
+      toast.error(copy.validation.selectConcert);
       return;
     }
     setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
@@ -62,7 +75,7 @@ export function BookConcertTab() {
 
   const handleSubmit = async () => {
     if (!selectedConcert || !selectedStageId) {
-      toast.error("Please complete all selections");
+      toast.error(copy.validation.completeSelections);
       return;
     }
 
@@ -76,11 +89,11 @@ export function BookConcertTab() {
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success("Concert booked successfully! 🎵");
+        toast.success(copy.success.created);
         handleReset();
       }
     } catch (error) {
-      toast.error("Failed to create booking");
+      toast.error(copy.errors.failed);
     } finally {
       setIsSubmitting(false);
     }
@@ -91,37 +104,61 @@ export function BookConcertTab() {
 
   return (
     <div className="space-y-6">
-      {/* Stepper */}
-      <div className="flex items-center justify-between">
-        {STEPS.map((step, index) => (
-          <div key={step} className="flex items-center flex-1">
-            <div className="flex flex-col items-center flex-1">
-              <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                  index <= currentStep
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-300 text-gray-400"
-                }`}
-              >
-                {index + 1}
+      {/* Stepper - Mobile-First Design */}
+      <div className="flex items-start md:items-center justify-between gap-2">
+        {STEPS.map((step, index) => {
+          const Icon = STEP_ICONS[index];
+          const isActive = index === currentStep;
+          const isCompleted = index < currentStep;
+
+          return (
+            <div key={step} className="flex items-center flex-1">
+              <div className="flex flex-col items-center flex-1">
+                <div
+                  className={`relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border-2 transition-all ${
+                    isCompleted
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : isActive
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-background text-muted-foreground"
+                  }`}
+                  aria-current={isActive ? "step" : undefined}
+                  aria-label={`Step ${index + 1}: ${step}`}
+                >
+                  {/* Step Number Badge */}
+                  <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isCompleted || isActive
+                      ? "bg-primary text-white shadow-md"
+                      : "bg-gray-300 text-gray-600"
+                  }`}>
+                    {index + 1}
+                  </div>
+                  {/* Icon */}
+                  {isCompleted ? (
+                    <Check className="w-6 h-6 md:w-7 md:h-7" aria-hidden="true" />
+                  ) : (
+                    <Icon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+                  )}
+                </div>
+                <span
+                  className={`mt-2 text-xs md:text-sm font-medium text-center transition-colors ${
+                    isActive || isCompleted ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {step}
+                </span>
               </div>
-              <span
-                className={`mt-2 text-sm font-medium ${
-                  index <= currentStep ? "text-blue-600" : "text-gray-400"
-                }`}
-              >
-                {step}
-              </span>
+              {index < STEPS.length - 1 && (
+                <div
+                  className={`h-0.5 w-full max-w-[2rem] md:max-w-[4rem] mx-1 md:mx-4 transition-colors ${
+                    index < currentStep ? "bg-primary" : "bg-border"
+                  }`}
+                  aria-hidden="true"
+                />
+              )}
             </div>
-            {index < STEPS.length - 1 && (
-              <div
-                className={`h-0.5 flex-1 mx-4 ${
-                  index < currentStep ? "bg-blue-600" : "bg-gray-300"
-                }`}
-              />
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Step Content */}
@@ -146,6 +183,14 @@ export function BookConcertTab() {
                 ))}
               </SelectContent>
             </Select>
+            {selectedVenueId && (() => {
+              const selectedVenue = venues.find(v => v.id === selectedVenueId);
+              return selectedVenue?.venue_type ? (
+                <div className="mt-2">
+                  <VenueTypeBadge venueType={selectedVenue.venue_type} showIcon />
+                </div>
+              ) : null;
+            })()}
             {venues.length === 0 && (
               <p className="text-sm text-gray-500">No venues available</p>
             )}
@@ -157,7 +202,7 @@ export function BookConcertTab() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Select a Concert</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Choose a scheduled concert at {venues.find((v) => v.id === selectedVenueId)?.name}.
+                Choose a concert series that fits this venue. Only series appropriate for {venues.find((v) => v.id === selectedVenueId)?.name} are shown.
               </p>
             </div>
             {upcomingConcerts.length > 0 ? (
@@ -173,25 +218,20 @@ export function BookConcertTab() {
                     onClick={() => setSelectedConcert(concert)}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium">{concert.series?.name}</p>
-                        <p className="text-sm text-gray-600">
-                          {new Date(concert.scheduled_date).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </p>
-                        {concert.start_time && (
-                          <p className="text-sm text-gray-600">
-                            {concert.start_time}
-                            {concert.end_time && ` - ${concert.end_time}`}
-                          </p>
+                      <div className="flex-1">
+                        <p className="font-medium">{concert.series?.title}</p>
+                        {concert.series?.tagline && (
+                          <p className="text-xs text-gray-500 italic mb-1">{concert.series.tagline}</p>
                         )}
+                        <p className="text-sm text-gray-600">
+                          {formatPacificDate(concert.starts_at)}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {formatPacificTimeRange(concert.starts_at, concert.ends_at)}
+                        </p>
                       </div>
                       {selectedConcert?.id === concert.id && (
-                        <div className="text-blue-600">✓</div>
+                        <div className="text-blue-600 flex-shrink-0">✓</div>
                       )}
                     </div>
                   </Card>
@@ -199,8 +239,8 @@ export function BookConcertTab() {
               </div>
             ) : (
               <div className="text-center py-8 text-gray-500">
-                <p>No upcoming concerts scheduled at this venue.</p>
-                <p className="text-sm mt-2">Please select a different venue or check back later.</p>
+                <p>{emptyStates.noConcerts.message}</p>
+                <p className="text-sm mt-2">{emptyStates.noConcerts.hint}</p>
               </div>
             )}
           </div>
@@ -215,17 +255,19 @@ export function BookConcertTab() {
               </p>
             </div>
 
-            {/* Series Select */}
+            {/* Series Select - Auto-populated from concert */}
             <div>
               <label className="block text-sm font-medium mb-2">Series</label>
-              <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId}>
+              <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId} disabled>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select series" />
+                  <SelectValue>
+                    {seriesList.find(s => s.id === selectedSeriesId)?.title || "Select series"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {seriesList.map((series) => (
                     <SelectItem key={series.id} value={series.id}>
-                      {series.name}
+                      {series.title}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -243,7 +285,7 @@ export function BookConcertTab() {
                   <SelectContent>
                     {collections.map((collection) => (
                       <SelectItem key={collection.id} value={collection.id}>
-                        {collection.name}
+                        {collection.title}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -277,16 +319,31 @@ export function BookConcertTab() {
                 <label className="block text-sm font-medium mb-2">Difficulty Level</label>
                 <Select value={selectedStageId} onValueChange={setSelectedStageId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select stage" />
+                    <SelectValue>
+                      {selectedStageId
+                        ? (() => {
+                            const selectedStage = stages.find(s => s.id === selectedStageId);
+                            if (!selectedStage) return "Select difficulty";
+                            return selectedStage.stage === 1 ? "Stage 1" :
+                                   selectedStage.stage === 2 ? "Stage 2" :
+                                   selectedStage.stage === 3 ? "Stage 3" : "Select difficulty";
+                          })()
+                        : "Select difficulty"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {stages.map((stage) => (
-                      <SelectItem key={stage.id} value={stage.id}>
-                        {stage.stage === "stage_1" && "Stage 1 - Beginner"}
-                        {stage.stage === "stage_2" && "Stage 2 - Intermediate"}
-                        {stage.stage === "stage_3" && "Stage 3 - Advanced"}
-                      </SelectItem>
-                    ))}
+                    {stages.map((stage) => {
+                      const stageLabel =
+                        stage.stage === 1 ? "Stage 1" :
+                        stage.stage === 2 ? "Stage 2" :
+                        stage.stage === 3 ? "Stage 3" : "Unknown";
+
+                      return (
+                        <SelectItem key={stage.id} value={stage.id}>
+                          {stageLabel}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>

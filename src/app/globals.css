@@ -7,19 +7,19 @@
   --card-foreground: 0 0% 9%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 9%;
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 98%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
   --secondary: 0 0% 96%;
   --secondary-foreground: 0 0% 9%;
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 45%;
-  --accent: 0 0% 96%;
-  --accent-foreground: 0 0% 9%;
+  --accent: 221 83% 53%;
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 90%;
   --input: 0 0% 90%;
-  --ring: 0 0% 9%;
+  --ring: 221 83% 53%;
   --radius: 0.5rem;
 }
 
@@ -43,40 +43,92 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: var(--font-montserrat), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* MusicUp Brand Colors */
+  --color-brand-blue: #2563EB;
+  --color-brand-cyan: #06B6D4;
+  --color-brand-orange: #EB6A18;
+  --color-brand-bg-light: #F8FAFC;
+  --color-brand-bg-dark: #0B1220;
+
+  /* Concert Series Colors */
+  --color-series-empathy: #E9B949;
+  --color-series-pianotales: #8B5CF6;
+  --color-series-market: #16A34A;
+  --color-series-sound: #DC2626;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 0 0% 83%;
-  }
-}
+/* Dark mode disabled - remove the prefers-color-scheme media query to prevent automatic dark mode */
+/* If you want to add dark mode in the future, use class-based dark mode instead */
 
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 * {
   border-color: hsl(var(--border));
+}
+
+/* Typography System */
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.font-body {
+  font-family: var(--font-sans);
+}
+
+/* Headings with Playfair Display */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Optional: Override for specific heading styles */
+.heading-playfair {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.heading-montserrat {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Logo Animation */
+@keyframes logo-bar-wave {
+  0%, 100% {
+    transform: scaleY(1);
+    transform-origin: center bottom;
+  }
+  50% {
+    transform: scaleY(0.7);
+    transform-origin: center bottom;
+  }
+}
+
+.animate-logo-bar-1 {
+  animation: logo-bar-wave 1.2s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.animate-logo-bar-2 {
+  animation: logo-bar-wave 1.2s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.animate-logo-bar-3 {
+  animation: logo-bar-wave 1.2s ease-in-out infinite;
+  animation-delay: 0.4s;
 }

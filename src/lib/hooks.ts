@@ -40,10 +40,10 @@ interface UseListResult<T> {
 // ============================================================================
 
 /**
- * Fetch all venues
+ * Fetch all venues with venue type information
  */
-export function useVenues(): UseListResult<Venue> {
-  const [data, setData] = useState<Venue[]>([]);
+export function useVenues(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -55,7 +55,15 @@ export function useVenues(): UseListResult<Venue> {
       const supabase = createClient();
       const { data: venues, error: fetchError } = await supabase
         .from("venues")
-        .select("*")
+        .select(`
+          *,
+          venue_type:venue_type_id (
+            id,
+            slug,
+            label,
+            description
+          )
+        `)
         .order("name");
 
       if (fetchError) throw fetchError;
@@ -75,6 +83,41 @@ export function useVenues(): UseListResult<Venue> {
 }
 
 /**
+ * Fetch all venue types
+ */
+export function useVenueTypes(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchVenueTypes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { data: venueTypes, error: fetchError } = await supabase
+        .from("venue_types")
+        .select("*")
+        .order("label");
+
+      if (fetchError) throw fetchError;
+      setData(venueTypes || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch venue types"));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchVenueTypes();
+  }, [fetchVenueTypes]);
+
+  return { data, loading, error, refetch: fetchVenueTypes };
+}
+
+/**
  * Fetch all series
  */
 export function useSeries(): UseListResult<Series> {
@@ -91,7 +134,7 @@ export function useSeries(): UseListResult<Series> {
       const { data: series, error: fetchError } = await supabase
         .from("series")
         .select("*")
-        .order("name");
+        .order("title");
 
       if (fetchError) throw fetchError;
       setData(series || []);
@@ -107,6 +150,60 @@ export function useSeries(): UseListResult<Series> {
   }, [fetchSeries]);
 
   return { data, loading, error, refetch: fetchSeries };
+}
+
+/**
+ * Fetch series with their valid venue type mappings
+ * Returns series with an array of venue_type_ids they're valid for
+ */
+export function useSeriesWithVenueTypes(): UseListResult<any> {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchSeriesWithVenueTypes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+
+      // Fetch all series
+      const { data: series, error: seriesError } = await supabase
+        .from("series")
+        .select("*")
+        .order("title");
+
+      if (seriesError) throw seriesError;
+
+      // Fetch all series-venue-type mappings
+      const { data: mappings, error: mappingsError } = await supabase
+        .from("series_venue_types")
+        .select("series_id, venue_type_id");
+
+      if (mappingsError) throw mappingsError;
+
+      // Combine data
+      const seriesWithVenueTypes = (series || []).map(s => ({
+        ...s,
+        venue_type_ids: (mappings || [])
+          .filter(m => m.series_id === s.id)
+          .map(m => m.venue_type_id)
+      }));
+
+      setData(seriesWithVenueTypes);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch series with venue types"));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSeriesWithVenueTypes();
+  }, [fetchSeriesWithVenueTypes]);
+
+  return { data, loading, error, refetch: fetchSeriesWithVenueTypes };
 }
 
 /**
@@ -136,7 +233,7 @@ export function useCollections(seriesId?: string): UseListResult<CollectionWithS
           series:series_id (*)
         `)
         .eq("series_id", seriesId)
-        .order("display_order");
+        .order("order_index");
 
       if (fetchError) throw fetchError;
       setData(collections || []);
@@ -184,7 +281,7 @@ export function usePieces(collectionId?: string): UseListResult<PieceWithCollect
           )
         `)
         .eq("collection_id", collectionId)
-        .order("display_order");
+        .order("order_index");
 
       if (fetchError) throw fetchError;
       setData(pieces || []);
@@ -287,19 +384,16 @@ export function useMyBookings(): UseListResult<BookingWithDetails> {
             venue:venue_id (*),
             series:series_id (*)
           ),
-          piece_stage:piece_stage_id (
+          piece:piece_id (
             *,
-            piece:piece_id (
+            collection:collection_id (
               *,
-              collection:collection_id (
-                *,
-                series:series_id (*)
-              )
+              series:series_id (*)
             )
           ),
-          performer:performer_id (*)
+          profile:profile_id (*)
         `)
-        .eq("performer_id", user.id)
+        .eq("profile_id", user.id)
         .order("created_at", { ascending: false });
 
       if (fetchError) throw fetchError;
@@ -399,12 +493,12 @@ export function useMyPastConcerts(): UseListResult<ConcertWithDetails> {
           series:series_id (*),
           bookings!inner (
             *,
-            performer_id
+            profile_id
           )
         `)
-        .eq("bookings.performer_id", user.id)
+        .eq("bookings.profile_id", user.id)
         .eq("status", "completed")
-        .order("scheduled_date", { ascending: false });
+        .order("starts_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);
@@ -494,7 +588,7 @@ export function useMyManagedConcerts(): UseListResult<ConcertWithDetails> {
 
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString();
 
       // First get the venue IDs the admin manages
       const { data: adminVenues, error: venuesError } = await supabase
@@ -521,23 +615,20 @@ export function useMyManagedConcerts(): UseListResult<ConcertWithDetails> {
           series:series_id (*),
           bookings (
             *,
-            performer:performer_id (*),
-            piece_stage:piece_stage_id (
+            profile:profile_id (*),
+            piece:piece_id (
               *,
-              piece:piece_id (
+              collection:collection_id (
                 *,
-                collection:collection_id (
-                  *,
-                  series:series_id (*)
-                )
+                series:series_id (*)
               )
             )
           )
         `)
         .in("venue_id", venueIds)
         .eq("status", "scheduled")
-        .gte("scheduled_date", today)
-        .order("scheduled_date", { ascending: true });
+        .gte("starts_at", today)
+        .order("starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);
@@ -583,21 +674,18 @@ export function useVenueConcerts(venueId?: string): UseListResult<ConcertWithDet
           series:series_id (*),
           bookings (
             *,
-            performer:performer_id (*),
-            piece_stage:piece_stage_id (
+            profile:profile_id (*),
+            piece:piece_id (
               *,
-              piece:piece_id (
+              collection:collection_id (
                 *,
-                collection:collection_id (
-                  *,
-                  series:series_id (*)
-                )
+                series:series_id (*)
               )
             )
           )
         `)
         .eq("venue_id", venueId)
-        .order("scheduled_date", { ascending: false });
+        .order("starts_at", { ascending: false });
 
       if (fetchError) throw fetchError;
       setData(concerts || []);
@@ -621,6 +709,7 @@ export function useVenueConcerts(venueId?: string): UseListResult<ConcertWithDet
 
 /**
  * Fetch upcoming concerts at a specific venue (for booking)
+ * Filters out concerts with invalid series-venue type combinations
  */
 export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWithDetails> {
   const [data, setData] = useState<ConcertWithDetails[]>([]);
@@ -639,22 +728,51 @@ export function useUpcomingConcerts(venueId?: string): UseListResult<ConcertWith
 
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString(); // Full ISO timestamp
 
       const { data: concerts, error: fetchError } = await supabase
         .from("concerts")
         .select(`
           *,
-          venue:venue_id (*),
+          venue:venue_id (
+            *,
+            venue_type:venue_type_id (*)
+          ),
           series:series_id (*)
         `)
         .eq("venue_id", venueId)
         .eq("status", "scheduled")
-        .gte("scheduled_date", today)
-        .order("scheduled_date", { ascending: true });
+        .gte("starts_at", today)
+        .order("starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
-      setData(concerts || []);
+
+      // Filter concerts to only include those with valid series-venue type matches
+      // or concerts at venues without a type (backwards compatibility)
+      const validConcerts = await Promise.all(
+        (concerts || []).map(async (concert) => {
+          // If venue has no type, allow all series
+          if (!concert.venue?.venue_type_id) {
+            return concert;
+          }
+
+          // Check if this series-venue type combo is valid
+          const { data: mapping } = await supabase
+            .from("series_venue_types")
+            .select("id")
+            .eq("series_id", concert.series_id)
+            .eq("venue_type_id", concert.venue.venue_type_id)
+            .maybeSingle();
+
+          // Only include concerts with valid mappings
+          return mapping ? concert : null;
+        })
+      );
+
+      // Filter out null values (invalid concerts)
+      const filteredConcerts = validConcerts.filter((c): c is ConcertWithDetails => c !== null);
+
+      setData(filteredConcerts);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch upcoming concerts"));
     } finally {
@@ -690,7 +808,7 @@ export function useMyUpcomingBookings(): UseListResult<BookingWithDetails> {
 
     try {
       const supabase = createClient();
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString(); // Full timestamp for comparison
 
       const { data: bookings, error: fetchError } = await supabase
         .from("bookings")
@@ -701,22 +819,19 @@ export function useMyUpcomingBookings(): UseListResult<BookingWithDetails> {
             venue:venue_id (*),
             series:series_id (*)
           ),
-          piece_stage:piece_stage_id (
+          piece:piece_id (
             *,
-            piece:piece_id (
+            collection:collection_id (
               *,
-              collection:collection_id (
-                *,
-                series:series_id (*)
-              )
+              series:series_id (*)
             )
           ),
-          performer:performer_id (*)
+          profile:profile_id (*)
         `)
-        .eq("performer_id", user.id)
+        .eq("profile_id", user.id)
         .neq("status", "cancelled")
-        .gte("concert.scheduled_date", today)
-        .order("concert.scheduled_date", { ascending: true });
+        .gte("concert.starts_at", today)
+        .order("concert.starts_at", { ascending: true });
 
       if (fetchError) throw fetchError;
       setData(bookings || []);

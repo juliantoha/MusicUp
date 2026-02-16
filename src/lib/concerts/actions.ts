@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { sendCompletionThankYouEmail } from "@/lib/email/actions";
+import { logConcertCompleted, logHoursGranted } from "@/lib/logging/actions";
 
 export interface UpdateBookingStatusData {
   booking_id: string;
@@ -269,6 +270,21 @@ export async function completeConcert(data: CompleteConcertData) {
       sendCompletionThankYouEmail(booking.performer_id, data.concert_id).catch((error) => {
         console.error("Error sending completion thank you email:", error);
         // Don't fail the concert completion if email fails
+      });
+    });
+
+    // 5. Log concert completed event
+    const totalHours = performedBookings.length * 3.0;
+    logConcertCompleted(user.id, data.concert_id, performedBookings.length, totalHours).catch(
+      (error) => {
+        console.error("Error logging concert completed:", error);
+      }
+    );
+
+    // 6. Log individual service hour grants
+    performedBookings.forEach((booking) => {
+      logHoursGranted(user.id, booking.performer_id, data.concert_id, 3.0).catch((error) => {
+        console.error("Error logging hours granted:", error);
       });
     });
 

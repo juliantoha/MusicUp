@@ -18,6 +18,11 @@ export async function signUp({ email, password, fullName }: SignUpData) {
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        full_name: fullName,
+      },
+    },
   });
 
   if (authError) {
@@ -28,16 +33,18 @@ export async function signUp({ email, password, fullName }: SignUpData) {
     throw new Error("Failed to create user");
   }
 
-  // Create profile with performer role
-  const { error: profileError } = await supabase.from("profiles").insert({
-    id: authData.user.id,
-    email: authData.user.email,
-    full_name: fullName,
-    role: "performer",
-  });
+  // Profile is automatically created by database trigger
+  // Update full_name after signup
+  if (fullName) {
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ full_name: fullName })
+      .eq("id", authData.user.id);
 
-  if (profileError) {
-    throw new Error(profileError.message);
+    if (updateError) {
+      console.error("Error updating profile name:", updateError);
+      // Don't throw - profile was created, just name update failed
+    }
   }
 
   return authData;
@@ -65,4 +72,32 @@ export async function signOut() {
   if (error) {
     throw new Error(error.message);
   }
+}
+
+export async function requestPasswordReset(email: string) {
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { success: true };
+}
+
+export async function updatePassword(newPassword: string) {
+  const supabase = createClient();
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { success: true };
 }

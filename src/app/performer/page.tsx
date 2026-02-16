@@ -1,44 +1,188 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { withRole } from "@/lib/auth/withRole";
 import { BookConcertTab } from "@/components/performer/BookConcertTab";
 import { ChangeBookingTab } from "@/components/performer/ChangeBookingTab";
 import { InformationTab } from "@/components/performer/InformationTab";
 import { SheetMusicLibraryTab } from "@/components/performer/SheetMusicLibraryTab";
+import { Music, Calendar, Award } from "lucide-react";
 
 function PerformerPage() {
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Performer Dashboard</h1>
-        <p className="text-gray-600">Manage your performances, track your hours, and access practice materials</p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
+      <div className="container mx-auto p-4 md:p-8 max-w-7xl">
+        {/* Hero Section */}
+        <div className="mb-10">
+          <div className="flex items-start gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#1e40af] flex items-center justify-center shadow-lg flex-shrink-0">
+              <Music className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1 overflow-visible">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563EB] to-[#06B6D4] bg-clip-text text-transparent mb-3 leading-tight">
+                Music up your city
+              </h1>
+              <p className="text-lg text-gray-600 leading-relaxed mt-2">
+                Book concerts. Perform live. Track your hours. All in one place.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid sm:grid-cols-3 gap-6 mb-10">
+          <Card className="group border-0 border-l-4 border-l-[#2563EB] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-blue-50/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Calendar className="h-4 w-4 text-[#2563EB]" />
+                </div>
+                Upcoming Concerts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-[#2563EB] mb-1">0</div>
+              <p className="text-sm text-gray-600">Book your first performance</p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-0 border-l-4 border-l-[#06B6D4] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-cyan-50/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-[#06B6D4]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Music className="h-4 w-4 text-[#06B6D4]" />
+                </div>
+                Past Performances
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-[#06B6D4] mb-1">0</div>
+              <p className="text-sm text-gray-600">Your performance history</p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-0 border-l-4 border-l-[#EB6A18] shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white to-orange-50/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-[#EB6A18]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Award className="h-4 w-4 text-[#EB6A18]" />
+                </div>
+                Service Hours
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-[#EB6A18] mb-1">0</div>
+              <p className="text-sm text-gray-600">Verified hours earned</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Tabs - Modern Redesign */}
+        <Tabs defaultValue="book" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-3 bg-transparent p-0 h-auto">
+            <TabsTrigger
+              value="book"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#2563EB] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#2563EB] data-[state=active]:to-[#1e40af] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Calendar className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">Book Concert</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="manage"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#06B6D4] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#06B6D4] data-[state=active]:to-[#0891b2] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Music className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">My Bookings</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="info"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#EB6A18] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#EB6A18] data-[state=active]:to-[#c2410c] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Award className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">Service Hours</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-red-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="library"
+              className="group relative overflow-hidden rounded-2xl px-6 py-4 bg-white border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 data-[state=active]:border-[#8B5CF6] data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#8B5CF6] data-[state=active]:to-[#7c3aed] data-[state=active]:shadow-xl data-[state=active]:scale-105"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <Music className="h-5 w-5 text-gray-600 group-data-[state=active]:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-700 group-data-[state=active]:text-white transition-colors">Repertoire</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-violet-50 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-0 transition-opacity" />
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="book" className="space-y-4">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Find a concert near you</CardTitle>
+                <CardDescription className="text-base text-gray-700">
+                  Browse available concerts in your city. Choose your location, date, and repertoire.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <BookConcertTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="manage" className="space-y-4">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Your bookings</CardTitle>
+                <CardDescription className="text-base text-gray-700">
+                  View upcoming performances and manage your bookings. Cancel at least 48 hours in advance.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <ChangeBookingTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="info" className="space-y-4">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Service hours tracker</CardTitle>
+                <CardDescription className="text-base text-gray-700">
+                  MusicUp verifies 3 hours per Empathy Concert. Export your hours for school or community service requirements.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <InformationTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="library" className="space-y-4">
+            <Card className="border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-t-xl">
+                <CardTitle className="text-2xl text-gray-900">Music library</CardTitle>
+                <CardDescription className="text-base text-gray-700">
+                  Access sheet music, audio references, and practice resources. Every piece has PDF and audio included.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <SheetMusicLibraryTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Tabs defaultValue="book" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="book">Book a Concert</TabsTrigger>
-          <TabsTrigger value="manage">My Bookings</TabsTrigger>
-          <TabsTrigger value="info">Information</TabsTrigger>
-          <TabsTrigger value="library">Sheet Music</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="book" className="space-y-4">
-          <BookConcertTab />
-        </TabsContent>
-
-        <TabsContent value="manage" className="space-y-4">
-          <ChangeBookingTab />
-        </TabsContent>
-
-        <TabsContent value="info" className="space-y-4">
-          <InformationTab />
-        </TabsContent>
-
-        <TabsContent value="library" className="space-y-4">
-          <SheetMusicLibraryTab />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }

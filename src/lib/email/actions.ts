@@ -6,10 +6,14 @@ import {
   bookingConfirmationTemplate,
   concertReminderTemplate,
   completionThankYouTemplate,
+  venueContactNotificationTemplate,
   type BookingConfirmationData,
   type ConcertReminderData,
   type CompletionThankYouData,
+  type VenueContactNotificationData,
 } from "./templates";
+import { email as copy } from "@/lib/copy";
+import { logEmailSent } from "@/lib/logging/actions";
 
 // Initialize Resend with API key from environment
 // Use a placeholder in development if key is missing to allow builds
@@ -124,7 +128,7 @@ export async function sendBookingConfirmationEmail(bookingId: string) {
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: FROM_EMAIL,
       to: performer.email,
-      subject: `🎵 Concert Booking Confirmed - ${piece?.title || "Your Performance"}`,
+      subject: copy.bookingConfirmation.subject(piece?.title || "Your Performance"),
       html: bookingConfirmationTemplate(emailData),
     });
 
@@ -134,6 +138,12 @@ export async function sendBookingConfirmationEmail(bookingId: string) {
     }
 
     console.log("Booking confirmation email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(performer.email, "booking_confirmation", bookingId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendBookingConfirmationEmail:", error);
@@ -244,7 +254,7 @@ export async function sendConcertReminderEmail(bookingId: string) {
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: FROM_EMAIL,
       to: performer.email,
-      subject: `⏰ Concert Reminder - Tomorrow at ${concertTime}`,
+      subject: copy.concertReminder.subject(concertTime),
       html: concertReminderTemplate(emailData),
     });
 
@@ -254,6 +264,12 @@ export async function sendConcertReminderEmail(bookingId: string) {
     }
 
     console.log("Concert reminder email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(performer.email, "concert_reminder", bookingId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendConcertReminderEmail:", error);
@@ -349,7 +365,7 @@ export async function sendCompletionThankYouEmail(performerId: string, concertId
     const { data: emailResult, error: emailError } = await resend.emails.send({
       from: FROM_EMAIL,
       to: performer.email,
-      subject: `🎉 Thank You for Performing - 3 Hours Credited!`,
+      subject: copy.completionThankYou.subject,
       html: completionThankYouTemplate(emailData),
     });
 
@@ -359,9 +375,170 @@ export async function sendCompletionThankYouEmail(performerId: string, concertId
     }
 
     console.log("Completion thank you email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(performer.email, "completion_thank_you", undefined, concertId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
     return { success: true, emailId: emailResult?.id };
   } catch (error: any) {
     console.error("Error in sendCompletionThankYouEmail:", error);
+    return { error: error.message };
+  }
+}
+
+/**
+ * Send concert notification email to venue contact
+ * Notifies venue contact person when a new concert is scheduled at their venue
+ */
+export async function sendVenueContactNotificationEmail(concertId: string) {
+  try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("RESEND_API_KEY not configured, skipping email send");
+      return { error: "Email service not configured" };
+    }
+
+    const supabase = await createClient();
+
+    // Fetch concert with all related data
+    const { data: concert, error: concertError } = await supabase
+      .from("concerts")
+      .select(`
+        *,
+        venue:venue_id (
+          name,
+          address,
+          city,
+          state,
+          zip,
+          venue_contact_name,
+          venue_contact_email,
+          notes
+        ),
+        series:series_id (
+          title
+        )
+      `)
+      .eq("id", concertId)
+      .single();
+
+    if (concertError || !concert) {
+      console.error("Error fetching concert for venue notification:", concertError);
+      return { error: "Concert not found" };
+    }
+
+    const venue = concert.venue as any;
+    const series = concert.series as any;
+
+    // Check if venue has contact information
+    if (!venue?.venue_contact_email) {
+      console.warn("Venue has no contact email, skipping notification");
+      return { error: "Venue contact email not configured" };
+    }
+
+    if (!venue?.venue_contact_name) {
+      console.warn("Venue has no contact name, skipping notification");
+      return { error: "Venue contact name not configured" };
+    }
+
+    // Get the user who created the concert (admin/host)
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    let adminInfo: { name?: string; email?: string; phone?: string } = {};
+
+    if (user) {
+      const { data: adminProfile } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", user.id)
+        .single();
+
+      if (adminProfile) {
+        adminInfo.name = adminProfile.full_name || undefined;
+        adminInfo.email = adminProfile.email;
+      }
+    }
+
+    // Count expected performers (bookings for this concert)
+    const { count: performerCount } = await supabase
+      .from("bookings")
+      .select("id", { count: "exact" })
+      .eq("concert_id", concertId);
+
+    // Format date and time from starts_at and ends_at
+    const startsAt = new Date(concert.starts_at);
+    const endsAt = new Date(concert.ends_at);
+
+    const concertDate = startsAt.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "America/Los_Angeles",
+    });
+
+    const startTime = startsAt.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "America/Los_Angeles",
+    });
+
+    const endTime = endsAt.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "America/Los_Angeles",
+    });
+
+    const concertTime = `${startTime} - ${endTime} PT`;
+
+    const venueAddress = `${venue.address}, ${venue.city}, ${venue.state} ${venue.zip}`;
+
+    // Prepare email data
+    const emailData: VenueContactNotificationData = {
+      contactName: venue.venue_contact_name,
+      venueName: venue.name,
+      seriesName: series?.title || "Concert",
+      concertDate,
+      concertTime,
+      venueAddress,
+      performerCount: performerCount || 0,
+      adminName: adminInfo.name,
+      adminEmail: adminInfo.email,
+      notes: concert.notes,
+    };
+
+    // Send email
+    const FROM_EMAIL = process.env.FROM_EMAIL || "onboarding@resend.dev";
+    const { data: emailResult, error: emailError } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: venue.venue_contact_email,
+      subject: `🎼 New Concert Scheduled at ${venue.name} - ${concertDate}`,
+      html: venueContactNotificationTemplate(emailData),
+      // CC the admin/coordinator if their email is available
+      ...(adminInfo.email && { reply_to: adminInfo.email }),
+    });
+
+    if (emailError) {
+      console.error("Error sending venue contact notification email:", emailError);
+      return { error: emailError.message };
+    }
+
+    console.log("Venue contact notification email sent:", emailResult?.id);
+
+    // Log email sent event
+    logEmailSent(venue.venue_contact_email, "venue_contact_notification", undefined, concertId).catch((error) => {
+      console.error("Error logging email sent:", error);
+    });
+
+    return { success: true, emailId: emailResult?.id };
+  } catch (error: any) {
+    console.error("Error in sendVenueContactNotificationEmail:", error);
     return { error: error.message };
   }
 }

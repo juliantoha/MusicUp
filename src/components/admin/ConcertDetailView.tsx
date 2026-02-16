@@ -21,6 +21,8 @@ import {
 } from "@/lib/concerts/actions";
 import { CheckCircle2, XCircle, Upload, Camera, CheckCheck } from "lucide-react";
 import type { ConcertWithDetails } from "@/types/db";
+import { admin } from "@/lib/copy";
+import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
 
 interface ConcertDetailViewProps {
   concert: ConcertWithDetails;
@@ -156,29 +158,72 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
       <Card className="p-6">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-bold mb-2">{concert.series?.name}</h2>
+            <h2 className="text-2xl font-bold mb-2">{concert.series?.title}</h2>
             <div className="space-y-1 text-gray-600">
-              <p>
-                <strong>Venue:</strong> {concert.venue?.name}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p>
+                  <strong>Venue:</strong> {concert.venue?.name}
+                </p>
+                {concert.venue?.venue_type && (
+                  <VenueTypeBadge venueType={concert.venue.venue_type} />
+                )}
+              </div>
               <p>
                 <strong>Address:</strong> {concert.venue?.address}, {concert.venue?.city},{" "}
                 {concert.venue?.state}
               </p>
               <p>
                 <strong>Date:</strong>{" "}
-                {new Date(concert.scheduled_date).toLocaleDateString("en-US", {
+                {new Date(concert.starts_at).toLocaleDateString("en-US", {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
                   day: "numeric",
+                  timeZone: "America/Los_Angeles",
                 })}
               </p>
-              {concert.start_time && (
-                <p>
-                  <strong>Time:</strong> {concert.start_time}
-                  {concert.end_time && ` - ${concert.end_time}`}
-                </p>
+              <p>
+                <strong>Time:</strong>{" "}
+                {new Date(concert.starts_at).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                  timeZone: "America/Los_Angeles",
+                })}
+                {" - "}
+                {new Date(concert.ends_at).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                  timeZone: "America/Los_Angeles",
+                })}
+                {" PT"}
+              </p>
+
+              {/* Venue Contact Info */}
+              {(concert.venue?.venue_contact_name || concert.venue?.venue_contact_email || concert.venue?.venue_contact_phone) && (
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm font-semibold text-gray-700 mb-1">Venue Contact:</p>
+                  <div className="space-y-0.5 text-sm text-gray-600">
+                    {concert.venue?.venue_contact_name && (
+                      <p>{concert.venue.venue_contact_name}</p>
+                    )}
+                    {concert.venue?.venue_contact_email && (
+                      <p>
+                        <a href={`mailto:${concert.venue.venue_contact_email}`} className="text-blue-600 hover:underline">
+                          {concert.venue.venue_contact_email}
+                        </a>
+                      </p>
+                    )}
+                    {concert.venue?.venue_contact_phone && (
+                      <p>
+                        <a href={`tel:${concert.venue.venue_contact_phone}`} className="text-blue-600 hover:underline">
+                          {concert.venue.venue_contact_phone}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -200,50 +245,88 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
         ) : (
           <div className="space-y-3">
             {concert.bookings.map((booking: any) => {
-              const performer = booking.performer;
-              const piece = booking.piece_stage?.piece;
-              const stage = booking.piece_stage;
+              const performer = booking.profile;
+              const piece = booking.piece;
+              const stage = booking.stage;
               const currentStatus = bookingStatuses[booking.id] || booking.status;
 
               return (
-                <Card key={booking.id} className="p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium">{performer?.full_name || "Unknown"}</p>
-                        {currentStatus === "performed" && (
-                          <CheckCircle2 className="w-5 h-5 text-green-600" />
-                        )}
-                        {currentStatus === "absent" && (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        <p>
-                          <strong>Piece:</strong> {piece?.title || "Unknown"}
-                        </p>
-                        <p>
-                          <strong>Stage:</strong>{" "}
-                          {stage?.stage === "stage_1" && "Stage 1 - Beginner"}
-                          {stage?.stage === "stage_2" && "Stage 2 - Intermediate"}
-                          {stage?.stage === "stage_3" && "Stage 3 - Advanced"}
-                        </p>
+                <Card
+                  key={booking.id}
+                  className={`p-4 transition-colors ${
+                    currentStatus === "performed"
+                      ? "bg-green-50 border-green-200"
+                      : currentStatus === "absent"
+                      ? "bg-red-50 border-red-200"
+                      : ""
+                  }`}
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-medium text-base md:text-lg truncate">
+                            {performer?.full_name || "Unknown"}
+                          </p>
+                          {currentStatus === "performed" && (
+                            <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-green-600 flex-shrink-0" />
+                          )}
+                          {currentStatus === "absent" && (
+                            <XCircle className="w-5 h-5 md:w-6 md:h-6 text-red-600 flex-shrink-0" />
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground space-y-1">
+                          <p className="truncate">
+                            <strong>Piece:</strong> {piece?.title || "Unknown"}
+                          </p>
+                          <p>
+                            <strong>Stage:</strong>{" "}
+                            {stage === 1 && "Stage 1"}
+                            {stage === 2 && "Stage 2"}
+                            {stage === 3 && "Stage 3"}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className="w-48">
-                      <Select
-                        value={currentStatus}
-                        onValueChange={(value: any) => handleStatusChange(booking.id, value)}
+
+                    {/* Finger-Friendly Status Buttons */}
+                    <div className="grid grid-cols-3 gap-2 md:gap-3">
+                      <Button
+                        variant={currentStatus === "confirmed" ? "default" : "outline"}
+                        size="lg"
+                        onClick={() => handleStatusChange(booking.id, "confirmed")}
+                        className={`h-auto py-3 md:py-4 flex flex-col gap-1 ${
+                          currentStatus === "confirmed" ? "" : "hover:bg-muted"
+                        }`}
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="confirmed">Confirmed</SelectItem>
-                          <SelectItem value="performed">Performed ✓</SelectItem>
-                          <SelectItem value="absent">Absent</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        <span className="text-xs md:text-sm font-medium">{admin.checklist.markConfirmed}</span>
+                      </Button>
+                      <Button
+                        variant={currentStatus === "performed" ? "default" : "outline"}
+                        size="lg"
+                        onClick={() => handleStatusChange(booking.id, "performed")}
+                        className={`h-auto py-3 md:py-4 flex flex-col gap-1 ${
+                          currentStatus === "performed"
+                            ? "bg-green-600 hover:bg-green-700 text-white"
+                            : "hover:bg-green-50 hover:border-green-300 hover:text-green-700"
+                        }`}
+                      >
+                        <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
+                        <span className="text-xs md:text-sm font-medium">{admin.checklist.markPerformed}</span>
+                      </Button>
+                      <Button
+                        variant={currentStatus === "absent" ? "default" : "outline"}
+                        size="lg"
+                        onClick={() => handleStatusChange(booking.id, "absent")}
+                        className={`h-auto py-3 md:py-4 flex flex-col gap-1 ${
+                          currentStatus === "absent"
+                            ? "bg-red-600 hover:bg-red-700 text-white"
+                            : "hover:bg-red-50 hover:border-red-300 hover:text-red-700"
+                        }`}
+                      >
+                        <XCircle className="w-4 h-4 md:w-5 md:h-5" />
+                        <span className="text-xs md:text-sm font-medium">{admin.checklist.markAbsent}</span>
+                      </Button>
                     </div>
                   </div>
                 </Card>
@@ -279,33 +362,47 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
               className="hidden"
             />
             <p className="text-sm text-gray-500 mt-2">
-              Upload photos of the concert (max 5MB, JPG/PNG)
+              {admin.checklist.uploadPhoto}
             </p>
           </div>
 
-          {/* Photo Gallery */}
+          {/* Photo Gallery - Enhanced Thumbnail Grid */}
           {loadingPhotos ? (
-            <p className="text-gray-500">Loading photos...</p>
+            <div className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground">Loading photos...</p>
+            </div>
           ) : photos.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
               {photos.map((photo) => (
-                <div key={photo.id} className="relative">
+                <div
+                  key={photo.id}
+                  className="group relative aspect-[4/3] overflow-hidden rounded-lg border-2 border-border hover:border-primary transition-colors"
+                >
                   <img
                     src={photo.photo_url}
                     alt={photo.caption || "Concert photo"}
-                    className="w-full h-48 object-cover rounded-lg border"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    loading="lazy"
                   />
                   {photo.caption && (
-                    <p className="text-sm text-gray-600 mt-1">{photo.caption}</p>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                      <p className="text-xs md:text-sm text-white line-clamp-2">
+                        {photo.caption}
+                      </p>
+                    </div>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 border-2 border-dashed rounded-lg text-gray-500">
-              <Camera className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-              <p>No photos uploaded yet</p>
-              <p className="text-sm">Upload a group photo to complete this concert</p>
+            <div className="text-center py-12 border-2 border-dashed rounded-lg bg-muted/10">
+              <Camera className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-base md:text-lg font-medium text-foreground mb-1">
+                No photos uploaded yet
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Upload a group photo to complete this concert
+              </p>
             </div>
           )}
         </div>
@@ -323,13 +420,13 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
               <p>✓ {photos.length} group photo{photos.length !== 1 ? "s" : ""} uploaded</p>
               {canComplete && (
                 <p className="text-green-700 font-medium mt-2">
-                  All requirements met! Ready to complete concert.
+                  {admin.status.allRequirementsMet}
                 </p>
               )}
               {!canComplete && (
                 <p className="text-orange-700 font-medium mt-2">
-                  {performedCount === 0 && "Mark at least one performer as performed. "}
-                  {photos.length === 0 && "Upload at least one group photo."}
+                  {performedCount === 0 && `${admin.status.needsAttendance}. `}
+                  {photos.length === 0 && admin.status.needsPhotos}
                 </p>
               )}
             </div>
@@ -339,7 +436,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
             disabled={!canComplete || completing}
             size="lg"
           >
-            {completing ? "Completing..." : "Complete Concert"}
+            {completing ? admin.checklist.completing : admin.checklist.completeConcert}
           </Button>
         </div>
         <div className="mt-4 pt-4 border-t text-sm text-gray-600">

@@ -12,7 +12,16 @@ export type Profile = {
   id: string;
   email: string;
   full_name: string | null;
-  role: "performer" | "admin" | "super_admin";
+  role: "performer" | "admin" | "super_admin" | "venue_contact";
+  profile_photo_path: string | null;
+  created_at: string;
+};
+
+export type VenueType = {
+  id: string;
+  slug: string;
+  label: string;
+  description: string | null;
   created_at: string;
 };
 
@@ -23,11 +32,18 @@ export type Venue = {
   city: string;
   state: string;
   zip: string;
-  contact_name: string | null;
   contact_email: string | null;
-  contact_phone: string | null;
   notes: string | null;
+  is_active: boolean;
+  venue_type_id: string | null;
+  venue_contact_name: string | null;
+  venue_contact_email: string | null;
+  venue_contact_phone: string | null;
   created_at: string;
+};
+
+export type VenueWithType = Venue & {
+  venue_type: VenueType | null;
 };
 
 export type AdminsVenue = {
@@ -39,17 +55,35 @@ export type AdminsVenue = {
 
 export type Series = {
   id: string;
-  name: string;
+  slug: string;
+  title: string;
   description: string | null;
+  tagline: string | null;
+  blurb: string | null;
+  format: string | null;
+  what_you_get: string | null;
+  is_active: boolean;
   created_at: string;
+};
+
+export type SeriesVenueType = {
+  id: string;
+  series_id: string;
+  venue_type_id: string;
+  created_at: string;
+};
+
+export type SeriesWithVenueTypes = Series & {
+  venue_types: VenueType[];
 };
 
 export type Collection = {
   id: string;
   series_id: string;
-  name: string;
+  title: string;
   description: string | null;
-  display_order: number;
+  is_primary: boolean;
+  order_index: number;
   created_at: string;
 };
 
@@ -59,14 +93,15 @@ export type Piece = {
   title: string;
   composer: string | null;
   year_composed: number | null;
-  display_order: number;
+  image_url: string | null;
+  order_index: number;
   created_at: string;
 };
 
 export type PieceStage = {
   id: string;
   piece_id: string;
-  stage: "stage_1" | "stage_2" | "stage_3";
+  stage: 1 | 2 | 3;
   score_url: string | null;
   audio_url: string | null;
   notes: string | null;
@@ -77,9 +112,8 @@ export type Concert = {
   id: string;
   venue_id: string;
   series_id: string;
-  scheduled_date: string;
-  start_time: string | null;
-  end_time: string | null;
+  starts_at: string; // TIMESTAMPTZ - combined date and time
+  ends_at: string; // TIMESTAMPTZ - combined date and time
   status: "scheduled" | "in_progress" | "completed" | "cancelled";
   notes: string | null;
   created_at: string;
@@ -88,9 +122,10 @@ export type Concert = {
 export type Booking = {
   id: string;
   concert_id: string;
-  performer_id: string;
-  piece_stage_id: string;
-  status: "pending" | "confirmed" | "cancelled";
+  profile_id: string;
+  piece_id: string;
+  stage: 1 | 2 | 3;
+  status: "booked" | "changed" | "cancelled" | "performed" | "absent";
   created_at: string;
 };
 
@@ -121,6 +156,14 @@ export type ServiceHour = {
   created_at: string;
 };
 
+export type Log = {
+  id: string;
+  event: string;
+  actor_profile_id: string | null;
+  payload: Record<string, any> | null;
+  created_at: string;
+};
+
 // ============================================================================
 // Extended Types with Relations
 // ============================================================================
@@ -142,12 +185,12 @@ export type BookingWithDetails = Booking & {
     venue: Venue;
     series: Series;
   };
-  piece_stage: PieceStageWithPiece;
-  performer: Profile;
+  piece: PieceWithCollection;
+  profile: Profile;
 };
 
 export type ConcertWithDetails = Concert & {
-  venue: Venue;
+  venue: VenueWithType;
   series: Series;
   bookings?: BookingWithDetails[];
 };
@@ -169,7 +212,7 @@ export const profileSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
   full_name: z.string().nullable(),
-  role: z.enum(["performer", "admin", "super_admin"]),
+  role: z.enum(["performer", "admin", "super_admin", "venue_contact"]),
   created_at: z.string(),
 });
 
@@ -180,16 +223,20 @@ export const venueSchema = z.object({
   city: z.string().min(1, "City is required"),
   state: z.string().length(2, "State must be 2 characters"),
   zip: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code"),
-  contact_name: z.string().nullable(),
   contact_email: z.string().email().nullable().or(z.literal("")),
-  contact_phone: z.string().nullable(),
   notes: z.string().nullable(),
+  is_active: z.boolean(),
+  venue_type_id: z.string().uuid().nullable(),
+  venue_contact_name: z.string().min(1, "Venue contact name is required").nullable().or(z.literal("")),
+  venue_contact_email: z.string().email("Invalid email address").nullable().or(z.literal("")),
+  venue_contact_phone: z.string().nullable().or(z.literal("")),
   created_at: z.string(),
 });
 
 export const seriesSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1, "Series name is required"),
+  slug: z.string().min(1, "Series slug is required"),
+  title: z.string().min(1, "Series title is required"),
   description: z.string().nullable(),
   created_at: z.string(),
 });
@@ -197,9 +244,10 @@ export const seriesSchema = z.object({
 export const collectionSchema = z.object({
   id: z.string().uuid(),
   series_id: z.string().uuid(),
-  name: z.string().min(1, "Collection name is required"),
+  title: z.string().min(1, "Collection title is required"),
   description: z.string().nullable(),
-  display_order: z.number().int().nonnegative(),
+  is_primary: z.boolean(),
+  order_index: z.number().int().nonnegative(),
   created_at: z.string(),
 });
 
@@ -209,7 +257,7 @@ export const pieceSchema = z.object({
   title: z.string().min(1, "Title is required"),
   composer: z.string().nullable(),
   year_composed: z.number().int().min(1000).max(9999).nullable(),
-  display_order: z.number().int().nonnegative(),
+  order_index: z.number().int().nonnegative(),
   created_at: z.string(),
 });
 
@@ -227,9 +275,8 @@ export const concertSchema = z.object({
   id: z.string().uuid(),
   venue_id: z.string().uuid(),
   series_id: z.string().uuid(),
-  scheduled_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
-  start_time: z.string().nullable(),
-  end_time: z.string().nullable(),
+  starts_at: z.string(), // ISO 8601 timestamp
+  ends_at: z.string(), // ISO 8601 timestamp
   status: z.enum(["scheduled", "in_progress", "completed", "cancelled"]),
   notes: z.string().nullable(),
   created_at: z.string(),
@@ -242,6 +289,7 @@ export const bookingSchema = z.object({
   piece_stage_id: z.string().uuid(),
   status: z.enum(["pending", "confirmed", "cancelled"]),
   created_at: z.string(),
+  updated_at: z.string(),
 });
 
 export const serviceHourSchema = z.object({
@@ -262,6 +310,13 @@ export const serviceHourSchema = z.object({
 export const venueInsertSchema = venueSchema.omit({ id: true, created_at: true });
 export const venueUpdateSchema = venueInsertSchema.partial();
 
+// Schema specifically for updating venue contact info (used by venue admins)
+export const venueContactUpdateSchema = z.object({
+  venue_contact_name: z.string().min(1, "Venue contact name is required").nullable().or(z.literal("")),
+  venue_contact_email: z.string().email("Invalid email address").nullable().or(z.literal("")),
+  venue_contact_phone: z.string().nullable().or(z.literal("")),
+}).partial();
+
 export const seriesInsertSchema = seriesSchema.omit({ id: true, created_at: true });
 export const seriesUpdateSchema = seriesInsertSchema.partial();
 
@@ -277,8 +332,8 @@ export const pieceStageUpdateSchema = pieceStageInsertSchema.partial();
 export const concertInsertSchema = concertSchema.omit({ id: true, created_at: true });
 export const concertUpdateSchema = concertInsertSchema.partial();
 
-export const bookingInsertSchema = bookingSchema.omit({ id: true, created_at: true });
-export const bookingUpdateSchema = bookingInsertSchema.partial();
+export const bookingInsertSchema = bookingSchema.omit({ id: true, created_at: true, updated_at: true });
+export const bookingUpdateSchema = bookingInsertSchema.omit({ concert_id: true, performer_id: true }).partial();
 
 export const serviceHourInsertSchema = serviceHourSchema.omit({ id: true, created_at: true });
 export const serviceHourUpdateSchema = serviceHourInsertSchema.partial();
@@ -289,6 +344,7 @@ export const serviceHourUpdateSchema = serviceHourInsertSchema.partial();
 
 export type VenueInsert = z.infer<typeof venueInsertSchema>;
 export type VenueUpdate = z.infer<typeof venueUpdateSchema>;
+export type VenueContactUpdate = z.infer<typeof venueContactUpdateSchema>;
 
 export type SeriesInsert = z.infer<typeof seriesInsertSchema>;
 export type SeriesUpdate = z.infer<typeof seriesUpdateSchema>;
