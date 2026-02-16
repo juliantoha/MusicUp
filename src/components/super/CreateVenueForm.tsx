@@ -88,10 +88,12 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
   };
 
   return (
-    <Card>
+    <Card className="border border-gray-100">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Plus className="h-5 w-5 text-green-600" />
+          <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+            <Plus className="h-4 w-4 text-green-600" />
+          </div>
           <CardTitle>Create New Venue</CardTitle>
         </div>
         <CardDescription>
@@ -102,12 +104,13 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">Basic Information</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-100 pb-2">Basic Information</h3>
 
             <div className="space-y-2">
               <Label htmlFor="name">Venue Name *</Label>
               <Input
                 id="name"
+                className="h-10 border-gray-200 bg-white"
                 placeholder="e.g., Ivy Park Pleasanton"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
@@ -123,7 +126,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 onValueChange={(value) => handleChange("venue_type_id", value || null)}
                 disabled={creating || loadingVenueTypes}
               >
-                <SelectTrigger id="venue_type_id">
+                <SelectTrigger id="venue_type_id" className="h-10 border-gray-200">
                   <SelectValue placeholder="Select a venue type..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,6 +146,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
               <Label htmlFor="address">Street Address *</Label>
               <Input
                 id="address"
+                className="h-10 border-gray-200 bg-white"
                 placeholder="e.g., 123 Main St"
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
@@ -156,6 +160,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
+                  className="h-10 border-gray-200 bg-white"
                   placeholder="e.g., Pleasanton"
                   value={formData.city}
                   onChange={(e) => handleChange("city", e.target.value)}
@@ -168,6 +173,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 <Label htmlFor="state">State *</Label>
                 <Input
                   id="state"
+                  className="h-10 border-gray-200 bg-white"
                   placeholder="CA"
                   maxLength={2}
                   value={formData.state}
@@ -182,6 +188,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
               <Label htmlFor="zip">ZIP Code *</Label>
               <Input
                 id="zip"
+                className="h-10 border-gray-200 bg-white"
                 placeholder="94588"
                 value={formData.zip}
                 onChange={(e) => handleChange("zip", e.target.value)}
@@ -194,6 +201,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
               <Label htmlFor="notes">Notes (Optional)</Label>
               <Textarea
                 id="notes"
+                className="border-gray-200 bg-white"
                 placeholder="Any additional information about the venue..."
                 value={formData.notes || ""}
                 onChange={(e) => handleChange("notes", e.target.value)}
@@ -205,7 +213,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
 
           {/* Venue Contact Information */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-gray-700 border-b pb-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-100 pb-2">
               Venue Contact Person
             </h3>
             <p className="text-xs text-gray-500">
@@ -216,6 +224,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
               <Label htmlFor="venue_contact_name">Contact Name</Label>
               <Input
                 id="venue_contact_name"
+                className="h-10 border-gray-200 bg-white"
                 placeholder="e.g., John Smith"
                 value={formData.venue_contact_name || ""}
                 onChange={(e) => handleChange("venue_contact_name", e.target.value)}
@@ -227,6 +236,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
               <Label htmlFor="venue_contact_email">Contact Email</Label>
               <Input
                 id="venue_contact_email"
+                className="h-10 border-gray-200 bg-white"
                 type="email"
                 placeholder="e.g., contact@venue.com"
                 value={formData.venue_contact_email || ""}
@@ -239,6 +249,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
               <Label htmlFor="venue_contact_phone">Contact Phone</Label>
               <Input
                 id="venue_contact_phone"
+                className="h-10 border-gray-200 bg-white"
                 type="tel"
                 placeholder="e.g., (925) 555-1234"
                 value={formData.venue_contact_phone || ""}
@@ -252,7 +263,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
           <div className="flex gap-3 pt-4">
             <Button
               type="submit"
-              className="flex-1"
+              className="flex-1 shadow-md hover:shadow-lg transition-all"
               disabled={creating}
             >
               {creating ? (

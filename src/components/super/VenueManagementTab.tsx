@@ -19,7 +19,7 @@ export function VenueManagementTab() {
   if (showCreateForm) {
     return (
       <div className="space-y-4">
-        <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+        <Button variant="outline" className="border-gray-200" onClick={() => setShowCreateForm(false)}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Venues
         </Button>
@@ -38,7 +38,7 @@ export function VenueManagementTab() {
   if (selectedVenue) {
     return (
       <div className="space-y-4">
-        <Button variant="outline" onClick={() => setSelectedVenue(null)}>
+        <Button variant="outline" className="border-gray-200" onClick={() => setSelectedVenue(null)}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Venues
         </Button>
@@ -49,8 +49,14 @@ export function VenueManagementTab() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-8">
-        <p className="text-gray-500">Loading venues...</p>
+      <div className="space-y-4">
+        <div className="h-8 w-64 skeleton rounded-lg" />
+        <div className="h-4 w-96 skeleton rounded-lg" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="h-40 skeleton rounded-xl" />
+          <div className="h-40 skeleton rounded-xl" />
+          <div className="h-40 skeleton rounded-xl" />
+        </div>
       </div>
     );
   }
@@ -59,14 +65,16 @@ export function VenueManagementTab() {
     return (
       <div className="space-y-4">
         <div className="flex justify-end">
-          <Button onClick={() => setShowCreateForm(true)}>
+          <Button className="shadow-md hover:shadow-lg transition-all" onClick={() => setShowCreateForm(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Create Venue
           </Button>
         </div>
-        <Card className="p-12">
+        <Card className="p-12 border border-gray-100">
           <div className="text-center text-gray-500">
-            <Building2 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+              <Building2 className="w-8 h-8 text-gray-400" />
+            </div>
             <h3 className="text-lg font-semibold mb-2">No Venues</h3>
             <p className="text-sm mb-4">No venues have been created yet.</p>
             <Button onClick={() => setShowCreateForm(true)} variant="outline">
@@ -88,7 +96,7 @@ export function VenueManagementTab() {
             Select a venue to manage its administrators and permissions.
           </p>
         </div>
-        <Button onClick={() => setShowCreateForm(true)}>
+        <Button className="shadow-md hover:shadow-lg transition-all" onClick={() => setShowCreateForm(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Create Venue
         </Button>
@@ -98,7 +106,7 @@ export function VenueManagementTab() {
         {venues.map((venue) => (
           <Card
             key={venue.id}
-            className="p-4 cursor-pointer hover:border-blue-500 hover:shadow-md transition-all"
+            className="p-4 cursor-pointer card-hover hover:border-blue-500 hover:shadow-md transition-all border border-gray-100"
             onClick={() => setSelectedVenue(venue)}
           >
             <div className="flex items-start gap-3">

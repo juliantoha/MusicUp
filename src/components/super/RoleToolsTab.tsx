@@ -116,7 +116,7 @@ export function RoleToolsTab() {
 
   return (
     <div className="space-y-6">
-      <Alert className="border-purple-200 bg-purple-50">
+      <Alert className="border-purple-100 bg-purple-50/60 rounded-xl">
         <Shield className="h-4 w-4 text-purple-600" />
         <AlertDescription className="text-purple-900">
           <strong>Warning:</strong> These tools modify user permissions and should be used with
@@ -126,10 +126,12 @@ export function RoleToolsTab() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Promote to Super Admin */}
-        <Card>
+        <Card className="border border-gray-100">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-purple-600" />
+              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                <UserPlus className="h-4 w-4 text-purple-600" />
+              </div>
               <CardTitle>Promote to Super Admin</CardTitle>
             </div>
             <CardDescription>
@@ -145,6 +147,7 @@ export function RoleToolsTab() {
                 </label>
                 <Input
                   id="super-admin-email"
+                  className="h-10 border-gray-200 bg-white"
                   type="email"
                   placeholder="user@example.com"
                   value={superAdminEmail}
@@ -159,7 +162,7 @@ export function RoleToolsTab() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full shadow-md hover:shadow-lg transition-all"
                 disabled={promotingToSuperAdmin || !superAdminEmail.trim()}
               >
                 {promotingToSuperAdmin ? (
@@ -179,10 +182,12 @@ export function RoleToolsTab() {
         </Card>
 
         {/* Grant Host Role */}
-        <Card>
+        <Card className="border border-gray-100">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-600" />
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Building2 className="h-4 w-4 text-blue-600" />
+              </div>
               <CardTitle>Grant Host Role</CardTitle>
             </div>
             <CardDescription>
@@ -198,6 +203,7 @@ export function RoleToolsTab() {
                 </label>
                 <Input
                   id="venue-admin-email"
+                  className="h-10 border-gray-200 bg-white"
                   type="email"
                   placeholder="user@example.com"
                   value={venueAdminEmail}
@@ -223,7 +229,7 @@ export function RoleToolsTab() {
                   disabled={grantingVenueAdmin}
                   required
                 >
-                  <SelectTrigger id="venue-select">
+                  <SelectTrigger id="venue-select" className="h-10 border-gray-200">
                     <SelectValue placeholder="Select a venue" />
                   </SelectTrigger>
                   <SelectContent>
@@ -244,7 +250,7 @@ export function RoleToolsTab() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full shadow-md hover:shadow-lg transition-all"
                 disabled={grantingVenueAdmin || !venueAdminEmail.trim() || !selectedVenueId}
               >
                 {grantingVenueAdmin ? (
@@ -265,7 +271,7 @@ export function RoleToolsTab() {
       </div>
 
       {/* Additional Info */}
-      <Card className="border-gray-200 bg-gray-50">
+      <Card className="bg-gray-50/50 border-gray-100">
         <CardHeader>
           <CardTitle className="text-base">Role Hierarchy</CardTitle>
         </CardHeader>

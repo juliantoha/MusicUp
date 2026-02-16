@@ -203,7 +203,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
   return (
     <div className="space-y-6">
       {/* Venue Header */}
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100">
         <div className="flex items-start gap-3">
           <Building2 className="w-6 h-6 text-blue-600 mt-1" />
           <div>
@@ -224,16 +224,24 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
       </Card>
 
       {/* Current Admins */}
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100">
         <div className="flex items-center gap-3 mb-4">
-          <Shield className="w-6 h-6 text-purple-600" />
+          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+            <Shield className="w-4 h-4 text-purple-600" />
+          </div>
           <h3 className="text-xl font-semibold">Current Administrators</h3>
         </div>
 
         {loadingAdmins ? (
-          <p className="text-gray-500">Loading admins...</p>
+          <div className="space-y-3">
+            <div className="h-16 skeleton rounded-lg" />
+            <div className="h-16 skeleton rounded-lg" />
+          </div>
         ) : admins.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <Shield className="w-8 h-8 text-gray-400" />
+            </div>
             <p>No administrators assigned to this venue yet.</p>
             <p className="text-sm mt-1">Use the search below to add admins.</p>
           </div>
@@ -242,7 +250,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
             {admins.map((item: any) => {
               const admin = item.admin;
               return (
-                <Card key={item.id} className="p-4">
+                <Card key={item.id} className="p-4 card-hover border border-gray-100">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -266,7 +274,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
                         value={admin?.role}
                         onValueChange={(value: any) => handleRoleChange(admin?.id, value)}
                       >
-                        <SelectTrigger className="w-40">
+                        <SelectTrigger className="w-40 h-10 border-gray-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -292,9 +300,11 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
       </Card>
 
       {/* Add Admin */}
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100">
         <div className="flex items-center gap-3 mb-4">
-          <UserPlus className="w-6 h-6 text-green-600" />
+          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+            <UserPlus className="w-4 h-4 text-green-600" />
+          </div>
           <h3 className="text-xl font-semibold">Add Administrator</h3>
         </div>
 
@@ -302,6 +312,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
           <div className="flex gap-2">
             <div className="flex-1">
               <Input
+                className="h-10 border-gray-200 bg-white"
                 placeholder="Search by email..."
                 value={searchEmail}
                 onChange={(e) => setSearchEmail(e.target.value)}
@@ -318,7 +329,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
             <div className="space-y-2">
               <p className="text-sm font-medium">Search Results:</p>
               {searchResults.map((profile) => (
-                <Card key={profile.id} className="p-4">
+                <Card key={profile.id} className="p-4 card-hover border border-gray-100">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -358,7 +369,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
             </div>
           )}
 
-          <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
+          <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-sm text-blue-800">
             <p className="font-medium mb-1">Note:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Only users with "admin" or "super_admin" role can be added as venue administrators</li>
@@ -370,16 +381,24 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
       </Card>
 
       {/* Venue Contacts Section */}
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100">
         <div className="flex items-center gap-3 mb-4">
-          <MapPin className="w-6 h-6 text-orange-600" />
+          <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+            <MapPin className="w-4 h-4 text-orange-600" />
+          </div>
           <h3 className="text-xl font-semibold">Venue Contacts</h3>
         </div>
 
         {loadingContacts ? (
-          <p className="text-gray-500 mb-4">Loading venue contacts...</p>
+          <div className="space-y-3 mb-4">
+            <div className="h-16 skeleton rounded-lg" />
+            <div className="h-16 skeleton rounded-lg" />
+          </div>
         ) : venueContacts.length === 0 ? (
-          <div className="text-center py-6 text-gray-500 mb-4 bg-gray-50 rounded-lg">
+          <div className="text-center py-6 text-gray-500 mb-4 bg-gray-50 rounded-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <MapPin className="w-8 h-8 text-gray-400" />
+            </div>
             <p>No venue contacts assigned yet.</p>
             <p className="text-sm mt-1">Invite someone using the form below.</p>
           </div>
@@ -388,7 +407,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
             {venueContacts.map((contact: any) => {
               const profile = contact.profile;
               return (
-                <Card key={contact.id} className="p-4">
+                <Card key={contact.id} className="p-4 card-hover border border-gray-100">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -420,11 +439,14 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
 
         <div className="space-y-4 border-t pt-4">
           <h4 className="font-medium flex items-center gap-2">
-            <Mail className="w-5 h-5 text-orange-600" />
+            <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Mail className="w-4 h-4 text-orange-600" />
+            </div>
             Invite Venue Contact
           </h4>
           <div className="flex gap-2">
             <Input
+              className="h-10 border-gray-200 bg-white"
               placeholder="Enter email address..."
               value={contactInviteEmail}
               onChange={(e) => setContactInviteEmail(e.target.value)}
@@ -436,7 +458,7 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
             </Button>
           </div>
 
-          <div className="bg-orange-50 p-4 rounded-lg text-sm text-orange-800">
+          <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 text-sm text-orange-800">
             <p className="font-medium mb-1">About Venue Contacts:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Venue contacts can view all concerts at their assigned venue</li>

@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { withRole } from "@/lib/auth/withRole";
 import { useSeries, useCollections, usePieces, useStages } from "@/lib/hooks";
 import { uploadScore, uploadAudio, getPieceStageDetails } from "@/lib/storage/actions";
-import { Upload, FileText, Music, CheckCircle2 } from "lucide-react";
+import { Upload, FileText, Music, CheckCircle2, Loader2 } from "lucide-react";
 
 function LibraryUploadPage() {
   const [selectedSeriesId, setSelectedSeriesId] = useState<string>("");
@@ -154,18 +154,21 @@ function LibraryUploadPage() {
 
   return (
     <div className="container mx-auto p-6 max-w-5xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Library Upload Utility</h1>
-        <p className="text-gray-600">Upload scores and audio files to the music library</p>
+      <div className="mb-8">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#2563EB] to-[#06B6D4] flex items-center justify-center mb-4">
+          <Upload className="w-6 h-6 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900">Library Upload Utility</h1>
+        <p className="text-gray-500">Upload scores and audio files to the music library</p>
       </div>
 
       {/* Selection */}
-      <Card className="p-6 mb-6">
+      <Card className="p-6 mb-6 border border-gray-100">
         <h3 className="text-lg font-semibold mb-4">Select Piece & Stage</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Series Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Series</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Series</label>
             <Select
               value={selectedSeriesId}
               onValueChange={(value) => {
@@ -177,7 +180,7 @@ function LibraryUploadPage() {
                 setAudioUrl(null);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
                 <SelectValue placeholder="Select series" />
               </SelectTrigger>
               <SelectContent>
@@ -192,7 +195,7 @@ function LibraryUploadPage() {
 
           {/* Collection Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Collection</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Collection</label>
             <Select
               value={selectedCollectionId}
               onValueChange={(value) => {
@@ -204,7 +207,7 @@ function LibraryUploadPage() {
               }}
               disabled={!selectedSeriesId}
             >
-              <SelectTrigger>
+              <SelectTrigger className={`h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors ${!selectedSeriesId ? "bg-gray-50/80" : ""}`}>
                 <SelectValue placeholder="Select collection" />
               </SelectTrigger>
               <SelectContent>
@@ -219,7 +222,7 @@ function LibraryUploadPage() {
 
           {/* Piece Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Piece</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Piece</label>
             <Select
               value={selectedPieceId}
               onValueChange={(value) => {
@@ -230,7 +233,7 @@ function LibraryUploadPage() {
               }}
               disabled={!selectedCollectionId}
             >
-              <SelectTrigger>
+              <SelectTrigger className={`h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors ${!selectedCollectionId ? "bg-gray-50/80" : ""}`}>
                 <SelectValue placeholder="Select piece" />
               </SelectTrigger>
               <SelectContent>
@@ -245,7 +248,7 @@ function LibraryUploadPage() {
 
           {/* Stage Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Difficulty Stage</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Difficulty Stage</label>
             <Select
               value={selectedStageId}
               onValueChange={(value) => {
@@ -257,7 +260,7 @@ function LibraryUploadPage() {
               }}
               disabled={!selectedPieceId}
             >
-              <SelectTrigger>
+              <SelectTrigger className={`h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors ${!selectedPieceId ? "bg-gray-50/80" : ""}`}>
                 <SelectValue placeholder="Select stage" />
               </SelectTrigger>
               <SelectContent>
@@ -274,7 +277,7 @@ function LibraryUploadPage() {
         </div>
 
         {selectedStage && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+          <div className="mt-4 bg-blue-50/60 border border-blue-100 rounded-xl p-4">
             <p className="text-sm font-medium mb-1">Selected:</p>
             <p className="text-sm text-gray-700">
               {selectedSeries?.title} → {selectedCollection?.title} → {selectedPiece?.title} →{" "}
@@ -288,14 +291,16 @@ function LibraryUploadPage() {
 
       {/* Upload Score */}
       {selectedStageId && (
-        <Card className="p-6 mb-6">
+        <Card className="p-6 mb-6 border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
-            <FileText className="w-6 h-6 text-red-600" />
+            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+              <FileText className="w-4 h-4 text-red-600" />
+            </div>
             <h3 className="text-lg font-semibold">Upload Score (PDF)</h3>
           </div>
 
           <div className="space-y-4">
-            <div>
+            <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 hover:border-gray-300 transition-colors">
               <Input
                 type="file"
                 accept=".pdf"
@@ -305,12 +310,16 @@ function LibraryUploadPage() {
             </div>
 
             <Button onClick={handleScoreUpload} disabled={!scoreFile || uploadingScore}>
-              <Upload className="w-4 h-4 mr-2" />
+              {uploadingScore ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4 mr-2" />
+              )}
               {uploadingScore ? "Uploading..." : "Upload Score"}
             </Button>
 
             {scoreUrl && (
-              <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl p-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <div>
                   <p className="text-sm font-medium text-green-800">Score uploaded successfully</p>
@@ -331,14 +340,16 @@ function LibraryUploadPage() {
 
       {/* Upload Audio */}
       {selectedStageId && (
-        <Card className="p-6 mb-6">
+        <Card className="p-6 mb-6 border border-gray-100">
           <div className="flex items-center gap-3 mb-4">
-            <Music className="w-6 h-6 text-purple-600" />
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Music className="w-4 h-4 text-purple-600" />
+            </div>
             <h3 className="text-lg font-semibold">Upload Audio</h3>
           </div>
 
           <div className="space-y-4">
-            <div>
+            <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 hover:border-gray-300 transition-colors">
               <Input
                 type="file"
                 accept="audio/*"
@@ -348,12 +359,16 @@ function LibraryUploadPage() {
             </div>
 
             <Button onClick={handleAudioUpload} disabled={!audioFile || uploadingAudio}>
-              <Upload className="w-4 h-4 mr-2" />
+              {uploadingAudio ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4 mr-2" />
+              )}
               {uploadingAudio ? "Uploading..." : "Upload Audio"}
             </Button>
 
             {audioUrl && (
-              <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl p-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
                 <div>
                   <p className="text-sm font-medium text-green-800">Audio uploaded successfully</p>
@@ -374,7 +389,7 @@ function LibraryUploadPage() {
 
       {/* Actions */}
       <div className="flex gap-2">
-        <Button variant="outline" onClick={handleReset}>
+        <Button variant="outline" onClick={handleReset} className="border-gray-200">
           Reset
         </Button>
       </div>

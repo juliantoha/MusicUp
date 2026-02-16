@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import { format } from "date-fns";
+import { Logo } from "@/components/Logo";
 
 type Concert = {
   id: string;
@@ -237,7 +238,7 @@ export default function VenueContactDashboard() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Music className="h-16 w-16 mx-auto mb-4 animate-pulse" />
+          <Logo className="h-12 w-12 text-[#2563EB] animate-pulse mx-auto mb-4" animate />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -246,15 +247,22 @@ export default function VenueContactDashboard() {
 
   const selectedVenue = venues.find(v => v.id === selectedVenueId);
 
+  const stageColor = (stage: number) => {
+    if (stage === 1) return "bg-green-50 text-green-700 border-green-200";
+    if (stage === 2) return "bg-amber-50 text-amber-700 border-amber-200";
+    if (stage === 3) return "bg-red-50 text-red-700 border-red-200";
+    return "bg-gray-50 text-gray-700 border-gray-200";
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-4xl font-display font-bold mb-2 tracking-tight">Venue Contact Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {profile.full_name || user?.email}</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Venue Contact Dashboard</h1>
+        <p className="text-gray-500">Welcome back, {profile.full_name || user?.email}</p>
       </div>
 
       {venues.length === 0 ? (
-        <Card>
+        <Card className="border border-gray-100">
           <CardHeader>
             <CardTitle>No Venues Assigned</CardTitle>
             <CardDescription>
@@ -267,9 +275,9 @@ export default function VenueContactDashboard() {
           {/* Venue Selector */}
           {venues.length > 1 && (
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Select Venue</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Select Venue</label>
               <select
-                className="w-full max-w-md px-4 py-2 border rounded-lg"
+                className="w-full max-w-md h-10 px-4 border border-gray-200 rounded-xl bg-white text-gray-900 focus:border-[#2563EB] focus:outline-none transition-colors"
                 value={selectedVenueId || ""}
                 onChange={(e) => setSelectedVenueId(e.target.value)}
               >
@@ -284,10 +292,12 @@ export default function VenueContactDashboard() {
 
           {/* Venue Info Card */}
           {selectedVenue && (
-            <Card className="mb-8">
+            <Card className="mb-8 border border-gray-100">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-blue-600" />
+                  </div>
                   {selectedVenue.name}
                 </CardTitle>
                 <CardDescription>
@@ -296,15 +306,15 @@ export default function VenueContactDashboard() {
               </CardHeader>
               {hostContacts.length > 0 && (
                 <CardContent>
-                  <h3 className="text-sm font-semibold mb-2">Host Contacts:</h3>
+                  <h3 className="text-sm font-semibold mb-3">Host Contacts:</h3>
                   <div className="space-y-2">
                     {hostContacts.map((host: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
+                      <div key={idx} className="flex items-center gap-4 text-sm bg-gray-50 rounded-xl px-4 py-3">
+                        <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
-                          <span>{host.profile?.full_name || 'Unknown'}</span>
+                          <span className="font-medium">{host.profile?.full_name || 'Unknown'}</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                           <Mail className="h-4 w-4 text-muted-foreground" />
                           <a href={`mailto:${host.profile?.email}`} className="text-primary hover:underline">
                             {host.profile?.email}
@@ -331,18 +341,35 @@ export default function VenueContactDashboard() {
 
             <TabsContent value="upcoming" className="space-y-4">
               {loadingData ? (
-                <p>Loading concerts...</p>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="border border-gray-100">
+                      <CardHeader>
+                        <div className="space-y-3 animate-pulse">
+                          <div className="h-5 bg-gray-200 rounded-lg w-1/3" />
+                          <div className="flex gap-4">
+                            <div className="h-4 bg-gray-100 rounded-lg w-32" />
+                            <div className="h-4 bg-gray-100 rounded-lg w-40" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
               ) : upcomingConcerts.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    No upcoming concerts scheduled
+                <Card className="border border-gray-100">
+                  <CardContent className="py-12 text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                      <Calendar className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <p className="text-muted-foreground">No upcoming concerts scheduled</p>
                   </CardContent>
                 </Card>
               ) : (
                 upcomingConcerts.map(concert => (
                   <Card
                     key={concert.id}
-                    className="cursor-pointer hover:shadow-lg transition-shadow"
+                    className="cursor-pointer card-hover border border-gray-100 transition-shadow"
                     onClick={() => setSelectedConcert(concert as any)}
                   >
                     <CardHeader>
@@ -370,18 +397,35 @@ export default function VenueContactDashboard() {
 
             <TabsContent value="past" className="space-y-4">
               {loadingData ? (
-                <p>Loading concerts...</p>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="border border-gray-100">
+                      <CardHeader>
+                        <div className="space-y-3 animate-pulse">
+                          <div className="h-5 bg-gray-200 rounded-lg w-1/3" />
+                          <div className="flex gap-4">
+                            <div className="h-4 bg-gray-100 rounded-lg w-32" />
+                            <div className="h-4 bg-gray-100 rounded-lg w-40" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
               ) : pastConcerts.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    No past concerts
+                <Card className="border border-gray-100">
+                  <CardContent className="py-12 text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                      <Clock className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <p className="text-muted-foreground">No past concerts</p>
                   </CardContent>
                 </Card>
               ) : (
                 pastConcerts.map(concert => (
                   <Card
                     key={concert.id}
-                    className="cursor-pointer hover:shadow-lg transition-shadow"
+                    className="cursor-pointer card-hover border border-gray-100 transition-shadow"
                     onClick={() => setSelectedConcert(concert as any)}
                   >
                     <CardHeader>
@@ -410,8 +454,8 @@ export default function VenueContactDashboard() {
 
           {/* Concert Details Modal/Sheet */}
           {selectedConcert && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl border-0 shadow-2xl">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -428,8 +472,9 @@ export default function VenueContactDashboard() {
                       </CardDescription>
                     </div>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
+                      className="border-gray-200 rounded-xl"
                       onClick={() => setSelectedConcert(null)}
                     >
                       Close
@@ -444,11 +489,16 @@ export default function VenueContactDashboard() {
                       Performers ({concertBookings.length})
                     </h3>
                     {concertBookings.length === 0 ? (
-                      <p className="text-muted-foreground text-sm">No performers booked yet</p>
+                      <div className="text-center py-6">
+                        <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                          <Music className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <p className="text-muted-foreground text-sm">No performers booked yet</p>
+                      </div>
                     ) : (
                       <div className="space-y-3">
                         {concertBookings.map((booking: any) => (
-                          <div key={booking.id} className="border rounded-lg p-4">
+                          <div key={booking.id} className="rounded-xl border border-gray-100 p-4">
                             <div className="flex items-start justify-between">
                               <div>
                                 <p className="font-medium">{booking.profile?.full_name || 'Unknown'}</p>
@@ -457,7 +507,10 @@ export default function VenueContactDashboard() {
                                   <span className="font-medium">Piece:</span> {booking.piece?.title || 'N/A'}
                                 </p>
                                 <p className="text-sm">
-                                  <span className="font-medium">Stage:</span> {booking.stage}
+                                  <span className="font-medium">Stage:</span>{" "}
+                                  <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium border ${stageColor(booking.stage)}`}>
+                                    Stage {booking.stage}
+                                  </span>
                                 </p>
                               </div>
                               <Badge variant={booking.status === "performed" ? "default" : "secondary"}>
@@ -477,7 +530,12 @@ export default function VenueContactDashboard() {
                       Concert Photos ({concertPhotos.length})
                     </h3>
                     {concertPhotos.length === 0 ? (
-                      <p className="text-muted-foreground text-sm">No photos uploaded yet</p>
+                      <div className="text-center py-6">
+                        <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                          <ImageIcon className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <p className="text-muted-foreground text-sm">No photos uploaded yet</p>
+                      </div>
                     ) : (
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {concertPhotos.map(photo => {
@@ -487,11 +545,11 @@ export default function VenueContactDashboard() {
                             .getPublicUrl(photo.photo_path);
 
                           return (
-                            <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 group">
                               <img
                                 src={data.publicUrl}
                                 alt="Concert photo"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                               />
                             </div>
                           );

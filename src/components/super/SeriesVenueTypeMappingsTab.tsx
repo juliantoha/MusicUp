@@ -93,8 +93,10 @@ export function SeriesVenueTypeMappingsTab() {
 
   if (loading || seriesLoading || venueTypesLoading) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">Loading mappings...</p>
+      <div className="space-y-4">
+        <div className="h-8 w-80 skeleton rounded-lg" />
+        <div className="h-4 w-96 skeleton rounded-lg" />
+        <div className="h-64 skeleton rounded-xl" />
       </div>
     );
   }
@@ -108,11 +110,11 @@ export function SeriesVenueTypeMappingsTab() {
         </p>
       </div>
 
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b">
+              <tr className="border-b bg-gray-50/80">
                 <th className="text-left py-3 px-2 font-semibold">Concert Series</th>
                 {venueTypes.map((vt) => (
                   <th key={vt.id} className="text-center py-3 px-2 font-medium text-sm">
@@ -125,7 +127,7 @@ export function SeriesVenueTypeMappingsTab() {
             </thead>
             <tbody>
               {series.filter(s => s.is_active).map((s) => (
-                <tr key={s.id} className="border-b hover:bg-gray-50">
+                <tr key={s.id} className="border-b hover:bg-blue-50/30 transition-colors">
                   <td className="py-3 px-2">
                     <div>
                       <p className="font-medium">{s.title}</p>
@@ -141,7 +143,7 @@ export function SeriesVenueTypeMappingsTab() {
                         <Button
                           variant={mapped ? "default" : "outline"}
                           size="sm"
-                          className={`h-8 w-8 p-0 ${
+                          className={`h-8 w-8 p-0 rounded-lg ${
                             mapped
                               ? "bg-green-600 hover:bg-green-700"
                               : "hover:bg-gray-100"
@@ -165,7 +167,7 @@ export function SeriesVenueTypeMappingsTab() {
         </div>
       </Card>
 
-      <Card className="p-4 bg-blue-50 border-blue-200">
+      <Card className="p-4 bg-blue-50 border-blue-200 rounded-xl border border-gray-100">
         <div className="flex items-start gap-3">
           <Lightbulb className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-blue-900">
@@ -180,7 +182,7 @@ export function SeriesVenueTypeMappingsTab() {
         </div>
       </Card>
 
-      <Card className="p-4 bg-amber-50 border-amber-200">
+      <Card className="p-4 bg-amber-50 border-amber-200 rounded-xl border border-gray-100">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-amber-900">
