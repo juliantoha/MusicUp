@@ -28,10 +28,25 @@ export function SheetMusicLibraryTab() {
   const selectedCollection = collections.find((c) => c.id === selectedCollectionId);
   const selectedPiece = pieces.find((p) => p.id === selectedPieceId);
 
+  const getStageBorderColor = (stage: number) => {
+    switch (stage) {
+      case 1:
+        return "border-l-green-500";
+      case 2:
+        return "border-l-amber-500";
+      case 3:
+        return "border-l-red-500";
+      default:
+        return "border-l-gray-500";
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Library className="w-6 h-6 text-blue-600" />
+        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+          <Library className="w-5 h-5 text-blue-600" />
+        </div>
         <div>
           <h3 className="text-xl font-semibold">Sheet Music Library</h3>
           <p className="text-sm text-gray-600">
@@ -41,11 +56,11 @@ export function SheetMusicLibraryTab() {
       </div>
 
       {/* Selection Filters */}
-      <Card className="p-6">
+      <Card className="p-6 border border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Series Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Series</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Series</label>
             <Select
               value={selectedSeriesId}
               onValueChange={(value) => {
@@ -54,7 +69,7 @@ export function SheetMusicLibraryTab() {
                 setSelectedPieceId("");
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
                 <SelectValue placeholder="Select series" />
               </SelectTrigger>
               <SelectContent>
@@ -69,7 +84,7 @@ export function SheetMusicLibraryTab() {
 
           {/* Collection Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Collection</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Collection</label>
             <Select
               value={selectedCollectionId}
               onValueChange={(value) => {
@@ -78,7 +93,7 @@ export function SheetMusicLibraryTab() {
               }}
               disabled={!selectedSeriesId}
             >
-              <SelectTrigger>
+              <SelectTrigger className={`h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors ${!selectedSeriesId ? "bg-gray-50/80" : ""}`}>
                 <SelectValue placeholder="Select collection" />
               </SelectTrigger>
               <SelectContent>
@@ -93,13 +108,13 @@ export function SheetMusicLibraryTab() {
 
           {/* Piece Select */}
           <div>
-            <label className="block text-sm font-medium mb-2">Piece</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Piece</label>
             <Select
               value={selectedPieceId}
               onValueChange={setSelectedPieceId}
               disabled={!selectedCollectionId}
             >
-              <SelectTrigger>
+              <SelectTrigger className={`h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors ${!selectedCollectionId ? "bg-gray-50/80" : ""}`}>
                 <SelectValue placeholder="Select piece" />
               </SelectTrigger>
               <SelectContent>
@@ -116,7 +131,7 @@ export function SheetMusicLibraryTab() {
 
       {/* Series Description */}
       {selectedSeries && (
-        <Card className="p-4 bg-blue-50">
+        <Card className="p-4 border-l-4 border-l-blue-500 bg-white border border-gray-100">
           <h4 className="font-semibold mb-2">{selectedSeries.title}</h4>
           {selectedSeries.description && (
             <p className="text-sm text-gray-700">{selectedSeries.description}</p>
@@ -126,7 +141,7 @@ export function SheetMusicLibraryTab() {
 
       {/* Piece Details & Stages */}
       {selectedPiece && (
-        <Card className="p-6">
+        <Card className="p-6 card-hover">
           <div className="flex gap-4 mb-4">
             {/* Album Cover / Thumbnail */}
             {selectedPiece.image_url && (
@@ -154,7 +169,7 @@ export function SheetMusicLibraryTab() {
             <div className="space-y-3">
               <h5 className="font-medium">Available Difficulty Levels</h5>
               {stages.map((stage) => (
-                <Card key={stage.id} className="p-4 bg-gray-50">
+                <Card key={stage.id} className={`p-4 border-l-4 ${getStageBorderColor(stage.stage)} bg-white border border-gray-100`}>
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h6 className="font-medium">
@@ -169,27 +184,27 @@ export function SheetMusicLibraryTab() {
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {stage.score_url ? (
-                      <Button variant="outline" size="sm" asChild>
+                      <Button variant="outline" size="sm" className="rounded-xl border-gray-200" asChild>
                         <a href={stage.score_url} target="_blank" rel="noopener noreferrer">
                           <Download className="w-4 h-4 mr-2" />
                           Download Sheet Music
                         </a>
                       </Button>
                     ) : (
-                      <Button variant="outline" size="sm" disabled>
+                      <Button variant="outline" size="sm" className="rounded-xl border-gray-200" disabled>
                         <Download className="w-4 h-4 mr-2" />
                         Sheet Music Unavailable
                       </Button>
                     )}
                     {stage.audio_url ? (
-                      <Button variant="outline" size="sm" asChild>
+                      <Button variant="outline" size="sm" className="rounded-xl border-gray-200" asChild>
                         <a href={stage.audio_url} target="_blank" rel="noopener noreferrer">
                           <Music className="w-4 h-4 mr-2" />
                           Listen to Song
                         </a>
                       </Button>
                     ) : (
-                      <Button variant="outline" size="sm" disabled>
+                      <Button variant="outline" size="sm" className="rounded-xl border-gray-200" disabled>
                         <Music className="w-4 h-4 mr-2" />
                         Audio Unavailable
                       </Button>
@@ -210,11 +225,25 @@ export function SheetMusicLibraryTab() {
       {!selectedSeriesId && (
         <Card className="p-12">
           <div className="text-center text-gray-500">
-            <Library className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+              <Library className="w-8 h-8 text-gray-400" />
+            </div>
             <h4 className="font-medium mb-2">Browse the Music Library</h4>
-            <p className="text-sm">
+            <p className="text-sm mb-6">
               Select a series above to start exploring available pieces and practice materials.
             </p>
+            {/* Skeleton loading indicator */}
+            <div className="max-w-md mx-auto space-y-3">
+              <div className="flex gap-3">
+                <div className="h-10 flex-1 rounded-lg bg-gray-100 animate-pulse" />
+                <div className="h-10 flex-1 rounded-lg bg-gray-100 animate-pulse" />
+              </div>
+              <div className="h-24 w-full rounded-lg bg-gray-50 animate-pulse" />
+              <div className="flex gap-3">
+                <div className="h-8 w-28 rounded-lg bg-gray-50 animate-pulse" />
+                <div className="h-8 w-28 rounded-lg bg-gray-50 animate-pulse" />
+              </div>
+            </div>
           </div>
         </Card>
       )}

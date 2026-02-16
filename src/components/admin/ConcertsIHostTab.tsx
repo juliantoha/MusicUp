@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useMyManagedConcerts } from "@/lib/hooks";
 import { ConcertDetailView } from "./ConcertDetailView";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, ChevronRight } from "lucide-react";
 import type { ConcertWithDetails } from "@/types/db";
 
 export function ConcertsIHostTab() {
@@ -23,7 +23,7 @@ export function ConcertsIHostTab() {
   if (selectedConcert) {
     return (
       <div className="space-y-4">
-        <Button variant="outline" onClick={() => setSelectedConcert(null)}>
+        <Button variant="outline" onClick={() => setSelectedConcert(null)} className="border-gray-200">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Concerts
         </Button>
@@ -40,43 +40,55 @@ export function ConcertsIHostTab() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-8">
-        <p className="text-gray-500">Loading concerts...</p>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <div className="h-6 w-48 skeleton rounded-lg" />
+          <div className="h-4 w-80 skeleton rounded-lg" />
+        </div>
+        <Card className="overflow-hidden border border-gray-100">
+          <div className="p-4 space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-4">
+                <div className="h-12 flex-1 skeleton rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
     );
   }
 
   if (concerts.length === 0) {
     return (
-      <Card className="p-12">
-        <div className="text-center text-gray-500">
-          <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-semibold mb-2">No Upcoming Concerts</h3>
-          <p className="text-sm">
-            You don't have any scheduled concerts at your venues yet.
-          </p>
+      <div className="text-center py-16 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+          <Calendar className="w-8 h-8 text-gray-400" />
         </div>
-      </Card>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">No Upcoming Concerts</h3>
+        <p className="text-sm text-gray-500">
+          You don't have any scheduled concerts at your venues yet.
+        </p>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold mb-2">Upcoming Concerts</h3>
-        <p className="text-sm text-gray-600 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">Upcoming Concerts</h3>
+        <p className="text-sm text-gray-500 mb-4">
           Click on a concert to manage performers and complete the event.
         </p>
       </div>
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden border border-gray-100">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Where</TableHead>
-              <TableHead>When</TableHead>
-              <TableHead>Who</TableHead>
-              <TableHead>What</TableHead>
+            <TableRow className="bg-gray-50/80 hover:bg-gray-50/80">
+              <TableHead className="font-semibold text-gray-700">Where</TableHead>
+              <TableHead className="font-semibold text-gray-700">When</TableHead>
+              <TableHead className="font-semibold text-gray-700">Who</TableHead>
+              <TableHead className="font-semibold text-gray-700">What</TableHead>
               <TableHead className="w-[100px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -91,20 +103,20 @@ export function ConcertsIHostTab() {
               return (
                 <TableRow
                   key={concert.id}
-                  className="cursor-pointer hover:bg-gray-50"
+                  className="cursor-pointer hover:bg-blue-50/40 transition-colors"
                   onClick={() => setSelectedConcert(concert)}
                 >
                   <TableCell>
                     <div>
-                      <p className="font-medium">{concert.venue?.name}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-medium text-gray-900">{concert.venue?.name}</p>
+                      <p className="text-sm text-gray-500">
                         {concert.venue?.city}, {concert.venue?.state}
                       </p>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium">
+                      <p className="font-medium text-gray-900">
                         {new Date(concert.starts_at).toLocaleDateString("en-US", {
                           weekday: "short",
                           month: "short",
@@ -113,7 +125,7 @@ export function ConcertsIHostTab() {
                           timeZone: "America/Los_Angeles",
                         })}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-500">
                         {new Date(concert.starts_at).toLocaleTimeString("en-US", {
                           hour: "numeric",
                           minute: "2-digit",
@@ -133,9 +145,9 @@ export function ConcertsIHostTab() {
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{bookingsCount} performers</p>
+                      <p className="font-medium text-gray-900">{bookingsCount} performer{bookingsCount !== 1 ? "s" : ""}</p>
                       {performers && performers.length > 0 && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-500">
                           {performers.join(", ")}
                           {bookingsCount > 3 && ` +${bookingsCount - 3} more`}
                         </p>
@@ -143,11 +155,11 @@ export function ConcertsIHostTab() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="font-medium">{concert.series?.title}</p>
+                    <p className="font-medium text-gray-900">{concert.series?.title}</p>
                   </TableCell>
                   <TableCell>
-                    <Button variant="outline" size="sm">
-                      Manage
+                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-600">
+                      <ChevronRight className="w-4 h-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
