@@ -153,10 +153,9 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up stagger-3">
               <Button asChild size="lg" className="bg-white text-[#2563EB] hover:bg-blue-50 hover:scale-105 transition-all font-semibold text-lg px-10 py-6 rounded-xl shadow-2xl animate-pulse-glow">
-                <Link href="/signup">Get Started Free</Link>
+                <Link href="/signup">Get Started Now</Link>
               </Button>
             </div>
-            <p className="mt-6 text-sm text-blue-200/60 animate-fade-in-up stagger-4">Free for performers. No credit card required.</p>
           </div>
         </div>
       </section>
@@ -391,7 +390,7 @@ export default function Home() {
       <footer className="bg-[#0B1220] text-white pt-16 pb-8 md:pt-20">
         <div className="container mx-auto px-4">
           {/* Logo + Mission row */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 pb-10 border-b border-white/10">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-12 pb-10 border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center p-1.5 shadow-lg">
                 <Logo className="w-full h-full text-white" />
