@@ -118,7 +118,7 @@ export default function Home() {
               <span className="text-2xl font-bold text-gradient-orange tracking-tight">MusicUp</span>
             </Link>
             <div className="flex items-center gap-3">
-              <Button asChild variant="ghost" className="text-gray-700 hover:text-[#2563EB] font-medium hidden sm:inline-flex">
+              <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-[#2563EB] font-medium hidden sm:inline-flex">
                 <Link href="/login">Sign In</Link>
               </Button>
               <Button asChild className="bg-[#2563EB] hover:bg-[#1d4ed8] shadow-md hover:shadow-lg transition-all rounded-lg px-5">
