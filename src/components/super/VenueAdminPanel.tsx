@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +36,8 @@ import {
   getVenueContacts,
   removeVenueContact,
 } from "@/lib/super/actions";
-import { Search, UserPlus, Trash2, Shield, Building2, MapPin, Mail } from "lucide-react";
+import { uploadVenuePhoto } from "@/lib/venues/actions";
+import { Search, UserPlus, Trash2, Shield, Building2, MapPin, Mail, Camera, Upload, Loader2 } from "lucide-react";
 import type { Venue, Profile } from "@/types/db";
 
 interface VenueAdminPanelProps {
@@ -59,10 +61,20 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
   const [selectedContact, setSelectedContact] = useState<string | null>(null);
   const [showRemoveContactDialog, setShowRemoveContactDialog] = useState(false);
 
+  // Venue Photos state
+  const [uploadingExterior, setUploadingExterior] = useState(false);
+  const [uploadingInterior, setUploadingInterior] = useState(false);
+  const [exteriorPhotoUrl, setExteriorPhotoUrl] = useState(venue.exterior_photo_url || "");
+  const [interiorPhotoUrl, setInteriorPhotoUrl] = useState(venue.interior_photo_url || "");
+  const exteriorInputRef = useRef<HTMLInputElement>(null);
+  const interiorInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     loadAdmins();
     loadVenueContacts();
-  }, [venue.id]);
+    setExteriorPhotoUrl(venue.exterior_photo_url || "");
+    setInteriorPhotoUrl(venue.interior_photo_url || "");
+  }, [venue.id, venue.exterior_photo_url, venue.interior_photo_url]);
 
   const loadAdmins = async () => {
     setLoadingAdmins(true);
@@ -219,6 +231,159 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
                 </p>
               )}
             </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Venue Photos */}
+      <Card className="p-6 border border-gray-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+            <Camera className="w-4 h-4 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">Venue Photos</h3>
+            <p className="text-sm text-gray-500">Upload or replace exterior and interior photos for this venue.</p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Exterior Photo */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-700">Exterior Photo</p>
+            <input
+              ref={exteriorInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setUploadingExterior(true);
+                const fd = new FormData();
+                fd.append("venue_id", venue.id);
+                fd.append("photo_type", "exterior");
+                fd.append("file", file);
+                const result = await uploadVenuePhoto(fd);
+                if ("error" in result && result.error) {
+                  toast.error(result.error);
+                } else if ("url" in result && result.url) {
+                  setExteriorPhotoUrl(result.url);
+                  toast.success("Exterior photo uploaded");
+                }
+                setUploadingExterior(false);
+                if (exteriorInputRef.current) exteriorInputRef.current.value = "";
+              }}
+            />
+            {exteriorPhotoUrl ? (
+              <div className="relative group rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                <Image
+                  src={exteriorPhotoUrl}
+                  alt="Venue exterior"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => exteriorInputRef.current?.click()}
+                    disabled={uploadingExterior}
+                  >
+                    {uploadingExterior ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Upload className="w-4 h-4 mr-1" />}
+                    Replace
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => exteriorInputRef.current?.click()}
+                disabled={uploadingExterior}
+                className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 transition-colors flex flex-col items-center justify-center gap-2"
+              >
+                {uploadingExterior ? (
+                  <Loader2 className="w-8 h-8 text-gray-300 animate-spin" />
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-gray-300" />
+                    <span className="text-xs text-gray-500">Upload exterior photo</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* Interior Photo */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-700">Interior Photo</p>
+            <input
+              ref={interiorInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setUploadingInterior(true);
+                const fd = new FormData();
+                fd.append("venue_id", venue.id);
+                fd.append("photo_type", "interior");
+                fd.append("file", file);
+                const result = await uploadVenuePhoto(fd);
+                if ("error" in result && result.error) {
+                  toast.error(result.error);
+                } else if ("url" in result && result.url) {
+                  setInteriorPhotoUrl(result.url);
+                  toast.success("Interior photo uploaded");
+                }
+                setUploadingInterior(false);
+                if (interiorInputRef.current) interiorInputRef.current.value = "";
+              }}
+            />
+            {interiorPhotoUrl ? (
+              <div className="relative group rounded-xl overflow-hidden border border-gray-200 aspect-[4/3]">
+                <Image
+                  src={interiorPhotoUrl}
+                  alt="Venue interior"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => interiorInputRef.current?.click()}
+                    disabled={uploadingInterior}
+                  >
+                    {uploadingInterior ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Upload className="w-4 h-4 mr-1" />}
+                    Replace
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => interiorInputRef.current?.click()}
+                disabled={uploadingInterior}
+                className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 transition-colors flex flex-col items-center justify-center gap-2"
+              >
+                {uploadingInterior ? (
+                  <Loader2 className="w-8 h-8 text-gray-300 animate-spin" />
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-gray-300" />
+                    <span className="text-xs text-gray-500">Upload interior photo</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </Card>
