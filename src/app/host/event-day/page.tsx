@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -210,6 +210,20 @@ export default function HostEventDayPage() {
   const [streamCopied, setStreamCopied] = useState(false);
   const [signingWaiverId, setSigningWaiverId] = useState<string | null>(null);
   const [concertConcluded, setConcertConcluded] = useState(false);
+  const [showStickyProgress, setShowStickyProgress] = useState(false);
+  const cardProgressRef = useRef<HTMLDivElement>(null);
+
+  // Show sticky bar only when the in-card progress bar has scrolled out of view
+  useEffect(() => {
+    const el = cardProgressRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyProgress(!entry.isIntersecting),
+      { rootMargin: "-56px 0px 0px 0px" } // offset for navbar height (h-14 = 56px)
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const sortedPerformers = [...performers].sort((a, b) => a.performanceOrder - b.performanceOrder);
   const checkedInCount = performers.filter(
@@ -321,8 +335,14 @@ export default function HostEventDayPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pb-12">
-      {/* Sticky progress bar — sits below the main navbar (h-14 = 56px) */}
-      <div className="sticky top-14 z-40 bg-gradient-to-r from-slate-50 to-blue-50/60 backdrop-blur-sm border-b border-blue-100/60 shadow-sm">
+      {/* Sticky progress bar — only visible when in-card bar has scrolled away */}
+      <div
+        className={`sticky top-14 z-40 bg-gradient-to-r from-slate-50 to-blue-50/60 backdrop-blur-sm border-b border-blue-100/60 transition-all duration-300 ${
+          showStickyProgress
+            ? "opacity-100 translate-y-0 shadow-sm"
+            : "opacity-0 -translate-y-full pointer-events-none"
+        }`}
+      >
         <div className="container mx-auto px-4 md:px-8 max-w-3xl">
           <div className="flex items-center gap-3 py-2">
             <p className="text-xs font-semibold text-gray-700 flex-shrink-0 w-8 text-right">
@@ -401,8 +421,8 @@ export default function HostEventDayPage() {
                 </div>
               </div>
 
-              {/* Progress bar */}
-              <div>
+              {/* Progress bar (observed for sticky bar visibility) */}
+              <div ref={cardProgressRef}>
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-medium text-gray-600">Concert progress</p>
                   <p className="text-xs font-semibold text-gray-900">{progressPct}%</p>
