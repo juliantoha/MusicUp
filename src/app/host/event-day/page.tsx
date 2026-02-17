@@ -208,6 +208,8 @@ export default function HostEventDayPage() {
   const [eventStreamUrl, setEventStreamUrl] = useState("");
   const [confirmingComplete, setConfirmingComplete] = useState(false);
   const [streamCopied, setStreamCopied] = useState(false);
+  const [signingWaiverId, setSigningWaiverId] = useState<string | null>(null);
+  const [concertConcluded, setConcertConcluded] = useState(false);
 
   const sortedPerformers = [...performers].sort((a, b) => a.performanceOrder - b.performanceOrder);
   const checkedInCount = performers.filter(
@@ -319,13 +321,8 @@ export default function HostEventDayPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pb-12">
-      {/* Demo banner — sticky top */}
-      <div className="sticky top-0 z-50 bg-gray-900 text-white text-center py-1.5 text-xs font-medium tracking-wide">
-        Demo Mode — {MOCK_EVENT.series} at {MOCK_EVENT.venue.name}
-      </div>
-
-      {/* Sticky progress bar — visible while scrolling */}
-      <div className="sticky top-[28px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+      {/* Sticky progress bar — sits below the main navbar (h-14 = 56px) */}
+      <div className="sticky top-14 z-40 bg-gradient-to-r from-slate-50 to-blue-50/60 backdrop-blur-sm border-b border-blue-100/60 shadow-sm">
         <div className="container mx-auto px-4 md:px-8 max-w-3xl">
           <div className="flex items-center gap-3 py-2">
             <p className="text-xs font-semibold text-gray-700 flex-shrink-0 w-8 text-right">
@@ -477,7 +474,7 @@ export default function HostEventDayPage() {
                         <span key={p.id}>
                           <button
                             className="underline hover:text-amber-900 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
-                            onClick={() => setExpandedPerformer(p.id)}
+                            onClick={() => setSigningWaiverId(p.id)}
                           >
                             {p.name}
                           </button>
@@ -819,16 +816,10 @@ export default function HostEventDayPage() {
                                 variant="outline"
                                 size="sm"
                                 className="text-amber-700 border-amber-300 hover:bg-amber-50 text-xs"
-                                onClick={() => {
-                                  setPerformers((prev) =>
-                                    prev.map((perf) =>
-                                      perf.id === p.id ? { ...perf, waiverSigned: true } : perf
-                                    )
-                                  );
-                                }}
+                                onClick={() => setSigningWaiverId(p.id)}
                               >
                                 <FileText className="w-3.5 h-3.5 mr-1" />
-                                Mark Waiver Signed
+                                Sign Waiver
                               </Button>
                             )}
                           </div>
@@ -886,6 +877,40 @@ export default function HostEventDayPage() {
                   </div>
                 );
               })}
+
+              {/* Conclude & Thank Audience — appears after all performers played */}
+              <div
+                className={`rounded-xl border-2 border-dashed p-4 text-center transition-all duration-300 ${
+                  performedCount === activeCount && activeCount > 0
+                    ? concertConcluded
+                      ? "border-green-300 bg-green-50/50"
+                      : "border-blue-300 bg-blue-50/30"
+                    : "border-gray-200 bg-gray-50/30 opacity-40"
+                }`}
+              >
+                {concertConcluded ? (
+                  <div className="flex items-center justify-center gap-2 text-green-700">
+                    <CheckCircle2 className="w-5 h-5" />
+                    <p className="text-sm font-medium">Concert concluded — audience thanked</p>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-500 mb-2">
+                      {performedCount === activeCount && activeCount > 0
+                        ? "All performers are done — time to wrap up!"
+                        : "Available after all performers have played"}
+                    </p>
+                    <Button
+                      disabled={performedCount !== activeCount || activeCount === 0}
+                      className="active:scale-95 transition-all"
+                      onClick={() => setConcertConcluded(true)}
+                    >
+                      <Heart className="w-4 h-4 mr-2" />
+                      Conclude &amp; Thank Audience
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </Card>
         </div>
@@ -1147,8 +1172,14 @@ export default function HostEventDayPage() {
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-blue-300" />
-                    <span className="text-blue-700">Thank the venue contact and audience</span>
+                    <CheckCircle2
+                      className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${concertConcluded ? "text-green-500" : "text-blue-300"}`}
+                    />
+                    <span
+                      className={concertConcluded ? "line-through text-blue-400" : "text-blue-700"}
+                    >
+                      Thank the venue contact and audience
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-blue-300" />
@@ -1263,6 +1294,123 @@ export default function HostEventDayPage() {
           </Card>
         </div>
       </div>
+
+      {/* ================================================================
+          WAIVER SIGNING MODAL — Full-screen overlay for in-person signing
+          ================================================================ */}
+      {signingWaiverId &&
+        (() => {
+          const performer = performers.find((p) => p.id === signingWaiverId);
+          if (!performer) return null;
+          return (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-sm">Performance Waiver</h3>
+                      <p className="text-xs text-gray-500">
+                        {performer.name} &middot; Age {performer.age} &middot;{" "}
+                        {performer.instrument}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Waiver content */}
+                <div className="px-6 py-4 space-y-4">
+                  <div className="p-4 bg-gray-50 rounded-lg text-xs text-gray-600 space-y-2 max-h-48 overflow-y-auto leading-relaxed">
+                    <p className="font-semibold text-gray-800 text-sm">
+                      MusicUp Performance Waiver &amp; Release
+                    </p>
+                    <p>
+                      I acknowledge that the performer named above will be participating in a live
+                      musical performance organized through MusicUp at {MOCK_EVENT.venue.name} on{" "}
+                      {MOCK_EVENT.date}.
+                    </p>
+                    <p>
+                      I consent to the performer being photographed and/or video recorded during the
+                      event. These materials may be used on performer profiles and shared with the
+                      venue.
+                    </p>
+                    <p>
+                      I understand that participation is voluntary and agree to release MusicUp, the
+                      host, and venue from any liability arising from participation in this event.
+                    </p>
+                    {performer.age < 18 && (
+                      <p className="font-medium text-amber-700 bg-amber-50 p-2 rounded">
+                        For performers under 18: I confirm I am the parent or legal guardian and
+                        authorize participation.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Signature area */}
+                  <div className="space-y-3">
+                    <div>
+                      <label
+                        htmlFor="waiver-signature"
+                        className="text-xs font-medium text-gray-700 mb-1.5 block"
+                      >
+                        Signature (print full name)
+                      </label>
+                      <Input
+                        id="waiver-signature"
+                        placeholder={
+                          performer.age < 18 ? "Parent/guardian full name" : performer.name
+                        }
+                        className="text-sm"
+                      />
+                    </div>
+                    <label className="flex items-start gap-2.5 text-xs text-gray-600 cursor-pointer">
+                      <input type="checkbox" className="mt-0.5 rounded border-gray-300" />
+                      <span>
+                        I confirm I am{" "}
+                        {performer.age < 18
+                          ? `the parent/guardian of ${performer.name}`
+                          : performer.name}{" "}
+                        and agree to the waiver terms above.
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="px-6 py-4 border-t border-gray-100 flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1 border-gray-200 active:scale-95 transition-all"
+                    onClick={() => setSigningWaiverId(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700 active:scale-[0.98] transition-all"
+                    onClick={() => {
+                      setPerformers((prev) =>
+                        prev.map((p) =>
+                          p.id === signingWaiverId ? { ...p, waiverSigned: true } : p
+                        )
+                      );
+                      setSigningWaiverId(null);
+                    }}
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                    Sign Waiver
+                  </Button>
+                </div>
+
+                <p className="px-6 pb-4 text-[10px] text-gray-400 text-center">
+                  This waiver will be saved to {performer.name}&apos;s profile.
+                </p>
+              </div>
+            </div>
+          );
+        })()}
     </div>
   );
 }
