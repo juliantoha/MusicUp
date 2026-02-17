@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +45,7 @@ const MOCK_EVENT = {
   startTime: "2:00 PM",
   endTime: "3:00 PM",
   status: "scheduled" as const,
+  serviceHours: 3.0,
   venue: {
     name: "Ivy Park Pleasanton",
     address: "4375 Hopyard Road",
@@ -198,6 +199,9 @@ const MOCK_PERFORMERS: Performer[] = [
   },
 ];
 
+/** Strip formatting from phone number for tel: href */
+const cleanPhone = (phone: string) => phone.replace(/[^\d+]/g, "");
+
 // ============================================================================
 // Component
 // ============================================================================
@@ -209,6 +213,8 @@ export default function HostEventDayPage() {
   const [showNotes, setShowNotes] = useState(false);
   const [eventNotes, setEventNotes] = useState("");
   const [eventStreamUrl, setEventStreamUrl] = useState("");
+  const [confirmingComplete, setConfirmingComplete] = useState(false);
+  const [streamCopied, setStreamCopied] = useState(false);
 
   const sortedPerformers = [...performers].sort((a, b) => a.performanceOrder - b.performanceOrder);
   const checkedInCount = performers.filter(
@@ -217,9 +223,15 @@ export default function HostEventDayPage() {
   const performedCount = performers.filter((p) => p.checkedIn === "performed").length;
   const absentCount = performers.filter((p) => p.checkedIn === "absent").length;
   const pendingWaivers = performers.filter((p) => !p.waiverSigned).length;
-  const totalSteps = performers.length + 1; // all performers performed + 1 photo
+  const activeCount = performers.length - absentCount;
+  const totalSteps = Math.max(activeCount + 1, 1); // active performers + 1 group photo
   const completedSteps = performedCount + Math.min(photos.length, 1);
   const progressPct = Math.round((completedSteps / totalSteps) * 100);
+
+  // First performer who hasn't performed and isn't absent
+  const nextUpId =
+    sortedPerformers.find((p) => p.checkedIn !== "performed" && p.checkedIn !== "absent")?.id ??
+    null;
 
   const handleCheckIn = (id: string, status: CheckInStatus) => {
     const now = new Date().toLocaleTimeString("en-US", {
@@ -279,10 +291,21 @@ export default function HostEventDayPage() {
     event.target.value = "";
   };
 
+  const handleCopyStreamUrl = async () => {
+    if (!eventStreamUrl.trim()) return;
+    try {
+      await navigator.clipboard.writeText(eventStreamUrl);
+      setStreamCopied(true);
+      setTimeout(() => setStreamCopied(false), 2000);
+    } catch {
+      // Fallback — URL is already visible in the input
+    }
+  };
+
   const canComplete = performedCount > 0 && photos.length > 0;
 
   const stageBadgeColor = (stage: number) => {
-    if (stage === 1) return "bg-green-100 text-green-700 border-green-200";
+    if (stage === 1) return "bg-teal-100 text-teal-700 border-teal-200";
     if (stage === 2) return "bg-blue-100 text-blue-700 border-blue-200";
     return "bg-purple-100 text-purple-700 border-purple-200";
   };
@@ -308,7 +331,7 @@ export default function HostEventDayPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pb-12">
       {/* Demo banner — sticky top */}
       <div className="sticky top-0 z-50 bg-gray-900 text-white text-center py-1.5 text-xs font-medium tracking-wide">
-        Demo Mode — Preview only
+        Demo Mode — {MOCK_EVENT.series} at {MOCK_EVENT.venue.name}
       </div>
 
       <div className="container mx-auto px-4 md:px-8 max-w-3xl pt-6">
@@ -375,12 +398,17 @@ export default function HostEventDayPage() {
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-blue-500 to-cyan-500"
+                    className={`h-full rounded-full transition-all duration-500 ease-out ${
+                      progressPct === 100
+                        ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                        : "bg-gradient-to-r from-blue-500 to-cyan-500"
+                    }`}
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
                 <p className="text-[10px] text-gray-400 mt-1">
-                  {performedCount}/{performers.length} performed &middot; {photos.length} photo
+                  {performedCount}/{activeCount} performed
+                  {absentCount > 0 ? ` · ${absentCount} absent` : ""} &middot; {photos.length} photo
                   {photos.length !== 1 ? "s" : ""}
                 </p>
               </div>
@@ -431,8 +459,17 @@ export default function HostEventDayPage() {
                   <p className="text-xs text-amber-700 mt-0.5">
                     {performers
                       .filter((p) => !p.waiverSigned)
-                      .map((p) => p.name)
-                      .join(", ")}{" "}
+                      .map((p, i, arr) => (
+                        <span key={p.id}>
+                          <button
+                            className="underline hover:text-amber-900 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                            onClick={() => setExpandedPerformer(p.id)}
+                          >
+                            {p.name}
+                          </button>
+                          {i < arr.length - 1 && ", "}
+                        </span>
+                      ))}{" "}
                     — must sign before performing.
                   </p>
                 </div>
@@ -481,7 +518,7 @@ export default function HostEventDayPage() {
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-500 ml-5">
                     <a
-                      href={`tel:${MOCK_EVENT.venue.contact.phone}`}
+                      href={`tel:${cleanPhone(MOCK_EVENT.venue.contact.phone)}`}
                       className="text-blue-600 hover:underline"
                     >
                       {MOCK_EVENT.venue.contact.phone}
@@ -495,8 +532,13 @@ export default function HostEventDayPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <a href={`tel:${MOCK_EVENT.venue.contact.phone}`}>
-                    <Button variant="outline" size="sm" className="border-gray-200 text-xs">
+                  <a href={`tel:${cleanPhone(MOCK_EVENT.venue.contact.phone)}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-gray-200 text-xs"
+                      aria-label={`Call ${MOCK_EVENT.venue.contact.name}`}
+                    >
                       <Phone className="w-3.5 h-3.5 mr-1" /> Call
                     </Button>
                   </a>
@@ -507,7 +549,12 @@ export default function HostEventDayPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button variant="outline" size="sm" className="border-gray-200 text-xs">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-gray-200 text-xs"
+                      aria-label="Get directions to venue"
+                    >
                       <ExternalLink className="w-3.5 h-3.5 mr-1" /> Directions
                     </Button>
                   </a>
@@ -602,8 +649,8 @@ export default function HostEventDayPage() {
                         </Button>
                       </div>
 
-                      {/* Status buttons — 3 cols on mobile, 4 on sm+ */}
-                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {/* Status buttons — 4 cols */}
+                      <div className="grid grid-cols-4 gap-2">
                         <Button
                           variant={p.checkedIn === "checked_in" ? "default" : "outline"}
                           size="sm"
@@ -647,7 +694,7 @@ export default function HostEventDayPage() {
                           variant={p.checkedIn === "pending" ? "default" : "outline"}
                           size="sm"
                           onClick={() => handleCheckIn(p.id, "pending")}
-                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] hidden sm:flex active:scale-95 transition-all ${
+                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
                             p.checkedIn === "pending" ? "" : "hover:bg-gray-50 border-gray-200"
                           }`}
                         >
@@ -679,16 +726,20 @@ export default function HostEventDayPage() {
                           </div>
                           <div className="flex items-center gap-2 text-sm">
                             <Phone className="w-3.5 h-3.5 text-gray-400" />
-                            <a href={`tel:${p.phone}`} className="text-blue-600 hover:underline">
+                            <a
+                              href={`tel:${cleanPhone(p.phone)}`}
+                              className="text-blue-600 hover:underline"
+                            >
                               {p.phone}
                             </a>
                           </div>
                           <div className="flex gap-2 pt-1">
-                            <a href={`tel:${p.phone}`}>
+                            <a href={`tel:${cleanPhone(p.phone)}`}>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 className="border-gray-200 text-xs"
+                                aria-label={`Call ${p.name}`}
                               >
                                 <PhoneCall className="w-3.5 h-3.5 mr-1" />
                                 Call
@@ -795,7 +846,7 @@ export default function HostEventDayPage() {
                             </div>
                             {eventStreamUrl && !p.streamVideoUrl && (
                               <button
-                                className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
+                                className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded"
                                 onClick={() => handlePerformerStreamUrl(p.id, eventStreamUrl)}
                               >
                                 <Link className="w-3 h-3" />
@@ -848,17 +899,21 @@ export default function HostEventDayPage() {
                   Performance Program
                 </h2>
                 <p className="text-xs text-gray-500">
-                  {performedCount}/{performers.length} complete
+                  {performedCount}/{activeCount} complete
+                  {absentCount > 0 ? ` · ${absentCount} absent` : ""}
                 </p>
               </div>
             </div>
             <div className="divide-y divide-gray-100">
               {sortedPerformers.map((p) => {
                 const isAbsent = p.checkedIn === "absent";
+                const isNextUp = p.id === nextUpId;
                 return (
                   <div
                     key={p.id}
-                    className={`px-6 py-4 flex items-center gap-4 transition-opacity duration-200 ${isAbsent ? "opacity-40" : ""}`}
+                    className={`px-6 py-4 flex items-center gap-4 transition-all duration-200 ${
+                      isAbsent ? "opacity-40" : isNextUp ? "bg-cyan-50/40" : ""
+                    }`}
                   >
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-colors duration-200 ${
@@ -866,7 +921,9 @@ export default function HostEventDayPage() {
                           ? "bg-gray-200 text-gray-500"
                           : p.checkedIn === "performed"
                             ? "bg-green-500 text-white"
-                            : "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
+                            : isNextUp
+                              ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white ring-2 ring-cyan-300 ring-offset-1"
+                              : "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
                       }`}
                     >
                       {isAbsent ? <XCircle className="w-4 h-4" /> : p.performanceOrder}
@@ -887,6 +944,11 @@ export default function HostEventDayPage() {
                         {isAbsent && (
                           <Badge className="bg-red-100 text-red-600 border-red-200 text-[10px]">
                             Absent
+                          </Badge>
+                        )}
+                        {isNextUp && !isAbsent && (
+                          <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200 text-[10px] animate-pulse">
+                            Next
                           </Badge>
                         )}
                       </div>
@@ -954,11 +1016,29 @@ export default function HostEventDayPage() {
                   />
                 </div>
                 {eventStreamUrl.trim() && (
-                  <a href={eventStreamUrl} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" className="border-gray-200">
-                      <ExternalLink className="w-3.5 h-3.5" />
+                  <>
+                    <Button
+                      variant="outline"
+                      className="border-gray-200"
+                      onClick={handleCopyStreamUrl}
+                      aria-label="Copy stream URL to clipboard"
+                    >
+                      {streamCopied ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                      ) : (
+                        <Clipboard className="w-3.5 h-3.5" />
+                      )}
                     </Button>
-                  </a>
+                    <a href={eventStreamUrl} target="_blank" rel="noopener noreferrer">
+                      <Button
+                        variant="outline"
+                        className="border-gray-200"
+                        aria-label="Open stream URL"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Button>
+                    </a>
+                  </>
                 )}
               </div>
               <p className="text-xs text-gray-400">
@@ -1042,7 +1122,7 @@ export default function HostEventDayPage() {
         <div className="mb-6">
           <Card className="overflow-hidden border border-gray-100">
             <button
-              className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50 w-full text-left"
+              className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50 w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-inset"
               onClick={() => setShowNotes(!showNotes)}
               aria-expanded={showNotes}
             >
@@ -1085,7 +1165,7 @@ export default function HostEventDayPage() {
         </div>
 
         {/* ================================================================
-            HOST REMINDERS — Quick checklist
+            HOST REMINDERS — Dynamic checklist
             ================================================================ */}
         <div className="mb-6">
           <Card className="overflow-hidden border border-gray-100">
@@ -1119,12 +1199,53 @@ export default function HostEventDayPage() {
                 </div>
               </div>
               <div className="p-3 bg-blue-50 rounded-xl">
-                <ul className="text-xs text-blue-700 space-y-1.5 list-disc list-inside">
-                  <li>All performers under 18 need a signed waiver</li>
-                  <li>Take a group photo before anyone leaves</li>
-                  <li>Mark each performer as &ldquo;Performed&rdquo; after their set</li>
-                  <li>Thank the venue contact and audience</li>
-                  <li>Complete the concert below to issue service hours</li>
+                <ul className="text-xs space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${pendingWaivers === 0 ? "text-green-500" : "text-blue-300"}`}
+                    />
+                    <span
+                      className={
+                        pendingWaivers === 0 ? "line-through text-blue-400" : "text-blue-700"
+                      }
+                    >
+                      All performers under 18 need a signed waiver
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${photos.length > 0 ? "text-green-500" : "text-blue-300"}`}
+                    />
+                    <span
+                      className={photos.length > 0 ? "line-through text-blue-400" : "text-blue-700"}
+                    >
+                      Take a group photo before anyone leaves
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2
+                      className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${performedCount === activeCount && activeCount > 0 ? "text-green-500" : "text-blue-300"}`}
+                    />
+                    <span
+                      className={
+                        performedCount === activeCount && activeCount > 0
+                          ? "line-through text-blue-400"
+                          : "text-blue-700"
+                      }
+                    >
+                      Mark each performer as &ldquo;Performed&rdquo; after their set
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-blue-300" />
+                    <span className="text-blue-700">Thank the venue contact and audience</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-blue-300" />
+                    <span className="text-blue-700">
+                      Complete the concert below to issue service hours
+                    </span>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -1132,16 +1253,23 @@ export default function HostEventDayPage() {
         </div>
 
         {/* ================================================================
-            COMPLETE CONCERT — Final action
+            COMPLETE CONCERT — Final action with confirmation step
             ================================================================ */}
         <div className="mb-8 animate-fade-in-up">
           <Card
             className={`overflow-hidden border-2 transition-colors duration-300 ${canComplete ? "border-green-200 bg-green-50/30" : "border-gray-200 bg-gray-50/30"}`}
           >
-            <div className="p-6">
-              <h2 className="font-semibold text-gray-900 heading-montserrat mb-3">
-                Ready to Complete?
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <div
+                className={`w-8 h-8 rounded-lg flex items-center justify-center ${canComplete ? "bg-green-100" : "bg-gray-100"}`}
+              >
+                <Star className={`w-4 h-4 ${canComplete ? "text-green-600" : "text-gray-400"}`} />
+              </div>
+              <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                Complete Concert
               </h2>
+            </div>
+            <div className="p-6">
               <div className="space-y-2 mb-4">
                 <div
                   className={`flex items-center gap-2 text-sm ${performedCount > 0 ? "text-green-700" : "text-gray-500"}`}
@@ -1170,22 +1298,56 @@ export default function HostEventDayPage() {
                     : `${pendingWaivers} waiver${pendingWaivers > 1 ? "s" : ""} pending`}
                 </div>
               </div>
-              <Button
-                disabled={!canComplete}
-                size="lg"
-                className="w-full shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
-                onClick={() => {
-                  alert(
-                    "Demo: Concert completed! Service hours would be granted to all performed participants."
-                  );
-                }}
-              >
-                <Star className="w-4 h-4 mr-2" />
-                Complete Concert
-              </Button>
+
+              {!confirmingComplete ? (
+                <Button
+                  disabled={!canComplete}
+                  size="lg"
+                  className="w-full shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
+                  onClick={() => setConfirmingComplete(true)}
+                >
+                  <Star className="w-4 h-4 mr-2" />
+                  Complete Concert
+                </Button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-center">
+                    <p className="text-sm font-medium text-amber-800">
+                      Grant {MOCK_EVENT.serviceHours} service hours to {performedCount} performer
+                      {performedCount !== 1 ? "s" : ""}?
+                    </p>
+                    <p className="text-xs text-amber-600 mt-0.5">This action cannot be undone.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="border-gray-200 active:scale-95 transition-all"
+                      onClick={() => setConfirmingComplete(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="lg"
+                      className="bg-green-600 hover:bg-green-700 active:scale-[0.98] transition-all"
+                      onClick={() => {
+                        alert(
+                          `Demo: Concert completed! ${MOCK_EVENT.serviceHours} service hours granted to ${performedCount} performer${performedCount !== 1 ? "s" : ""}.`
+                        );
+                        setConfirmingComplete(false);
+                      }}
+                    >
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Confirm
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <p className="mt-4 pt-4 border-t border-gray-200/60 text-xs text-gray-500">
-                <strong>Note:</strong> Completing the concert will grant 3.0 service hours to each
-                performer marked as &ldquo;Performed&rdquo; and set the concert status to completed.
+                <strong>Note:</strong> Completing the concert will grant {MOCK_EVENT.serviceHours}{" "}
+                service hours to each performer marked as &ldquo;Performed&rdquo; and set the
+                concert status to completed.
               </p>
             </div>
           </Card>
