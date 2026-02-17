@@ -193,7 +193,7 @@ export default function VenueContactDashboard() {
       setLoadingWaivers(true);
       const result = await getUnsignedWaivers(selectedVenueId);
       if ("unsignedWaivers" in result) {
-        setUnsignedWaivers(result.unsignedWaivers);
+        setUnsignedWaivers(result.unsignedWaivers ?? []);
       }
       setLoadingWaivers(false);
     };
@@ -380,7 +380,7 @@ export default function VenueContactDashboard() {
                     if (selectedVenueId) {
                       const result = await getUnsignedWaivers(selectedVenueId);
                       if ("unsignedWaivers" in result) {
-                        setUnsignedWaivers(result.unsignedWaivers);
+                        setUnsignedWaivers(result.unsignedWaivers ?? []);
                       }
                     }
                   }}
