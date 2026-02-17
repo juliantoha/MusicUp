@@ -82,6 +82,7 @@ export function ConcertsIHostTab() {
       </div>
 
       <Card className="overflow-hidden border border-gray-100">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50/80 hover:bg-gray-50/80">
@@ -167,6 +168,7 @@ export function ConcertsIHostTab() {
             })}
           </TableBody>
         </Table>
+        </div>
       </Card>
     </div>
   );

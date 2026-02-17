@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, Camera, Trash2, Settings, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { updateProfile, uploadProfilePhoto, deleteProfilePhoto } from "@/lib/profile/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -23,15 +34,17 @@ export default function SettingsPage() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   // Load profile photo URL
-  useState(() => {
+  useEffect(() => {
     if (profile?.profile_photo_path) {
       const supabase = createClient();
       const { data } = supabase.storage
         .from("profile_photos")
         .getPublicUrl(profile.profile_photo_path);
       setPhotoUrl(data.publicUrl);
+    } else {
+      setPhotoUrl(null);
     }
-  });
+  }, [profile?.profile_photo_path]);
 
   if (!user || !profile) {
     router.push("/login");
@@ -78,10 +91,6 @@ export default function SettingsPage() {
   };
 
   const handleDeletePhoto = async () => {
-    if (!confirm("Are you sure you want to delete your profile photo?")) {
-      return;
-    }
-
     setPhotoLoading(true);
 
     try {
@@ -159,17 +168,37 @@ export default function SettingsPage() {
                   </Button>
 
                   {photoUrl && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleDeletePhoto}
-                      disabled={photoLoading}
-                      className="h-9 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                    >
-                      <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                      Remove
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={photoLoading}
+                          className="h-9 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                          Remove
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove profile photo?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete your profile photo. You can upload a new one at any time.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleDeletePhoto}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Remove Photo
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   )}
 
                   <input

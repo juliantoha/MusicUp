@@ -206,10 +206,9 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
       setContactInviteEmail("");
       loadVenueContacts();
 
-      // Show the invitation token for testing (in production, this would be sent via email)
+      // Invitation token is sent via email — no need to expose in client
       if ("invitation" in result && result.invitation) {
-        console.log("Invitation token (for testing):", result.invitation.token);
-        toast.info("Check console for invitation token (for testing)");
+        toast.info("Invitation email sent with setup instructions");
       }
     } else if ("error" in result && result.error) {
       toast.error(result.error);

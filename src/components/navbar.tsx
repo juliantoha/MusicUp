@@ -89,9 +89,9 @@ export function Navbar() {
   });
 
   return (
-    <nav className="border-b border-gray-200/60 bg-white/80 backdrop-blur-lg sticky top-0 z-50 transition-shadow">
+    <nav aria-label="App navigation" className="border-b border-gray-200/60 bg-white/80 backdrop-blur-lg sticky top-0 z-50 transition-shadow">
       <div className="flex h-14 items-center px-4 container mx-auto gap-4">
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" aria-label="MusicUp home" className="flex items-center gap-2.5 group">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-md p-1.5">
             <Logo className="w-full h-full text-white" />
           </div>
@@ -113,7 +113,7 @@ export function Navbar() {
               }
             }}
           >
-            <SelectTrigger className="w-[140px] sm:w-[180px] border-gray-200 bg-white/60 hover:bg-white transition-colors">
+            <SelectTrigger aria-label="Account menu" className="w-[140px] sm:w-[180px] border-gray-200 bg-white/60 hover:bg-white transition-colors">
               <div className="flex items-center gap-2 overflow-hidden">
                 {photoUrl ? (
                   <img
