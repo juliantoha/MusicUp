@@ -30,6 +30,7 @@ import {
   Video,
   Link,
   Image as ImageIcon,
+  Info,
 } from "lucide-react";
 
 // ============================================================================
@@ -50,8 +51,12 @@ const MOCK_EVENT = {
     state: "CA",
     zip: "94588",
     venueType: "Senior Living",
-    notes:
-      "Check in at the front desk. Performance is in the main activity room on the 2nd floor. Piano is a Yamaha upright, recently tuned. Parking is free in the lot behind the building.",
+    notes: [
+      { label: "Check-in", text: "Front desk on arrival" },
+      { label: "Room", text: "Main activity room, 2nd floor" },
+      { label: "Piano", text: "Yamaha upright, recently tuned" },
+      { label: "Parking", text: "Free lot behind the building" },
+    ],
     contact: {
       name: "Margaret Chen",
       email: "mchen@ivyparkpleasanton.org",
@@ -81,6 +86,7 @@ interface Performer {
   stageLabel: string;
   performanceOrder: number;
   checkedIn: CheckInStatus;
+  checkedInTime: string | null;
   notes: string;
   waiverSigned: boolean;
   hasScoreUrl: boolean;
@@ -97,11 +103,12 @@ const MOCK_PERFORMERS: Performer[] = [
     age: 14,
     instrument: "Piano",
     piece: "Can't Help Falling in Love",
-    composer: "Hugo Peretti / Luigi Creatore / George David Weiss",
+    composer: "Peretti / Creatore / Weiss",
     stage: 2,
     stageLabel: "Intermediate",
     performanceOrder: 1,
     checkedIn: "pending",
+    checkedInTime: null,
     notes: "First time performing at this venue",
     waiverSigned: true,
     hasScoreUrl: true,
@@ -116,11 +123,12 @@ const MOCK_PERFORMERS: Performer[] = [
     age: 16,
     instrument: "Piano",
     piece: "Somewhere Over the Rainbow",
-    composer: "Harold Arlen / Yip Harburg",
+    composer: "Arlen / Harburg",
     stage: 3,
     stageLabel: "Advanced",
     performanceOrder: 2,
     checkedIn: "pending",
+    checkedInTime: null,
     notes: "",
     waiverSigned: true,
     hasScoreUrl: true,
@@ -135,11 +143,12 @@ const MOCK_PERFORMERS: Performer[] = [
     age: 12,
     instrument: "Piano",
     piece: "What a Wonderful World",
-    composer: "Bob Thiele / George David Weiss",
+    composer: "Thiele / Weiss",
     stage: 1,
     stageLabel: "Beginner",
     performanceOrder: 3,
     checkedIn: "pending",
+    checkedInTime: null,
     notes: "Parent (Maria) will accompany — has been briefed",
     waiverSigned: true,
     hasScoreUrl: true,
@@ -154,11 +163,12 @@ const MOCK_PERFORMERS: Performer[] = [
     age: 15,
     instrument: "Piano",
     piece: "Moon River",
-    composer: "Henry Mancini / Johnny Mercer",
+    composer: "Mancini / Mercer",
     stage: 2,
     stageLabel: "Intermediate",
     performanceOrder: 4,
     checkedIn: "pending",
+    checkedInTime: null,
     notes: "",
     waiverSigned: false,
     hasScoreUrl: true,
@@ -173,11 +183,12 @@ const MOCK_PERFORMERS: Performer[] = [
     age: 17,
     instrument: "Piano",
     piece: "Unchained Melody",
-    composer: "Alex North / Hy Zaret",
+    composer: "North / Zaret",
     stage: 3,
     stageLabel: "Advanced",
     performanceOrder: 5,
     checkedIn: "pending",
+    checkedInTime: null,
     notes: "Returning performer — performed here last month",
     waiverSigned: true,
     hasScoreUrl: true,
@@ -196,7 +207,6 @@ export default function HostEventDayPage() {
   const [photos, setPhotos] = useState<{ id: string; name: string; time: string }[]>([]);
   const [showNotes, setShowNotes] = useState(false);
   const [eventNotes, setEventNotes] = useState("");
-  const [, setConcertStarted] = useState(false);
   const [eventStreamUrl, setEventStreamUrl] = useState("");
   const [streamUrlSaved, setStreamUrlSaved] = useState(false);
 
@@ -208,7 +218,21 @@ export default function HostEventDayPage() {
   const pendingWaivers = performers.filter((p) => !p.waiverSigned).length;
 
   const handleCheckIn = (id: string, status: CheckInStatus) => {
-    setPerformers((prev) => prev.map((p) => (p.id === id ? { ...p, checkedIn: status } : p)));
+    const now = new Date().toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    setPerformers((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              checkedIn: status,
+              checkedInTime: status === "pending" ? null : (p.checkedInTime ?? now),
+            }
+          : p
+      )
+    );
   };
 
   const handlePerformerStreamUrl = (id: string, url: string) => {
@@ -259,6 +283,16 @@ export default function HostEventDayPage() {
     return "bg-purple-100 text-purple-700 border-purple-200";
   };
 
+  const statusBadge = (status: CheckInStatus) => {
+    if (status === "checked_in")
+      return { bg: "bg-blue-100 text-blue-700 border-blue-200", label: "Arrived" };
+    if (status === "performed")
+      return { bg: "bg-green-100 text-green-700 border-green-200", label: "Performed" };
+    if (status === "absent")
+      return { bg: "bg-red-100 text-red-700 border-red-200", label: "Absent" };
+    return null;
+  };
+
   const statusBg = (status: CheckInStatus) => {
     if (status === "checked_in") return "bg-blue-50/60 border-blue-200";
     if (status === "performed") return "bg-green-50/60 border-green-200";
@@ -267,12 +301,17 @@ export default function HostEventDayPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pt-16 pb-32">
-      <div className="container mx-auto px-4 md:px-8 max-w-3xl">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-white pb-32">
+      {/* Demo banner — sticky top */}
+      <div className="sticky top-0 z-50 bg-gray-900 text-white text-center py-1.5 text-xs font-medium tracking-wide">
+        Demo Mode — Preview only
+      </div>
+
+      <div className="container mx-auto px-4 md:px-8 max-w-3xl pt-6">
         {/* ================================================================
             HEADER — Event Banner
             ================================================================ */}
-        <div className="mb-8 animate-fade-in-up">
+        <div className="mb-6 animate-fade-in-up">
           <Card className="overflow-hidden border-0 shadow-xl">
             {/* Gradient hero */}
             <div className="bg-gradient-to-r from-[#2563EB] via-[#06B6D4] to-[#0891b2] px-6 py-6 relative noise-overlay">
@@ -356,67 +395,10 @@ export default function HostEventDayPage() {
         </div>
 
         {/* ================================================================
-            LIVESTREAM LINK — Optional, can paste now or later
-            ================================================================ */}
-        <div className="mb-6 animate-fade-in-up stagger-1">
-          <Card className="overflow-hidden border border-gray-100">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                <Video className="w-4 h-4 text-red-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Livestream / Recording Link
-                </h3>
-                <p className="text-xs text-gray-500">
-                  Optional — paste a YouTube, Facebook Live, or other stream URL
-                </p>
-              </div>
-              {streamUrlSaved && (
-                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
-                  Saved
-                </Badge>
-              )}
-            </div>
-            <div className="p-6 space-y-3">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Link className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <Input
-                    type="url"
-                    placeholder="https://youtube.com/live/..."
-                    value={eventStreamUrl}
-                    onChange={(e) => {
-                      setEventStreamUrl(e.target.value);
-                      setStreamUrlSaved(false);
-                    }}
-                    className="pl-10"
-                  />
-                </div>
-                <Button
-                  variant="outline"
-                  className="border-gray-200"
-                  disabled={!eventStreamUrl.trim()}
-                  onClick={() => {
-                    setStreamUrlSaved(true);
-                  }}
-                >
-                  Save
-                </Button>
-              </div>
-              <p className="text-xs text-gray-400">
-                You can add or update this link at any time — before, during, or after the event. It
-                will be linked to each performer&apos;s profile.
-              </p>
-            </div>
-          </Card>
-        </div>
-
-        {/* ================================================================
-            ALERTS — Urgent items
+            ALERTS — Urgent items (waiver)
             ================================================================ */}
         {pendingWaivers > 0 && (
-          <div className="mb-6 animate-fade-in-up stagger-1">
+          <div className="mb-6 animate-fade-in-up">
             <Card className="border-2 border-amber-200 bg-amber-50/50">
               <div className="p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
@@ -438,98 +420,116 @@ export default function HostEventDayPage() {
         )}
 
         {/* ================================================================
-            VENUE NOTES — Things to know
+            VENUE NOTES — First thing a host needs on arrival
             ================================================================ */}
-        <div className="mb-6 animate-fade-in-up stagger-1">
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
                 <Clipboard className="w-4 h-4 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
                   Venue Notes
-                </h3>
+                </h2>
               </div>
             </div>
             <div className="p-6">
-              <p className="text-sm text-gray-700 leading-relaxed">{MOCK_EVENT.venue.notes}</p>
-            </div>
-          </Card>
-        </div>
-
-        {/* ================================================================
-            PERFORMANCE PROGRAM — Order of performances
-            ================================================================ */}
-        <div className="mb-6 animate-fade-in-up stagger-2">
-          <Card className="overflow-hidden border border-gray-100">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Music className="w-4 h-4 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Performance Program
-                </h3>
-                <p className="text-xs text-gray-500">Order of performances for today</p>
-              </div>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {[...performers]
-                .sort((a, b) => a.performanceOrder - b.performanceOrder)
-                .map((p) => (
-                  <div key={p.id} className="px-6 py-4 flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                      {p.performanceOrder}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-semibold text-gray-900 text-sm">{p.name}</p>
-                        <Badge className={`text-[10px] ${stageBadgeColor(p.stage)}`}>
-                          {p.stageLabel}
-                        </Badge>
-                        {p.checkedIn === "performed" && (
-                          <CheckCircle2 className="w-4 h-4 text-green-500" />
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 mt-0.5">
-                        <span className="font-medium">{p.piece}</span>
-                      </p>
-                      <p className="text-xs text-gray-400">{p.composer}</p>
-                    </div>
-                    {/* Sheet Music Button */}
-                    {p.hasScoreUrl && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-gray-200 text-xs flex-shrink-0"
-                        onClick={() =>
-                          alert('Demo: Would open sheet music PDF for "' + p.piece + '"')
-                        }
-                      >
-                        <FileText className="w-3.5 h-3.5 mr-1" />
-                        Score
-                      </Button>
-                    )}
+              <div className="grid grid-cols-2 gap-3">
+                {MOCK_EVENT.venue.notes.map((note) => (
+                  <div key={note.label} className="p-2.5 bg-gray-50 rounded-lg">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                      {note.label}
+                    </p>
+                    <p className="text-sm text-gray-800 mt-0.5">{note.text}</p>
                   </div>
                 ))}
+              </div>
             </div>
           </Card>
         </div>
 
         {/* ================================================================
-            PERFORMER CHECK-IN — Attendance + status
+            VENUE CONTACT — Immediately accessible
             ================================================================ */}
-        <div className="mb-6 animate-fade-in-up stagger-3">
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+          <Card className="overflow-hidden border border-gray-100">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                <MessageCircle className="w-4 h-4 text-orange-600" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                  Venue Contact
+                </h2>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm">
+                    <User className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium text-gray-900">
+                      {MOCK_EVENT.venue.contact.name}
+                    </span>
+                    <span className="text-gray-400">—</span>
+                    <span className="text-gray-500">{MOCK_EVENT.venue.contact.role}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <a
+                      href={`tel:${MOCK_EVENT.venue.contact.phone}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {MOCK_EVENT.venue.contact.phone}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="w-4 h-4 text-gray-400" />
+                    <a
+                      href={`mailto:${MOCK_EVENT.venue.contact.email}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {MOCK_EVENT.venue.contact.email}
+                    </a>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <a href={`tel:${MOCK_EVENT.venue.contact.phone}`}>
+                    <Button variant="outline" size="sm" className="border-gray-200 text-xs">
+                      <Phone className="w-3.5 h-3.5 mr-1" /> Call
+                    </Button>
+                  </a>
+                  <a
+                    href={`https://maps.google.com?q=${encodeURIComponent(
+                      `${MOCK_EVENT.venue.address}, ${MOCK_EVENT.venue.city}, ${MOCK_EVENT.venue.state} ${MOCK_EVENT.venue.zip}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline" size="sm" className="border-gray-200 text-xs">
+                      <ExternalLink className="w-3.5 h-3.5 mr-1" /> Directions
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* ================================================================
+            PERFORMER CHECK-IN — Core day-of workflow
+            ================================================================ */}
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                 <CheckCheck className="w-4 h-4 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
                   Performer Check-In
-                </h3>
+                </h2>
                 <p className="text-xs text-gray-500">
                   {checkedInCount}/{performers.length} checked in &middot; {performedCount}{" "}
                   performed
@@ -540,6 +540,7 @@ export default function HostEventDayPage() {
             <div className="p-4 space-y-3">
               {performers.map((p) => {
                 const isExpanded = expandedPerformer === p.id;
+                const badge = statusBadge(p.checkedIn);
 
                 return (
                   <div
@@ -550,7 +551,7 @@ export default function HostEventDayPage() {
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <p className="font-semibold text-base text-gray-900 truncate">
                               {p.name}
                             </p>
@@ -559,16 +560,8 @@ export default function HostEventDayPage() {
                                 Waiver needed
                               </Badge>
                             )}
-                            {p.checkedIn === "checked_in" && (
-                              <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">
-                                Checked in
-                              </Badge>
-                            )}
-                            {p.checkedIn === "performed" && (
-                              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                            )}
-                            {p.checkedIn === "absent" && (
-                              <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                            {badge && (
+                              <Badge className={`${badge.bg} text-[10px]`}>{badge.label}</Badge>
                             )}
                           </div>
                           <div className="flex items-center gap-1.5 flex-wrap">
@@ -578,6 +571,14 @@ export default function HostEventDayPage() {
                             {p.performancePhoto && <ImageIcon className="w-3 h-3 text-blue-400" />}
                             {p.streamVideoUrl && <Video className="w-3 h-3 text-red-400" />}
                           </div>
+                          {p.checkedInTime && p.checkedIn !== "pending" && (
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                              <Clock className="w-2.5 h-2.5 inline mr-0.5" />
+                              {p.checkedIn === "checked_in" && "Arrived"}
+                              {p.checkedIn === "performed" && "Performed"}
+                              {p.checkedIn === "absent" && "Marked absent"} at {p.checkedInTime}
+                            </p>
+                          )}
                           {p.notes && (
                             <p className="text-xs text-gray-400 mt-1 italic">{p.notes}</p>
                           )}
@@ -587,6 +588,8 @@ export default function HostEventDayPage() {
                           size="sm"
                           onClick={() => setExpandedPerformer(isExpanded ? null : p.id)}
                           className="text-gray-400"
+                          aria-expanded={isExpanded}
+                          aria-label={`${isExpanded ? "Collapse" : "Expand"} details for ${p.name}`}
                         >
                           {isExpanded ? (
                             <ChevronUp className="w-4 h-4" />
@@ -596,8 +599,8 @@ export default function HostEventDayPage() {
                         </Button>
                       </div>
 
-                      {/* Status buttons — always visible */}
-                      <div className="grid grid-cols-4 gap-2">
+                      {/* Status buttons — 3 cols on mobile, 4 on sm+ */}
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                         <Button
                           variant={p.checkedIn === "checked_in" ? "default" : "outline"}
                           size="sm"
@@ -609,7 +612,7 @@ export default function HostEventDayPage() {
                           }`}
                         >
                           <User className="w-3.5 h-3.5" />
-                          Check In
+                          Arrived
                         </Button>
                         <Button
                           variant={p.checkedIn === "performed" ? "default" : "outline"}
@@ -641,7 +644,7 @@ export default function HostEventDayPage() {
                           variant={p.checkedIn === "pending" ? "default" : "outline"}
                           size="sm"
                           onClick={() => handleCheckIn(p.id, "pending")}
-                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] ${
+                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] hidden sm:flex ${
                             p.checkedIn === "pending" ? "" : "hover:bg-gray-50 border-gray-200"
                           }`}
                         >
@@ -751,21 +754,26 @@ export default function HostEventDayPage() {
                                 <Video className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                                 <Input
                                   type="url"
-                                  placeholder="Paste video link for this performer..."
+                                  placeholder="Paste video link..."
                                   value={p.streamVideoUrl}
                                   onChange={(e) => handlePerformerStreamUrl(p.id, e.target.value)}
                                   className="pl-8 h-8 text-xs"
                                 />
                               </div>
                               {p.streamVideoUrl && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="border-gray-200 text-xs h-8 px-2"
-                                  onClick={() => window.open(p.streamVideoUrl, "_blank")}
+                                <a
+                                  href={p.streamVideoUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                 >
-                                  <ExternalLink className="w-3 h-3" />
-                                </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-gray-200 text-xs h-8 px-2"
+                                  >
+                                    <ExternalLink className="w-3 h-3" />
+                                  </Button>
+                                </a>
                               )}
                             </div>
                             {eventStreamUrl && !p.streamVideoUrl && (
@@ -810,94 +818,159 @@ export default function HostEventDayPage() {
         </div>
 
         {/* ================================================================
-            VENUE CONTACT — Quick access
+            PERFORMANCE PROGRAM — Reference during the show
             ================================================================ */}
-        <div className="mb-6 animate-fade-in-up stagger-4">
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                <MessageCircle className="w-4 h-4 text-orange-600" />
+              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                <Music className="w-4 h-4 text-purple-600" />
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Venue Contact
-                </h3>
+              <div className="flex-1">
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                  Performance Program
+                </h2>
+                <p className="text-xs text-gray-500">Order of performances for today</p>
               </div>
             </div>
-            <div className="p-6 space-y-3">
-              <div className="flex items-center gap-2 text-sm">
-                <User className="w-4 h-4 text-gray-400" />
-                <span className="font-medium text-gray-900">{MOCK_EVENT.venue.contact.name}</span>
-                <span className="text-gray-400">—</span>
-                <span className="text-gray-500">{MOCK_EVENT.venue.contact.role}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 text-gray-400" />
-                <a
-                  href={`mailto:${MOCK_EVENT.venue.contact.email}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {MOCK_EVENT.venue.contact.email}
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="w-4 h-4 text-gray-400" />
-                <a
-                  href={`tel:${MOCK_EVENT.venue.contact.phone}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {MOCK_EVENT.venue.contact.phone}
-                </a>
-              </div>
-              <div className="flex gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-gray-200 text-xs"
-                  onClick={() => window.open(`tel:${MOCK_EVENT.venue.contact.phone}`)}
-                >
-                  <Phone className="w-3.5 h-3.5 mr-1" /> Call
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-gray-200 text-xs"
-                  onClick={() => window.open(`mailto:${MOCK_EVENT.venue.contact.email}`)}
-                >
-                  <Mail className="w-3.5 h-3.5 mr-1" /> Email
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-gray-200 text-xs"
-                  onClick={() =>
-                    window.open(
-                      `https://maps.google.com?q=${encodeURIComponent(
-                        `${MOCK_EVENT.venue.address}, ${MOCK_EVENT.venue.city}, ${MOCK_EVENT.venue.state} ${MOCK_EVENT.venue.zip}`
-                      )}`
-                    )
-                  }
-                >
-                  <ExternalLink className="w-3.5 h-3.5 mr-1" /> Directions
-                </Button>
-              </div>
+            <div className="divide-y divide-gray-100">
+              {[...performers]
+                .sort((a, b) => a.performanceOrder - b.performanceOrder)
+                .map((p) => {
+                  const isAbsent = p.checkedIn === "absent";
+                  return (
+                    <div
+                      key={p.id}
+                      className={`px-6 py-4 flex items-center gap-4 ${isAbsent ? "opacity-40" : ""}`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                          isAbsent
+                            ? "bg-gray-200 text-gray-500 line-through"
+                            : p.checkedIn === "performed"
+                              ? "bg-green-500 text-white"
+                              : "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
+                        }`}
+                      >
+                        {isAbsent ? <XCircle className="w-4 h-4" /> : p.performanceOrder}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p
+                            className={`font-semibold text-gray-900 text-sm ${isAbsent ? "line-through" : ""}`}
+                          >
+                            {p.name}
+                          </p>
+                          <Badge className={`text-[10px] ${stageBadgeColor(p.stage)}`}>
+                            {p.stageLabel}
+                          </Badge>
+                          {p.checkedIn === "performed" && (
+                            <CheckCircle2 className="w-4 h-4 text-green-500" />
+                          )}
+                          {isAbsent && (
+                            <Badge className="bg-red-100 text-red-600 border-red-200 text-[10px]">
+                              Absent
+                            </Badge>
+                          )}
+                        </div>
+                        <p
+                          className={`text-sm text-gray-600 mt-0.5 ${isAbsent ? "line-through" : ""}`}
+                        >
+                          <span className="font-medium">{p.piece}</span>
+                        </p>
+                        <p className="text-xs text-gray-400">{p.composer}</p>
+                      </div>
+                      {/* Sheet Music Button */}
+                      {p.hasScoreUrl && !isAbsent && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-gray-200 text-xs flex-shrink-0"
+                          onClick={() =>
+                            alert('Demo: Would open sheet music PDF for "' + p.piece + '"')
+                          }
+                        >
+                          <FileText className="w-3.5 h-3.5 mr-1" />
+                          Score
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </Card>
         </div>
 
         {/* ================================================================
-            PERFORMANCE PHOTO — Upload group photo
+            LIVESTREAM LINK — Optional, can paste now or later
             ================================================================ */}
-        <div className="mb-6 animate-fade-in-up stagger-5">
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+          <Card className="overflow-hidden border border-gray-100">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
+                <Video className="w-4 h-4 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                  Livestream / Recording Link
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Optional — paste a YouTube, Facebook Live, or other stream URL
+                </p>
+              </div>
+              {streamUrlSaved && (
+                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
+                  Saved
+                </Badge>
+              )}
+            </div>
+            <div className="p-6 space-y-3">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Link className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Input
+                    type="url"
+                    placeholder="https://youtube.com/live/..."
+                    value={eventStreamUrl}
+                    onChange={(e) => {
+                      setEventStreamUrl(e.target.value);
+                      setStreamUrlSaved(false);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  className="border-gray-200"
+                  disabled={!eventStreamUrl.trim()}
+                  onClick={() => {
+                    setStreamUrlSaved(true);
+                  }}
+                >
+                  Save
+                </Button>
+              </div>
+              <p className="text-xs text-gray-400">
+                You can add or update this link at any time — before, during, or after the event. It
+                will be linked to each performer&apos;s profile.
+              </p>
+            </div>
+          </Card>
+        </div>
+
+        {/* ================================================================
+            GROUP PHOTOS — Upload after performances
+            ================================================================ */}
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center">
                 <Camera className="w-4 h-4 text-pink-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Performance Photos
-                </h3>
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                  Group Photos
+                </h2>
                 <p className="text-xs text-gray-500">
                   {photos.length} photo{photos.length !== 1 ? "s" : ""} uploaded
                 </p>
@@ -961,18 +1034,24 @@ export default function HostEventDayPage() {
             <button
               className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50 w-full text-left"
               onClick={() => setShowNotes(!showNotes)}
+              aria-expanded={showNotes}
             >
               <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
                 <FileText className="w-4 h-4 text-gray-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
                   Event Notes
-                </h3>
+                </h2>
                 <p className="text-xs text-gray-500">
                   Jot down anything important during the event
                 </p>
               </div>
+              {eventNotes && !showNotes && (
+                <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px] mr-2">
+                  Has notes
+                </Badge>
+              )}
               {showNotes ? (
                 <ChevronUp className="w-4 h-4 text-gray-400" />
               ) : (
@@ -987,24 +1066,27 @@ export default function HostEventDayPage() {
                   value={eventNotes}
                   onChange={(e) => setEventNotes(e.target.value)}
                 />
+                <p className="text-[10px] text-gray-400 mt-2 text-right">
+                  {eventNotes.length} characters
+                </p>
               </div>
             )}
           </Card>
         </div>
 
         {/* ================================================================
-            EMERGENCY INFO — Quick reference
+            HOST REMINDERS — Quick checklist
             ================================================================ */}
         <div className="mb-6">
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                <AlertTriangle className="w-4 h-4 text-red-600" />
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Info className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Emergency & Quick Reference
-                </h3>
+                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                  Host Reminders
+                </h2>
               </div>
             </div>
             <div className="p-6 space-y-3">
@@ -1027,13 +1109,12 @@ export default function HostEventDayPage() {
                 </div>
               </div>
               <div className="p-3 bg-blue-50 rounded-xl">
-                <p className="text-xs text-blue-700 font-medium mb-1">Reminders:</p>
-                <ul className="text-xs text-blue-600 space-y-1 list-disc list-inside">
+                <ul className="text-xs text-blue-700 space-y-1.5 list-disc list-inside">
                   <li>All performers under 18 need a signed waiver</li>
                   <li>Take a group photo before anyone leaves</li>
                   <li>Mark each performer as &ldquo;Performed&rdquo; after their set</li>
                   <li>Thank the venue contact and audience</li>
-                  <li>Complete the concert to issue service hours</li>
+                  <li>Complete the concert below to issue service hours</li>
                 </ul>
               </div>
             </div>
@@ -1048,74 +1129,61 @@ export default function HostEventDayPage() {
             className={`overflow-hidden border-2 ${canComplete ? "border-green-200 bg-green-50/30" : "border-gray-200 bg-gray-50/30"}`}
           >
             <div className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h4 className="font-semibold text-gray-900 heading-montserrat mb-3">
-                    Ready to Complete?
-                  </h4>
-                  <div className="space-y-2">
-                    <div
-                      className={`flex items-center gap-2 text-sm ${performedCount > 0 ? "text-green-700" : "text-gray-500"}`}
-                    >
-                      <CheckCircle2
-                        className={`w-4 h-4 ${performedCount > 0 ? "text-green-600" : "text-gray-300"}`}
-                      />
-                      {performedCount} performer{performedCount !== 1 ? "s" : ""} marked as
-                      performed
-                    </div>
-                    <div
-                      className={`flex items-center gap-2 text-sm ${photos.length > 0 ? "text-green-700" : "text-gray-500"}`}
-                    >
-                      <CheckCircle2
-                        className={`w-4 h-4 ${photos.length > 0 ? "text-green-600" : "text-gray-300"}`}
-                      />
-                      {photos.length} group photo{photos.length !== 1 ? "s" : ""} uploaded
-                    </div>
-                    <div
-                      className={`flex items-center gap-2 text-sm ${pendingWaivers === 0 ? "text-green-700" : "text-amber-600"}`}
-                    >
-                      <CheckCircle2
-                        className={`w-4 h-4 ${pendingWaivers === 0 ? "text-green-600" : "text-amber-400"}`}
-                      />
-                      {pendingWaivers === 0
-                        ? "All waivers signed"
-                        : `${pendingWaivers} waiver${pendingWaivers > 1 ? "s" : ""} pending`}
-                    </div>
-                    {canComplete && (
-                      <p className="text-green-700 font-medium text-sm mt-2">
-                        All requirements met! Ready to complete concert.
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <Button
-                  disabled={!canComplete}
-                  size="lg"
-                  className="shadow-md hover:shadow-lg transition-all"
-                  onClick={() => {
-                    setConcertStarted(true);
-                    alert(
-                      "Demo: Concert completed! Service hours would be granted to all performed participants."
-                    );
-                  }}
+              <h2 className="font-semibold text-gray-900 heading-montserrat mb-3">
+                Ready to Complete?
+              </h2>
+              <div className="space-y-2 mb-4">
+                <div
+                  className={`flex items-center gap-2 text-sm ${performedCount > 0 ? "text-green-700" : "text-gray-500"}`}
                 >
-                  <Star className="w-4 h-4 mr-2" />
-                  Complete Concert
-                </Button>
+                  <CheckCircle2
+                    className={`w-4 h-4 flex-shrink-0 ${performedCount > 0 ? "text-green-600" : "text-gray-300"}`}
+                  />
+                  {performedCount} performer{performedCount !== 1 ? "s" : ""} marked as performed
+                </div>
+                <div
+                  className={`flex items-center gap-2 text-sm ${photos.length > 0 ? "text-green-700" : "text-gray-500"}`}
+                >
+                  <CheckCircle2
+                    className={`w-4 h-4 flex-shrink-0 ${photos.length > 0 ? "text-green-600" : "text-gray-300"}`}
+                  />
+                  {photos.length} group photo{photos.length !== 1 ? "s" : ""} uploaded
+                </div>
+                <div
+                  className={`flex items-center gap-2 text-sm ${pendingWaivers === 0 ? "text-green-700" : "text-amber-600"}`}
+                >
+                  <CheckCircle2
+                    className={`w-4 h-4 flex-shrink-0 ${pendingWaivers === 0 ? "text-green-600" : "text-amber-400"}`}
+                  />
+                  {pendingWaivers === 0
+                    ? "All waivers signed"
+                    : `${pendingWaivers} waiver${pendingWaivers > 1 ? "s" : ""} pending`}
+                </div>
+                {canComplete && (
+                  <p className="text-green-700 font-medium text-sm mt-2">
+                    All requirements met! Ready to complete concert.
+                  </p>
+                )}
               </div>
-              <div className="mt-4 pt-4 border-t border-gray-200/60 text-xs text-gray-500">
+              <Button
+                disabled={!canComplete}
+                size="lg"
+                className="w-full shadow-md hover:shadow-lg transition-all"
+                onClick={() => {
+                  alert(
+                    "Demo: Concert completed! Service hours would be granted to all performed participants."
+                  );
+                }}
+              >
+                <Star className="w-4 h-4 mr-2" />
+                Complete Concert
+              </Button>
+              <p className="mt-4 pt-4 border-t border-gray-200/60 text-xs text-gray-500">
                 <strong>Note:</strong> Completing the concert will grant 3.0 service hours to each
                 performer marked as &ldquo;Performed&rdquo; and set the concert status to completed.
-              </div>
+              </p>
             </div>
           </Card>
-        </div>
-
-        {/* Demo banner */}
-        <div className="text-center mb-8">
-          <Badge className="bg-gray-100 text-gray-500 border-gray-200 px-4 py-1.5">
-            Demo Mode — Data shown is for preview only
-          </Badge>
         </div>
       </div>
     </div>
