@@ -1,10 +1,31 @@
 "use server";
 
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { venueContactUpdateSchema, venueInsertSchema, type VenueContactUpdate, type VenueInsert } from "@/types/db";
 
 const VENUE_PHOTOS_BUCKET = "venue_photos";
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
+
+/**
+ * Create admin Supabase client with service role key
+ * Bypasses RLS — only use after verifying permissions at the application level
+ */
+function createAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error("Missing Supabase configuration");
+  }
+
+  return createSupabaseClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
 
 /**
  * Helper to verify user is a super admin
@@ -331,18 +352,20 @@ export async function uploadVenuePhoto(formData: FormData) {
     return { error: "File size must be less than 5MB" };
   }
 
-  // Verify permissions
+  // Verify permissions (uses session-based client for auth check)
   const verification = await verifyVenueUpdatePermission(venueId);
   if ("error" in verification) return verification;
 
-  const supabase = await createClient();
+  // Use admin client for storage operations to bypass storage RLS
+  // (permission already verified above)
+  const adminClient = createAdminClient();
 
   // Generate storage path
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const storagePath = `venue_${venueId}/${photoType}.${ext}`;
 
   // Upload file (upsert to replace existing)
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError } = await adminClient.storage
     .from(VENUE_PHOTOS_BUCKET)
     .upload(storagePath, file, { upsert: true });
 
@@ -352,7 +375,7 @@ export async function uploadVenuePhoto(formData: FormData) {
   }
 
   // Get public URL
-  const { data: urlData } = supabase.storage
+  const { data: urlData } = adminClient.storage
     .from(VENUE_PHOTOS_BUCKET)
     .getPublicUrl(storagePath);
 
@@ -360,7 +383,7 @@ export async function uploadVenuePhoto(formData: FormData) {
 
   // Update the venue record
   const column = photoType === "interior" ? "interior_photo_url" : "exterior_photo_url";
-  const { error: updateError } = await supabase
+  const { error: updateError } = await adminClient
     .from("venues")
     .update({ [column]: photoUrl })
     .eq("id", venueId);
