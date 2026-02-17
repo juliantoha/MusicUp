@@ -167,7 +167,7 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
     setLoadingWaivers(true);
     const result = await getUnsignedWaivers(venue.id);
     if ("unsignedWaivers" in result) {
-      setUnsignedWaivers(result.unsignedWaivers);
+      setUnsignedWaivers(result.unsignedWaivers ?? []);
     }
     setLoadingWaivers(false);
   };

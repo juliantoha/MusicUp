@@ -62,7 +62,7 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
     setLoadingPhotos(true);
     const result = await getConcertPhotos(concert.id);
     if (result.photos) {
-      setPhotos(result.photos);
+      setPhotos(result.photos ?? []);
     }
     setLoadingPhotos(false);
   };
