@@ -105,8 +105,25 @@ export default function Home() {
     { name: "House Concerts", tagline: "Living Rooms", desc: "Intimate shows with clear run-of-show.", color: "#D97706" },
   ];
 
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
       {/* Navigation */}
       <nav aria-label="Main navigation" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-lg shadow-sm border-b border-gray-200/60" : "bg-white/60 backdrop-blur-md border-b border-transparent"}`}>
         <div className="container mx-auto px-4 py-3">
