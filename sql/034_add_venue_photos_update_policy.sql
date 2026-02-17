@@ -2,8 +2,15 @@
 -- The upload uses upsert: true which requires an UPDATE policy when replacing existing photos.
 -- Without this, replacement uploads fail with a permission error.
 
-CREATE POLICY IF NOT EXISTS "Admins can update venue photos"
-  ON storage.objects FOR UPDATE
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE policyname = 'Admins can update venue photos'
+      AND tablename = 'objects'
+      AND schemaname = 'storage'
+  ) THEN
+    CREATE POLICY "Admins can update venue photos"
+      ON storage.objects FOR UPDATE
   USING (
     bucket_id = 'venue_photos'
     AND auth.role() = 'authenticated'
@@ -22,3 +29,5 @@ CREATE POLICY IF NOT EXISTS "Admins can update venue photos"
       AND profiles.role IN ('admin', 'super_admin')
     )
   );
+  END IF;
+END $$;
