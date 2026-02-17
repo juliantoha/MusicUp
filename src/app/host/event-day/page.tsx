@@ -23,7 +23,6 @@ import {
   ChevronUp,
   ExternalLink,
   Clipboard,
-  CheckCheck,
   Heart,
   Star,
   MessageCircle,
@@ -92,7 +91,6 @@ interface Performer {
   notes: string;
   waiverSigned: boolean;
   hasScoreUrl: boolean;
-  streamVideoUrl: string;
   performancePhoto: { name: string; time: string } | null;
 }
 
@@ -107,14 +105,13 @@ const MOCK_PERFORMERS: Performer[] = [
     piece: "Can't Help Falling in Love",
     composer: "Peretti / Creatore / Weiss",
     stage: 2,
-    stageLabel: "Intermediate",
+    stageLabel: "Stage 2",
     performanceOrder: 1,
     checkedIn: "pending",
     checkedInTime: null,
     notes: "First time performing at this venue",
     waiverSigned: true,
     hasScoreUrl: true,
-    streamVideoUrl: "",
     performancePhoto: null,
   },
   {
@@ -127,14 +124,13 @@ const MOCK_PERFORMERS: Performer[] = [
     piece: "Somewhere Over the Rainbow",
     composer: "Arlen / Harburg",
     stage: 3,
-    stageLabel: "Advanced",
+    stageLabel: "Stage 3",
     performanceOrder: 2,
     checkedIn: "pending",
     checkedInTime: null,
     notes: "",
     waiverSigned: true,
     hasScoreUrl: true,
-    streamVideoUrl: "",
     performancePhoto: null,
   },
   {
@@ -147,14 +143,13 @@ const MOCK_PERFORMERS: Performer[] = [
     piece: "What a Wonderful World",
     composer: "Thiele / Weiss",
     stage: 1,
-    stageLabel: "Beginner",
+    stageLabel: "Stage 1",
     performanceOrder: 3,
     checkedIn: "pending",
     checkedInTime: null,
     notes: "Parent (Maria) will accompany — has been briefed",
     waiverSigned: true,
     hasScoreUrl: true,
-    streamVideoUrl: "",
     performancePhoto: null,
   },
   {
@@ -167,14 +162,13 @@ const MOCK_PERFORMERS: Performer[] = [
     piece: "Moon River",
     composer: "Mancini / Mercer",
     stage: 2,
-    stageLabel: "Intermediate",
+    stageLabel: "Stage 2",
     performanceOrder: 4,
     checkedIn: "pending",
     checkedInTime: null,
     notes: "",
     waiverSigned: false,
     hasScoreUrl: true,
-    streamVideoUrl: "",
     performancePhoto: null,
   },
   {
@@ -187,14 +181,13 @@ const MOCK_PERFORMERS: Performer[] = [
     piece: "Unchained Melody",
     composer: "North / Zaret",
     stage: 3,
-    stageLabel: "Advanced",
+    stageLabel: "Stage 3",
     performanceOrder: 5,
     checkedIn: "pending",
     checkedInTime: null,
     notes: "Returning performer — performed here last month",
     waiverSigned: true,
     hasScoreUrl: true,
-    streamVideoUrl: "",
     performancePhoto: null,
   },
 ];
@@ -251,10 +244,6 @@ export default function HostEventDayPage() {
     );
   };
 
-  const handlePerformerStreamUrl = (id: string, url: string) => {
-    setPerformers((prev) => prev.map((p) => (p.id === id ? { ...p, streamVideoUrl: url } : p)));
-  };
-
   const handlePerformerPhotoUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -307,7 +296,8 @@ export default function HostEventDayPage() {
   const stageBadgeColor = (stage: number) => {
     if (stage === 1) return "bg-teal-100 text-teal-700 border-teal-200";
     if (stage === 2) return "bg-blue-100 text-blue-700 border-blue-200";
-    return "bg-purple-100 text-purple-700 border-purple-200";
+    if (stage === 3) return "bg-purple-100 text-purple-700 border-purple-200";
+    return "bg-amber-100 text-amber-700 border-amber-200"; // Stage 4
   };
 
   const statusBadge = (status: CheckInStatus) => {
@@ -332,6 +322,30 @@ export default function HostEventDayPage() {
       {/* Demo banner — sticky top */}
       <div className="sticky top-0 z-50 bg-gray-900 text-white text-center py-1.5 text-xs font-medium tracking-wide">
         Demo Mode — {MOCK_EVENT.series} at {MOCK_EVENT.venue.name}
+      </div>
+
+      {/* Sticky progress bar — visible while scrolling */}
+      <div className="sticky top-[28px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+        <div className="container mx-auto px-4 md:px-8 max-w-3xl">
+          <div className="flex items-center gap-3 py-2">
+            <p className="text-xs font-semibold text-gray-700 flex-shrink-0 w-8 text-right">
+              {progressPct}%
+            </p>
+            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden flex-1">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ease-out ${
+                  progressPct === 100
+                    ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                    : "bg-gradient-to-r from-blue-500 to-cyan-500"
+                }`}
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <p className="text-[10px] text-gray-400 flex-shrink-0">
+              {performedCount}/{activeCount} performed
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="container mx-auto px-4 md:px-8 max-w-3xl pt-6">
@@ -565,20 +579,21 @@ export default function HostEventDayPage() {
         </div>
 
         {/* ================================================================
-            PERFORMER CHECK-IN — Core day-of workflow, sorted by performance order
+            CONCERT PROGRAM — Unified check-in + program, sorted by performance order
             ================================================================ */}
         <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                <CheckCheck className="w-4 h-4 text-blue-600" />
+              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                <Music className="w-4 h-4 text-purple-600" />
               </div>
               <div className="flex-1">
                 <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Performer Check-In
+                  Concert Program
                 </h2>
                 <p className="text-xs text-gray-500">
-                  {checkedInCount}/{performers.length} arrived &middot; {performedCount} performed
+                  {checkedInCount}/{performers.length} arrived &middot; {performedCount}/
+                  {activeCount} performed
                 </p>
               </div>
             </div>
@@ -587,23 +602,43 @@ export default function HostEventDayPage() {
               {sortedPerformers.map((p) => {
                 const isExpanded = expandedPerformer === p.id;
                 const badge = statusBadge(p.checkedIn);
+                const isAbsent = p.checkedIn === "absent";
+                const isNextUp = p.id === nextUpId;
 
                 return (
                   <div
                     key={p.id}
-                    className={`rounded-xl border-2 transition-all duration-200 ${statusBg(p.checkedIn)}`}
+                    className={`rounded-xl border-2 transition-all duration-200 ${statusBg(p.checkedIn)} ${
+                      isNextUp && !isAbsent && p.checkedIn === "pending"
+                        ? "ring-2 ring-cyan-200 ring-offset-1"
+                        : ""
+                    }`}
                   >
-                    {/* Main row */}
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-3 mb-3">
+                    {/* Main content */}
+                    <div className={`p-4 ${isAbsent ? "opacity-50" : ""}`}>
+                      {/* Header: order number, name, badges, chevron */}
+                      <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
-                              {p.performanceOrder}
+                            <span
+                              className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 ${
+                                isAbsent
+                                  ? "bg-gray-300"
+                                  : p.checkedIn === "performed"
+                                    ? "bg-green-500"
+                                    : "bg-gradient-to-br from-blue-500 to-cyan-500"
+                              }`}
+                            >
+                              {isAbsent ? <XCircle className="w-3.5 h-3.5" /> : p.performanceOrder}
                             </span>
-                            <p className="font-semibold text-base text-gray-900 truncate">
+                            <p
+                              className={`font-semibold text-base text-gray-900 truncate ${isAbsent ? "line-through" : ""}`}
+                            >
                               {p.name}
                             </p>
+                            <Badge className={`text-[10px] ${stageBadgeColor(p.stage)}`}>
+                              {p.stageLabel}
+                            </Badge>
                             {!p.waiverSigned && (
                               <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px]">
                                 Waiver needed
@@ -612,99 +647,133 @@ export default function HostEventDayPage() {
                             {badge && (
                               <Badge className={`${badge.bg} text-[10px]`}>{badge.label}</Badge>
                             )}
+                            {isNextUp && !isAbsent && (
+                              <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200 text-[10px] animate-pulse">
+                                Next
+                              </Badge>
+                            )}
                           </div>
-                          <div className="flex items-center gap-1.5 flex-wrap ml-7">
-                            <p className="text-xs text-gray-500">
-                              {p.piece} &middot; {p.stageLabel}
+
+                          {/* Piece + composer */}
+                          <div className="ml-8">
+                            <p
+                              className={`text-sm text-gray-700 font-medium ${isAbsent ? "line-through" : ""}`}
+                            >
+                              {p.piece}
                             </p>
-                            {p.performancePhoto && <ImageIcon className="w-3 h-3 text-blue-400" />}
-                            {p.streamVideoUrl && <Video className="w-3 h-3 text-red-400" />}
+                            <p className="text-xs text-gray-400">{p.composer}</p>
                           </div>
-                          {p.checkedInTime && p.checkedIn !== "pending" && (
-                            <p className="text-[10px] text-gray-400 mt-0.5 ml-7">
-                              <Clock className="w-2.5 h-2.5 inline mr-0.5" />
-                              {p.checkedIn === "checked_in" && "Arrived"}
-                              {p.checkedIn === "performed" && "Performed"}
-                              {p.checkedIn === "absent" && "Marked absent"} at {p.checkedInTime}
-                            </p>
-                          )}
-                          {p.notes && (
-                            <p className="text-xs text-gray-400 mt-1 italic ml-7">{p.notes}</p>
-                          )}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setExpandedPerformer(isExpanded ? null : p.id)}
-                          className="text-gray-400"
-                          aria-expanded={isExpanded}
-                          aria-label={`${isExpanded ? "Collapse" : "Expand"} details for ${p.name}`}
-                          title={isExpanded ? "Collapse" : "Contact & media"}
-                        >
-                          {isExpanded ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
+
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          {/* Score button */}
+                          {p.hasScoreUrl && !isAbsent && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-gray-200 text-xs h-8 px-2.5"
+                              onClick={() =>
+                                alert('Demo: Would open sheet music PDF for "' + p.piece + '"')
+                              }
+                            >
+                              <FileText className="w-3.5 h-3.5 mr-1" />
+                              Score
+                            </Button>
                           )}
-                        </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setExpandedPerformer(isExpanded ? null : p.id)}
+                            className="text-gray-400 h-8 w-8 p-0"
+                            aria-expanded={isExpanded}
+                            aria-label={`${isExpanded ? "Collapse" : "Expand"} details for ${p.name}`}
+                            title={isExpanded ? "Collapse" : "Contact & media"}
+                          >
+                            {isExpanded ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Timestamp + notes + photo indicator */}
+                      <div className="ml-8 space-y-0.5">
+                        {p.checkedInTime && p.checkedIn !== "pending" && (
+                          <p className="text-[10px] text-gray-400">
+                            <Clock className="w-2.5 h-2.5 inline mr-0.5" />
+                            {p.checkedIn === "checked_in" && "Arrived"}
+                            {p.checkedIn === "performed" && "Performed"}
+                            {p.checkedIn === "absent" && "Marked absent"} at {p.checkedInTime}
+                          </p>
+                        )}
+                        {p.notes && <p className="text-xs text-gray-400 italic">{p.notes}</p>}
+                        {p.performancePhoto && (
+                          <p className="text-[10px] text-blue-500 flex items-center gap-1">
+                            <ImageIcon className="w-3 h-3" /> Photo uploaded
+                          </p>
+                        )}
                       </div>
 
                       {/* Status buttons — 4 cols */}
-                      <div className="grid grid-cols-4 gap-2">
-                        <Button
-                          variant={p.checkedIn === "checked_in" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleCheckIn(p.id, "checked_in")}
-                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
-                            p.checkedIn === "checked_in"
-                              ? "bg-blue-600 hover:bg-blue-700 text-white"
-                              : "hover:bg-blue-50 hover:border-blue-300 border-gray-200"
-                          }`}
-                        >
-                          <User className="w-3.5 h-3.5" />
-                          Arrived
-                        </Button>
-                        <Button
-                          variant={p.checkedIn === "performed" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleCheckIn(p.id, "performed")}
-                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
-                            p.checkedIn === "performed"
-                              ? "bg-green-600 hover:bg-green-700 text-white"
-                              : "hover:bg-green-50 hover:border-green-300 border-gray-200"
-                          }`}
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          Performed
-                        </Button>
-                        <Button
-                          variant={p.checkedIn === "absent" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleCheckIn(p.id, "absent")}
-                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
-                            p.checkedIn === "absent"
-                              ? "bg-red-600 hover:bg-red-700 text-white"
-                              : "hover:bg-red-50 hover:border-red-300 border-gray-200"
-                          }`}
-                        >
-                          <XCircle className="w-3.5 h-3.5" />
-                          Absent
-                        </Button>
-                        <Button
-                          variant={p.checkedIn === "pending" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleCheckIn(p.id, "pending")}
-                          className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
-                            p.checkedIn === "pending" ? "" : "hover:bg-gray-50 border-gray-200"
-                          }`}
-                        >
-                          <Clock className="w-3.5 h-3.5" />
-                          Reset
-                        </Button>
-                      </div>
+                      {!isAbsent || p.checkedIn === "absent" ? (
+                        <div className="grid grid-cols-4 gap-2 mt-3">
+                          <Button
+                            variant={p.checkedIn === "checked_in" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleCheckIn(p.id, "checked_in")}
+                            className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
+                              p.checkedIn === "checked_in"
+                                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                : "hover:bg-blue-50 hover:border-blue-300 border-gray-200"
+                            }`}
+                          >
+                            <User className="w-3.5 h-3.5" />
+                            Arrived
+                          </Button>
+                          <Button
+                            variant={p.checkedIn === "performed" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleCheckIn(p.id, "performed")}
+                            className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
+                              p.checkedIn === "performed"
+                                ? "bg-green-600 hover:bg-green-700 text-white"
+                                : "hover:bg-green-50 hover:border-green-300 border-gray-200"
+                            }`}
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Performed
+                          </Button>
+                          <Button
+                            variant={p.checkedIn === "absent" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleCheckIn(p.id, "absent")}
+                            className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
+                              p.checkedIn === "absent"
+                                ? "bg-red-600 hover:bg-red-700 text-white"
+                                : "hover:bg-red-50 hover:border-red-300 border-gray-200"
+                            }`}
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            Absent
+                          </Button>
+                          <Button
+                            variant={p.checkedIn === "pending" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleCheckIn(p.id, "pending")}
+                            className={`h-auto py-2.5 flex flex-col gap-0.5 rounded-xl text-[11px] active:scale-95 transition-all ${
+                              p.checkedIn === "pending" ? "" : "hover:bg-gray-50 border-gray-200"
+                            }`}
+                          >
+                            <Clock className="w-3.5 h-3.5" />
+                            Reset
+                          </Button>
+                        </div>
+                      ) : null}
                     </div>
 
-                    {/* Expandable details: contact + media */}
+                    {/* Expandable details: contact + performance photo */}
                     {isExpanded && (
                       <div className="px-4 pb-4 pt-3 border-t border-gray-100 space-y-4">
                         {/* Contact info */}
@@ -765,114 +834,50 @@ export default function HostEventDayPage() {
                           </div>
                         </div>
 
-                        {/* Performance media — photo + video link */}
-                        <div className="space-y-3 pt-3 border-t border-gray-100">
+                        {/* Performance photo */}
+                        <div className="space-y-2 pt-3 border-t border-gray-100">
                           <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
-                            Performance Media
+                            Performance Photo
                             <span className="normal-case font-normal text-gray-400 ml-1">
                               — linked to {p.name.split(" ")[0]}&apos;s profile
                             </span>
                           </p>
 
-                          {/* Per-performer photo upload */}
-                          <div className="space-y-2">
-                            {p.performancePhoto ? (
-                              <div className="flex items-center gap-3 p-2.5 bg-green-50 border border-green-200 rounded-lg">
-                                <ImageIcon className="w-4 h-4 text-green-600 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-medium text-green-800 truncate">
-                                    {p.performancePhoto.name}
-                                  </p>
-                                  <p className="text-[10px] text-green-600">
-                                    Uploaded at {p.performancePhoto.time}
-                                  </p>
-                                </div>
-                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                          {p.performancePhoto ? (
+                            <div className="flex items-center gap-3 p-2.5 bg-green-50 border border-green-200 rounded-lg">
+                              <ImageIcon className="w-4 h-4 text-green-600 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-green-800 truncate">
+                                  {p.performancePhoto.name}
+                                </p>
+                                <p className="text-[10px] text-green-600">
+                                  Uploaded at {p.performancePhoto.time}
+                                </p>
                               </div>
-                            ) : (
-                              <div>
-                                <label htmlFor={`performer-photo-${p.id}`}>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    asChild
-                                    className="border-gray-200 text-xs"
-                                  >
-                                    <span className="cursor-pointer">
-                                      <Camera className="w-3.5 h-3.5 mr-1" />
-                                      Upload Performance Photo
-                                    </span>
-                                  </Button>
-                                </label>
-                                <Input
-                                  id={`performer-photo-${p.id}`}
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => handlePerformerPhotoUpload(p.id, e)}
-                                  className="hidden"
-                                />
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Per-performer stream/video link */}
-                          <div className="space-y-1.5">
-                            <div className="flex gap-2">
-                              <div className="relative flex-1">
-                                <Video className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                                <Input
-                                  type="url"
-                                  placeholder="Paste video link..."
-                                  value={p.streamVideoUrl}
-                                  onChange={(e) => handlePerformerStreamUrl(p.id, e.target.value)}
-                                  className="pl-8 h-8 text-xs"
-                                />
-                              </div>
-                              {p.streamVideoUrl && (
-                                <a
-                                  href={p.streamVideoUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-gray-200 text-xs h-8 px-2"
-                                  >
-                                    <ExternalLink className="w-3 h-3" />
-                                  </Button>
-                                </a>
-                              )}
+                              <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                             </div>
-                            {eventStreamUrl && !p.streamVideoUrl && (
-                              <button
-                                className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded"
-                                onClick={() => handlePerformerStreamUrl(p.id, eventStreamUrl)}
-                              >
-                                <Link className="w-3 h-3" />
-                                Use event stream link
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Saved media summary */}
-                          {(p.performancePhoto || p.streamVideoUrl) && (
-                            <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg">
-                              <p className="text-[10px] text-blue-700 font-medium mb-1">
-                                Linked to {p.name}&apos;s profile:
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {p.performancePhoto && (
-                                  <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">
-                                    <ImageIcon className="w-3 h-3 mr-1" /> Photo
-                                  </Badge>
-                                )}
-                                {p.streamVideoUrl && (
-                                  <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">
-                                    <Video className="w-3 h-3 mr-1" /> Video
-                                  </Badge>
-                                )}
-                              </div>
+                          ) : (
+                            <div>
+                              <label htmlFor={`performer-photo-${p.id}`}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  asChild
+                                  className="border-gray-200 text-xs"
+                                >
+                                  <span className="cursor-pointer">
+                                    <Camera className="w-3.5 h-3.5 mr-1" />
+                                    Upload Performance Photo
+                                  </span>
+                                </Button>
+                              </label>
+                              <Input
+                                id={`performer-photo-${p.id}`}
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handlePerformerPhotoUpload(p.id, e)}
+                                className="hidden"
+                              />
                             </div>
                           )}
                         </div>
@@ -886,104 +891,9 @@ export default function HostEventDayPage() {
         </div>
 
         {/* ================================================================
-            PERFORMANCE PROGRAM — Reference during the show
-            ================================================================ */}
-        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
-          <Card className="overflow-hidden border border-gray-100">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Music className="w-4 h-4 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <h2 className="font-semibold text-gray-900 heading-montserrat text-sm">
-                  Performance Program
-                </h2>
-                <p className="text-xs text-gray-500">
-                  {performedCount}/{activeCount} complete
-                  {absentCount > 0 ? ` · ${absentCount} absent` : ""}
-                </p>
-              </div>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {sortedPerformers.map((p) => {
-                const isAbsent = p.checkedIn === "absent";
-                const isNextUp = p.id === nextUpId;
-                return (
-                  <div
-                    key={p.id}
-                    className={`px-6 py-4 flex items-center gap-4 transition-all duration-200 ${
-                      isAbsent ? "opacity-40" : isNextUp ? "bg-cyan-50/40" : ""
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-colors duration-200 ${
-                        isAbsent
-                          ? "bg-gray-200 text-gray-500"
-                          : p.checkedIn === "performed"
-                            ? "bg-green-500 text-white"
-                            : isNextUp
-                              ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white ring-2 ring-cyan-300 ring-offset-1"
-                              : "bg-gradient-to-br from-blue-500 to-cyan-500 text-white"
-                      }`}
-                    >
-                      {isAbsent ? <XCircle className="w-4 h-4" /> : p.performanceOrder}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p
-                          className={`font-semibold text-gray-900 text-sm ${isAbsent ? "line-through" : ""}`}
-                        >
-                          {p.name}
-                        </p>
-                        <Badge className={`text-[10px] ${stageBadgeColor(p.stage)}`}>
-                          {p.stageLabel}
-                        </Badge>
-                        {p.checkedIn === "performed" && (
-                          <CheckCircle2 className="w-4 h-4 text-green-500" />
-                        )}
-                        {isAbsent && (
-                          <Badge className="bg-red-100 text-red-600 border-red-200 text-[10px]">
-                            Absent
-                          </Badge>
-                        )}
-                        {isNextUp && !isAbsent && (
-                          <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200 text-[10px] animate-pulse">
-                            Next
-                          </Badge>
-                        )}
-                      </div>
-                      <p
-                        className={`text-sm text-gray-600 mt-0.5 ${isAbsent ? "line-through" : ""}`}
-                      >
-                        <span className="font-medium">{p.piece}</span>
-                      </p>
-                      <p className="text-xs text-gray-400">{p.composer}</p>
-                    </div>
-                    {/* Sheet Music Button */}
-                    {p.hasScoreUrl && !isAbsent && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-gray-200 text-xs flex-shrink-0"
-                        onClick={() =>
-                          alert('Demo: Would open sheet music PDF for "' + p.piece + '"')
-                        }
-                      >
-                        <FileText className="w-3.5 h-3.5 mr-1" />
-                        Score
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-        </div>
-
-        {/* ================================================================
             LIVESTREAM LINK — Optional, auto-saves on type
             ================================================================ */}
-        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.25s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
@@ -1042,7 +952,7 @@ export default function HostEventDayPage() {
                 )}
               </div>
               <p className="text-xs text-gray-400">
-                Add or update at any time. Available in each performer&apos;s media section.
+                Add or update at any time. This link will be associated with the event.
               </p>
             </div>
           </Card>
@@ -1051,7 +961,7 @@ export default function HostEventDayPage() {
         {/* ================================================================
             CONCERT GROUP PHOTO — Upload after performances
             ================================================================ */}
-        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.35s" }}>
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
           <Card className="overflow-hidden border border-gray-100">
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center">
@@ -1313,8 +1223,8 @@ export default function HostEventDayPage() {
                 <div className="space-y-3">
                   <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-center">
                     <p className="text-sm font-medium text-amber-800">
-                      Grant {MOCK_EVENT.serviceHours} service hours to {performedCount} performer
-                      {performedCount !== 1 ? "s" : ""}?
+                      Grant {MOCK_EVENT.serviceHours} service hours to each of the {performedCount}{" "}
+                      performer{performedCount !== 1 ? "s" : ""}?
                     </p>
                     <p className="text-xs text-amber-600 mt-0.5">This action cannot be undone.</p>
                   </div>
