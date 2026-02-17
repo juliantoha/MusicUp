@@ -18,7 +18,7 @@ export function SignedWaiversView() {
     setLoading(true);
     const result = await getMySignedWaivers();
     if ("signedWaivers" in result) {
-      setSignedWaivers(result.signedWaivers);
+      setSignedWaivers(result.signedWaivers ?? []);
     }
     setLoading(false);
   };
