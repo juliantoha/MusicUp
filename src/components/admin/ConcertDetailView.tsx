@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -432,11 +433,11 @@ export function ConcertDetailView({ concert, onUpdate }: ConcertDetailViewProps)
                   key={photo.id}
                   className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-gray-200 hover:border-blue-300 transition-all hover:shadow-md"
                 >
-                  <img
+                  <Image
                     src={photo.photo_url}
                     alt={photo.caption || "Concert photo"}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   {photo.caption && (
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">

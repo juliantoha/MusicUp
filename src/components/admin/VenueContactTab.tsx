@@ -14,11 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Building2, Save, Loader2, Tag, Camera, Upload, MapPin, X } from "lucide-react";
+import { Building2, Save, Loader2, Tag, Camera, Upload, MapPin, X, FileText } from "lucide-react";
 import { getMyManagedVenues, updateVenue, uploadVenuePhoto } from "@/lib/venues/actions";
+import { getUnsignedWaivers } from "@/lib/waivers/actions";
 import { useVenueTypes } from "@/lib/hooks";
 import { VenueLocationMap } from "@/components/VenueLocationMap";
-import type { Venue } from "@/types/db";
+import { WaiverSigningPanel } from "@/components/WaiverSigningPanel";
+import type { Venue, VenueWaiver } from "@/types/db";
 
 export function VenueContactTab() {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -140,6 +142,8 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
   const [latitude, setLatitude] = useState(venue.latitude?.toString() || "");
   const [longitude, setLongitude] = useState(venue.longitude?.toString() || "");
   const [savingLocation, setSavingLocation] = useState(false);
+  const [unsignedWaivers, setUnsignedWaivers] = useState<VenueWaiver[]>([]);
+  const [loadingWaivers, setLoadingWaivers] = useState(true);
   const interiorInputRef = useRef<HTMLInputElement>(null);
   const exteriorInputRef = useRef<HTMLInputElement>(null);
 
@@ -156,7 +160,17 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
     setLatitude(venue.latitude?.toString() || "");
     setLongitude(venue.longitude?.toString() || "");
     setHasChanges(false);
+    loadUnsignedWaivers();
   }, [venue.id, venue.interior_photo_url, venue.exterior_photo_url, venue.latitude, venue.longitude]);
+
+  const loadUnsignedWaivers = async () => {
+    setLoadingWaivers(true);
+    const result = await getUnsignedWaivers(venue.id);
+    if ("unsignedWaivers" in result) {
+      setUnsignedWaivers(result.unsignedWaivers);
+    }
+    setLoadingWaivers(false);
+  };
 
   const handleChange = (field: string, value: string | null) => {
     setFormData((prev) => ({
@@ -194,6 +208,21 @@ function VenueContactEditor({ venue, onUpdate }: VenueContactEditorProps) {
             {venue.address}, {venue.city}, {venue.state} {venue.zip}
           </p>
         </div>
+
+        {/* Venue Waivers - Show if there are unsigned waivers */}
+        {!loadingWaivers && unsignedWaivers.length > 0 && (
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Required Waivers
+            </Label>
+            <WaiverSigningPanel
+              waivers={unsignedWaivers}
+              venueName={venue.name}
+              onAllSigned={() => loadUnsignedWaivers()}
+            />
+          </div>
+        )}
 
         {/* Venue Type Selector */}
         <div className="space-y-2">

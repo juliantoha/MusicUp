@@ -168,6 +168,33 @@ export type Log = {
   created_at: string;
 };
 
+export type VenueWaiver = {
+  id: string;
+  venue_id: string;
+  title: string;
+  waiver_url: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SignedWaiver = {
+  id: string;
+  waiver_id: string;
+  profile_id: string;
+  signed_pdf_url: string;
+  signed_at: string;
+};
+
+export type SignedWaiverWithDetails = SignedWaiver & {
+  profile: Profile;
+  waiver: VenueWaiver;
+};
+
+export type VenueWaiverWithSignatures = VenueWaiver & {
+  signed_waivers: SignedWaiver[];
+};
+
 // ============================================================================
 // Extended Types with Relations
 // ============================================================================

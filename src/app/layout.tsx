@@ -6,21 +6,20 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { OrganizationStructuredData, ServiceStructuredData } from "@/components/structured-data";
 
-// Configure Montserrat with all weights
+// Configure Montserrat with only used weights (400, 500, 600, 700)
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-montserrat",
   display: "swap",
 });
 
-// Configure Playfair Display for elegant headings
+// Configure Playfair Display for elegant headings (700 only)
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["700"],
   variable: "--font-playfair",
   display: "swap",
-  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -126,8 +125,11 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-sans">
         <AuthProvider>
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <main id="main-content" className="min-h-screen">{children}</main>
           <Toaster />
         </AuthProvider>
       </body>

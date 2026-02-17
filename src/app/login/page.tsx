@@ -63,9 +63,9 @@ export default function LoginPage() {
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-[#06B6D4]/5 rounded-full blur-[100px] -z-10" />
 
       {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
+      <nav aria-label="Login navigation" className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
         <div className="container mx-auto px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 group w-fit">
+          <Link href="/" aria-label="Back to MusicUp home" className="flex items-center gap-2 group w-fit">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
               <Logo className="w-full h-full text-white" />
             </div>
@@ -99,6 +99,8 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoFocus
+                autoComplete="email"
                 className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors"
               />
             </div>
@@ -122,12 +124,14 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="current-password"
                   className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, CheckCircle2, Loader2, Eye, EyeOff } from "lucide-react";
+import { Mail, CheckCircle2, Loader2, Eye, EyeOff, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,9 +22,9 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-[#06B6D4]/5 rounded-full blur-[100px] -z-10" />
 
       {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
+      <nav aria-label="Signup navigation" className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-lg border-b border-gray-200/40">
         <div className="container mx-auto px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 group w-fit">
+          <Link href="/" aria-label="Back to MusicUp home" className="flex items-center gap-2 group w-fit">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
               <Logo className="w-full h-full text-white" />
             </div>
@@ -201,6 +201,8 @@ export default function SignupPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
+              autoFocus
+              autoComplete="name"
               className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors"
             />
           </div>
@@ -215,6 +217,7 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
               className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors"
             />
           </div>
@@ -231,12 +234,14 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                autoComplete="new-password"
                 className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -256,17 +261,34 @@ export default function SignupPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
+                autoComplete="new-password"
                 className="h-11 bg-white border-gray-200 focus:border-[#2563EB] transition-colors pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                 tabIndex={-1}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+            {/* Real-time password validation hints */}
+            {password.length > 0 && (
+              <div className="space-y-1 pt-1">
+                <div className={`flex items-center gap-1.5 text-xs ${password.length >= 6 ? "text-green-600" : "text-gray-400"}`}>
+                  {password.length >= 6 ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                  At least 6 characters
+                </div>
+                {confirmPassword.length > 0 && (
+                  <div className={`flex items-center gap-1.5 text-xs ${password === confirmPassword ? "text-green-600" : "text-red-500"}`}>
+                    {password === confirmPassword ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                    Passwords match
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <Button type="submit" className="w-full h-11 text-base font-semibold shadow-md hover:shadow-lg transition-all" disabled={loading}>
             {loading ? (

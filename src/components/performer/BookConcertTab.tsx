@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts } from "@/lib/hooks";
+import { useVenues, useSeries, useCollections, usePieces, useStages, useUpcomingConcerts, useUnsignedWaivers } from "@/lib/hooks";
 import { createBooking } from "@/lib/bookings/actions";
 import { formatPacificDate, formatPacificTimeRange } from "@/lib/utils";
 import { MapPin, Calendar, Music, Check, Loader2, ChevronLeft, ChevronRight, RotateCcw, User } from "lucide-react";
@@ -20,6 +20,7 @@ import type { Concert } from "@/types/db";
 import { booking as copy, emptyStates } from "@/lib/copy";
 import { VenueTypeBadge } from "@/components/ui/VenueTypeBadge";
 import { VenueLocationMap } from "@/components/VenueLocationMap";
+import { WaiverSigningPanel } from "@/components/WaiverSigningPanel";
 
 const STEP_ICONS = [MapPin, Calendar, Music];
 
@@ -34,9 +35,11 @@ export function BookConcertTab() {
   const [selectedPieceId, setSelectedPieceId] = useState<string>("");
   const [selectedStageId, setSelectedStageId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [waiversCleared, setWaiversCleared] = useState(false);
 
   const { data: venues } = useVenues();
   const { data: upcomingConcerts } = useUpcomingConcerts(selectedVenueId);
+  const { data: unsignedWaivers, loading: loadingWaivers, refetch: refetchWaivers } = useUnsignedWaivers(selectedVenueId);
   const { data: seriesList } = useSeries();
   const { data: collections } = useCollections(selectedSeriesId);
   const { data: pieces } = usePieces(selectedCollectionId);
@@ -52,6 +55,10 @@ export function BookConcertTab() {
   const handleNext = () => {
     if (currentStep === 0 && !selectedVenueId) {
       toast.error(copy.validation.selectVenue);
+      return;
+    }
+    if (currentStep === 0 && unsignedWaivers.length > 0 && !waiversCleared) {
+      toast.error("Please sign all required waivers before proceeding");
       return;
     }
     if (currentStep === 1 && !selectedConcert) {
@@ -73,6 +80,7 @@ export function BookConcertTab() {
     setSelectedCollectionId("");
     setSelectedPieceId("");
     setSelectedStageId("");
+    setWaiversCleared(false);
   };
 
   const handleSubmit = async () => {
@@ -270,6 +278,19 @@ export function BookConcertTab() {
                       )}
                     </div>
                   </div>
+                  {/* Waiver Signing Section */}
+                  {!loadingWaivers && unsignedWaivers.length > 0 && !waiversCleared && (
+                    <div className="mt-4">
+                      <WaiverSigningPanel
+                        waivers={unsignedWaivers}
+                        venueName={selectedVenue.name}
+                        onAllSigned={() => {
+                          setWaiversCleared(true);
+                          refetchWaivers();
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })()}

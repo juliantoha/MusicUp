@@ -105,13 +105,30 @@ export default function Home() {
     { name: "House Concerts", tagline: "Living Rooms", desc: "Intimate shows with clear run-of-show.", color: "#D97706" },
   ];
 
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-lg shadow-sm border-b border-gray-200/60" : "bg-white/60 backdrop-blur-md border-b border-transparent"}`}>
+      <nav aria-label="Main navigation" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-lg shadow-sm border-b border-gray-200/60" : "bg-white/60 backdrop-blur-md border-b border-transparent"}`}>
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link href="/" aria-label="MusicUp home" className="flex items-center gap-2.5 group">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#EB6A18] to-[#c2410c] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg p-1.5">
                 <Logo className="w-full h-full text-white" />
               </div>
@@ -148,7 +165,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight animate-fade-in-up stagger-1">
               Music Every Day
             </h2>
-            <p className="text-xl md:text-2xl mb-12 text-blue-100/90 max-w-3xl mx-auto leading-relaxed [text-wrap:balance] animate-fade-in-up stagger-2">
+            <p className="text-xl md:text-2xl mb-12 text-white/95 max-w-3xl mx-auto leading-relaxed [text-wrap:balance] animate-fade-in-up stagger-2">
               Play where people live. Libraries. Markets. Senior&nbsp;homes. Parks. Coffee&nbsp;shops.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up stagger-3">
@@ -269,7 +286,7 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
             Ready to Start Your<br className="hidden md:block" /> Performance Journey?
           </h2>
-          <p className="text-xl md:text-2xl text-blue-100/80 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
             Join hundreds of musicians bringing music every day to their local community.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -295,10 +312,11 @@ export default function Home() {
               <p className="text-lg text-gray-500">Everything you need to know about performing with MusicUp</p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3" role="list">
               {faqs.map((faq, index) => (
                 <div
                   key={index}
+                  role="listitem"
                   className={`bg-white rounded-2xl border transition-all duration-300 ${
                     openFAQ === index
                       ? "border-[#2563EB]/20 shadow-lg shadow-blue-500/5"
@@ -307,7 +325,9 @@ export default function Home() {
                 >
                   <button
                     onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                    className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 rounded-2xl"
+                    aria-expanded={openFAQ === index}
+                    aria-controls={`faq-answer-${index}`}
+                    className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 rounded-2xl focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2"
                   >
                     <span className="font-semibold text-base text-gray-900">{faq.question}</span>
                     <div className={`h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
@@ -317,11 +337,14 @@ export default function Home() {
                     </div>
                   </button>
                   <div
+                    id={`faq-answer-${index}`}
+                    role="region"
+                    aria-labelledby={`faq-question-${index}`}
                     className="accordion-content"
                     data-open={openFAQ === index ? "true" : "false"}
                   >
                     <div className="accordion-inner">
-                      <div className="px-6 pb-5 text-gray-500 leading-relaxed text-[15px]">
+                      <div className="px-6 pb-5 text-gray-600 leading-relaxed text-[15px]">
                         {faq.answer}
                       </div>
                     </div>
@@ -400,10 +423,10 @@ export default function Home() {
             <p className="text-gray-400 text-sm max-w-sm">Connecting musicians with venues for short, ready-to-run concerts in every community.</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-12 mb-12">
+          <nav aria-label="Footer navigation" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-12 mb-12">
             <div>
               <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">Product</h3>
-              <ul className="space-y-2.5 text-sm text-gray-500">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li><Link href="#how-it-works" className="hover:text-white transition-colors">How it works</Link></li>
                 <li><Link href="/library" className="hover:text-white transition-colors">Library</Link></li>
                 <li><Link href="/series" className="hover:text-white transition-colors">Concert Series</Link></li>
@@ -413,7 +436,7 @@ export default function Home() {
 
             <div>
               <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">For venues</h3>
-              <ul className="space-y-2.5 text-sm text-gray-500">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li><Link href="/signup" className="hover:text-white transition-colors">List a concert</Link></li>
                 <li><Link href="#" className="hover:text-white transition-colors">Host guide</Link></li>
                 <li><Link href="#" className="hover:text-white transition-colors">Safety</Link></li>
@@ -422,7 +445,7 @@ export default function Home() {
 
             <div>
               <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">For performers</h3>
-              <ul className="space-y-2.5 text-sm text-gray-500">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li><Link href="/signup" className="hover:text-white transition-colors">Find a concert</Link></li>
                 <li><Link href="/library" className="hover:text-white transition-colors">Repertoire</Link></li>
                 <li><Link href="#" className="hover:text-white transition-colors">Service hours</Link></li>
@@ -431,7 +454,7 @@ export default function Home() {
 
             <div>
               <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">Company</h3>
-              <ul className="space-y-2.5 text-sm text-gray-500">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li><Link href="#" className="hover:text-white transition-colors">About</Link></li>
                 <li><Link href="#" className="hover:text-white transition-colors">Built by Oclef</Link></li>
                 <li><Link href="#" className="hover:text-white transition-colors">Press</Link></li>
@@ -441,14 +464,14 @@ export default function Home() {
 
             <div>
               <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-300">Legal</h3>
-              <ul className="space-y-2.5 text-sm text-gray-500">
+              <ul className="space-y-2.5 text-sm text-gray-400">
                 <li><Link href="#" className="hover:text-white transition-colors">Terms</Link></li>
                 <li><Link href="#" className="hover:text-white transition-colors">Privacy</Link></li>
               </ul>
             </div>
-          </div>
+          </nav>
 
-          <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-600">
+          <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-500">
             <p>&copy; {new Date().getFullYear()} MusicUp by Oclef. All rights reserved.</p>
           </div>
         </div>
