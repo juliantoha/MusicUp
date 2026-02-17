@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import NextImage from "next/image";
 import { User, Camera, Trash2, Settings, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -137,9 +138,11 @@ export default function SettingsPage() {
               <div className="flex items-center gap-6">
                 <div className="relative group">
                   {photoUrl ? (
-                    <img
+                    <NextImage
                       src={photoUrl}
                       alt="Profile"
+                      width={80}
+                      height={80}
                       className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 shadow-sm"
                     />
                   ) : (

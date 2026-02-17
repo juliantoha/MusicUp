@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { createVenue } from "@/lib/venues/actions";
 import { useVenueTypes } from "@/lib/hooks";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Building2, Loader2, Plus } from "lucide-react";
 import type { VenueInsert } from "@/types/db";
 
@@ -27,6 +28,7 @@ interface CreateVenueFormProps {
 export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
   const { data: venueTypes, loading: loadingVenueTypes } = useVenueTypes();
   const [creating, setCreating] = useState(false);
+  const [validationError, setValidationError] = useState("");
   const [formData, setFormData] = useState<Partial<VenueInsert>>({
     name: "",
     address: "",
@@ -44,9 +46,10 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError("");
 
     if (!formData.name || !formData.address || !formData.city || !formData.state || !formData.zip) {
-      toast.error("Please fill in all required fields");
+      setValidationError("Please fill in all required fields (marked with *)");
       return;
     }
 
@@ -102,6 +105,11 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {validationError && (
+            <Alert variant="destructive">
+              <AlertDescription>{validationError}</AlertDescription>
+            </Alert>
+          )}
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-100 pb-2">Basic Information</h3>
@@ -116,6 +124,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 onChange={(e) => handleChange("name", e.target.value)}
                 disabled={creating}
                 required
+                aria-required="true"
               />
             </div>
 
@@ -152,6 +161,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 onChange={(e) => handleChange("address", e.target.value)}
                 disabled={creating}
                 required
+                aria-required="true"
               />
             </div>
 
@@ -166,6 +176,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                   onChange={(e) => handleChange("city", e.target.value)}
                   disabled={creating}
                   required
+                  aria-required="true"
                 />
               </div>
 
@@ -180,6 +191,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                   onChange={(e) => handleChange("state", e.target.value.toUpperCase())}
                   disabled={creating}
                   required
+                  aria-required="true"
                 />
               </div>
             </div>
@@ -194,6 +206,7 @@ export function CreateVenueForm({ onSuccess, onCancel }: CreateVenueFormProps) {
                 onChange={(e) => handleChange("zip", e.target.value)}
                 disabled={creating}
                 required
+                aria-required="true"
               />
             </div>
 

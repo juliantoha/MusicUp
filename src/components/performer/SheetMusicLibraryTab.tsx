@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -145,11 +146,12 @@ export function SheetMusicLibraryTab() {
           <div className="flex gap-4 mb-4">
             {/* Album Cover / Thumbnail */}
             {selectedPiece.image_url && (
-              <div className="flex-shrink-0">
-                <img
+              <div className="flex-shrink-0 relative w-32 h-32">
+                <Image
                   src={selectedPiece.image_url}
                   alt={`${selectedPiece.title} cover`}
-                  className="w-32 h-32 object-cover rounded-lg shadow-md"
+                  fill
+                  className="object-cover rounded-lg shadow-md"
                 />
               </div>
             )}
@@ -223,29 +225,15 @@ export function SheetMusicLibraryTab() {
 
       {/* Empty State */}
       {!selectedSeriesId && (
-        <Card className="p-12">
-          <div className="text-center text-gray-500">
-            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <Library className="w-8 h-8 text-gray-400" />
-            </div>
-            <h4 className="font-medium mb-2">Browse the Music Library</h4>
-            <p className="text-sm mb-6">
-              Select a series above to start exploring available pieces and practice materials.
-            </p>
-            {/* Skeleton loading indicator */}
-            <div className="max-w-md mx-auto space-y-3">
-              <div className="flex gap-3">
-                <div className="h-10 flex-1 rounded-lg bg-gray-100 animate-pulse" />
-                <div className="h-10 flex-1 rounded-lg bg-gray-100 animate-pulse" />
-              </div>
-              <div className="h-24 w-full rounded-lg bg-gray-50 animate-pulse" />
-              <div className="flex gap-3">
-                <div className="h-8 w-28 rounded-lg bg-gray-50 animate-pulse" />
-                <div className="h-8 w-28 rounded-lg bg-gray-50 animate-pulse" />
-              </div>
-            </div>
+        <div className="text-center py-12 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+          <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <Library className="w-8 h-8 text-gray-400" />
           </div>
-        </Card>
+          <h4 className="text-lg font-semibold text-gray-900 mb-1">Browse the Music Library</h4>
+          <p className="text-sm text-gray-500 max-w-sm mx-auto">
+            Select a series from the dropdown above to explore collections, pieces, and practice materials.
+          </p>
+        </div>
       )}
     </div>
   );

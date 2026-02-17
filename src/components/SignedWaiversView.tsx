@@ -33,7 +33,13 @@ export function SignedWaiversView() {
   }
 
   if (signedWaivers.length === 0) {
-    return null;
+    return (
+      <div className="text-center py-6 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+        <FileText className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+        <p className="text-sm text-gray-500">No signed waivers yet</p>
+        <p className="text-xs text-gray-400 mt-1">Signed waivers will appear here after you complete them.</p>
+      </div>
+    );
   }
 
   return (

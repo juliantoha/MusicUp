@@ -2,11 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, MapPin, Music, Phone, Mail, User, Image as ImageIcon, Clock, FileText } from "lucide-react";
+import Image from "next/image";
+import { Calendar, MapPin, Music, Mail, User, Image as ImageIcon, Clock, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import { format } from "date-fns";
@@ -298,17 +313,21 @@ export default function VenueContactDashboard() {
           {venues.length > 1 && (
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Select Venue</label>
-              <select
-                className="w-full max-w-md h-10 px-4 border border-gray-200 rounded-xl bg-white text-gray-900 focus:border-[#2563EB] focus:outline-none transition-colors"
+              <Select
                 value={selectedVenueId || ""}
-                onChange={(e) => setSelectedVenueId(e.target.value)}
+                onValueChange={(value) => setSelectedVenueId(value)}
               >
-                {venues.map(venue => (
-                  <option key={venue.id} value={venue.id}>
-                    {venue.name} - {venue.city}, {venue.state}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full max-w-md h-10 border-gray-200 bg-white focus:border-[#2563EB] transition-colors">
+                  <SelectValue placeholder="Select a venue" />
+                </SelectTrigger>
+                <SelectContent>
+                  {venues.map(venue => (
+                    <SelectItem key={venue.id} value={venue.id}>
+                      {venue.name} - {venue.city}, {venue.state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
 
@@ -501,115 +520,107 @@ export default function VenueContactDashboard() {
             </TabsContent>
           </Tabs>
 
-          {/* Concert Details Modal/Sheet */}
-          {selectedConcert && (
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-              <Card className="max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl border-0 shadow-2xl">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
+          {/* Concert Details Dialog */}
+          <Dialog open={!!selectedConcert} onOpenChange={(open) => { if (!open) setSelectedConcert(null); }}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              {selectedConcert && (
+                <>
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl">{(selectedConcert.series as any)?.title || 'Concert Details'}</DialogTitle>
+                    <DialogDescription className="flex items-center gap-4 mt-2">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {format(new Date(selectedConcert.starts_at), "PPP")}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {format(new Date(selectedConcert.starts_at), "p")} - {format(new Date(selectedConcert.ends_at), "p")}
+                      </span>
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-6">
+                    {/* Performers */}
                     <div>
-                      <CardTitle className="text-2xl">{(selectedConcert.series as any)?.title || 'Concert Details'}</CardTitle>
-                      <CardDescription className="flex items-center gap-4 mt-2">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {format(new Date(selectedConcert.starts_at), "PPP")}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {format(new Date(selectedConcert.starts_at), "p")} - {format(new Date(selectedConcert.ends_at), "p")}
-                        </span>
-                      </CardDescription>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-gray-200 rounded-xl"
-                      onClick={() => setSelectedConcert(null)}
-                    >
-                      Close
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Performers */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                      <Music className="h-5 w-5" />
-                      Performers ({concertBookings.length})
-                    </h3>
-                    {concertBookings.length === 0 ? (
-                      <div className="text-center py-6">
-                        <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-2">
-                          <Music className="w-5 h-5 text-gray-400" />
-                        </div>
-                        <p className="text-muted-foreground text-sm">No performers booked yet</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {concertBookings.map((booking: any) => (
-                          <div key={booking.id} className="rounded-xl border border-gray-100 p-4">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <p className="font-medium">{booking.profile?.full_name || 'Unknown'}</p>
-                                <p className="text-sm text-muted-foreground">{booking.profile?.email}</p>
-                                <p className="text-sm mt-1">
-                                  <span className="font-medium">Piece:</span> {booking.piece?.title || 'N/A'}
-                                </p>
-                                <p className="text-sm">
-                                  <span className="font-medium">Stage:</span>{" "}
-                                  <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium border ${stageColor(booking.stage)}`}>
-                                    Stage {booking.stage}
-                                  </span>
-                                </p>
-                              </div>
-                              <Badge variant={booking.status === "performed" ? "default" : "secondary"}>
-                                {booking.status}
-                              </Badge>
-                            </div>
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <Music className="h-5 w-5" />
+                        Performers ({concertBookings.length})
+                      </h3>
+                      {concertBookings.length === 0 ? (
+                        <div className="text-center py-6">
+                          <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                            <Music className="w-5 h-5 text-gray-400" />
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Photos */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                      <ImageIcon className="h-5 w-5" />
-                      Concert Photos ({concertPhotos.length})
-                    </h3>
-                    {concertPhotos.length === 0 ? (
-                      <div className="text-center py-6">
-                        <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-2">
-                          <ImageIcon className="w-5 h-5 text-gray-400" />
+                          <p className="text-muted-foreground text-sm">No performers booked yet</p>
                         </div>
-                        <p className="text-muted-foreground text-sm">No photos uploaded yet</p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {concertPhotos.map(photo => {
-                          const supabase = createClient();
-                          const { data } = supabase.storage
-                            .from("concert_photos")
-                            .getPublicUrl(photo.photo_path);
-
-                          return (
-                            <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 group">
-                              <img
-                                src={data.publicUrl}
-                                alt="Concert photo"
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
+                      ) : (
+                        <div className="space-y-3">
+                          {concertBookings.map((booking: any) => (
+                            <div key={booking.id} className="rounded-xl border border-gray-100 p-4">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <p className="font-medium">{booking.profile?.full_name || 'Unknown'}</p>
+                                  <p className="text-sm text-muted-foreground">{booking.profile?.email}</p>
+                                  <p className="text-sm mt-1">
+                                    <span className="font-medium">Piece:</span> {booking.piece?.title || 'N/A'}
+                                  </p>
+                                  <p className="text-sm">
+                                    <span className="font-medium">Stage:</span>{" "}
+                                    <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium border ${stageColor(booking.stage)}`}>
+                                      Stage {booking.stage}
+                                    </span>
+                                  </p>
+                                </div>
+                                <Badge variant={booking.status === "performed" ? "default" : "secondary"}>
+                                  {booking.status}
+                                </Badge>
+                              </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Photos */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <ImageIcon className="h-5 w-5" />
+                        Concert Photos ({concertPhotos.length})
+                      </h3>
+                      {concertPhotos.length === 0 ? (
+                        <div className="text-center py-6">
+                          <div className="w-10 h-10 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                            <ImageIcon className="w-5 h-5 text-gray-400" />
+                          </div>
+                          <p className="text-muted-foreground text-sm">No photos uploaded yet</p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {concertPhotos.map(photo => {
+                            const supabase = createClient();
+                            const { data } = supabase.storage
+                              .from("concert_photos")
+                              .getPublicUrl(photo.photo_path);
+
+                            return (
+                              <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 group">
+                                <Image
+                                  src={data.publicUrl}
+                                  alt="Concert photo"
+                                  fill
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </div>

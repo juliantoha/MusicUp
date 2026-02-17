@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Music, LogOut, User, Settings, Home, Building2, Zap, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
@@ -116,9 +117,11 @@ export function Navbar() {
             <SelectTrigger aria-label="Account menu" className="w-[140px] sm:w-[180px] border-gray-200 bg-white/60 hover:bg-white transition-colors">
               <div className="flex items-center gap-2 overflow-hidden">
                 {photoUrl ? (
-                  <img
+                  <Image
                     src={photoUrl}
                     alt="Profile"
+                    width={24}
+                    height={24}
                     className="h-6 w-6 rounded-full object-cover flex-shrink-0 ring-1 ring-gray-200"
                   />
                 ) : (
