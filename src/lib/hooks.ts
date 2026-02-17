@@ -15,6 +15,7 @@ import type {
   BookingWithDetails,
   ServiceHourWithDetails,
   ConcertWithDetails,
+  VenueWaiver,
 } from "@/types/db";
 
 // ============================================================================
@@ -886,4 +887,116 @@ export function useAllProfiles(): UseListResult<any> {
   }, [fetchProfiles]);
 
   return { data, loading, error, refetch: fetchProfiles };
+}
+
+// ============================================================================
+// Waiver Hooks
+// ============================================================================
+
+/**
+ * Fetch active waivers for a specific venue
+ */
+export function useVenueWaivers(venueId?: string): UseListResult<VenueWaiver> {
+  const [data, setData] = useState<VenueWaiver[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchWaivers = useCallback(async () => {
+    if (!venueId) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { data: waivers, error: fetchError } = await supabase
+        .from("venue_waivers")
+        .select("*")
+        .eq("venue_id", venueId)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+
+      if (fetchError) throw fetchError;
+      setData(waivers || []);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch waivers"));
+    } finally {
+      setLoading(false);
+    }
+  }, [venueId]);
+
+  useEffect(() => {
+    fetchWaivers();
+  }, [fetchWaivers]);
+
+  return { data, loading, error, refetch: fetchWaivers };
+}
+
+/**
+ * Fetch unsigned waivers for the current user at a specific venue
+ */
+export function useUnsignedWaivers(venueId?: string): UseListResult<VenueWaiver> {
+  const { user } = useAuth();
+  const [data, setData] = useState<VenueWaiver[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchUnsignedWaivers = useCallback(async () => {
+    if (!venueId || !user) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+
+      // Get all active waivers for this venue
+      const { data: waivers, error: waiversError } = await supabase
+        .from("venue_waivers")
+        .select("*")
+        .eq("venue_id", venueId)
+        .eq("is_active", true);
+
+      if (waiversError) throw waiversError;
+
+      if (!waivers || waivers.length === 0) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
+      // Get which ones the user has already signed
+      const waiverIds = waivers.map((w) => w.id);
+      const { data: signed, error: signedError } = await supabase
+        .from("signed_waivers")
+        .select("waiver_id")
+        .eq("profile_id", user.id)
+        .in("waiver_id", waiverIds);
+
+      if (signedError) throw signedError;
+
+      const signedWaiverIds = new Set((signed || []).map((s) => s.waiver_id));
+      const unsignedWaivers = waivers.filter((w) => !signedWaiverIds.has(w.id));
+
+      setData(unsignedWaivers);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch unsigned waivers"));
+    } finally {
+      setLoading(false);
+    }
+  }, [venueId, user]);
+
+  useEffect(() => {
+    fetchUnsignedWaivers();
+  }, [fetchUnsignedWaivers]);
+
+  return { data, loading, error, refetch: fetchUnsignedWaivers };
 }

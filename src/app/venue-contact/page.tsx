@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, MapPin, Music, Phone, Mail, User, Image as ImageIcon, Clock } from "lucide-react";
+import { Calendar, MapPin, Music, Phone, Mail, User, Image as ImageIcon, Clock, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import { format } from "date-fns";
 import { Logo } from "@/components/Logo";
+import { WaiverSigningPanel } from "@/components/WaiverSigningPanel";
+import { SignedWaiversView } from "@/components/SignedWaiversView";
+import { getUnsignedWaivers } from "@/lib/waivers/actions";
+import type { VenueWaiver } from "@/types/db";
 
 type Concert = {
   id: string;
@@ -70,6 +74,8 @@ export default function VenueContactDashboard() {
   const [concertPhotos, setConcertPhotos] = useState<ConcertPhoto[]>([]);
   const [hostContacts, setHostContacts] = useState<HostContact[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [unsignedWaivers, setUnsignedWaivers] = useState<VenueWaiver[]>([]);
+  const [loadingWaivers, setLoadingWaivers] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || !profile)) {
@@ -162,6 +168,22 @@ export default function VenueContactDashboard() {
     };
 
     fetchConcerts();
+  }, [selectedVenueId]);
+
+  // Fetch waivers for selected venue
+  useEffect(() => {
+    if (!selectedVenueId) return;
+
+    const fetchWaivers = async () => {
+      setLoadingWaivers(true);
+      const result = await getUnsignedWaivers(selectedVenueId);
+      if ("unsignedWaivers" in result) {
+        setUnsignedWaivers(result.unsignedWaivers);
+      }
+      setLoadingWaivers(false);
+    };
+
+    fetchWaivers();
   }, [selectedVenueId]);
 
   // Fetch host contacts for selected venue
@@ -327,6 +349,33 @@ export default function VenueContactDashboard() {
               )}
             </Card>
           )}
+
+          {/* Unsigned Waivers */}
+          {!loadingWaivers && unsignedWaivers.length > 0 && selectedVenue && (
+            <Card className="mb-8 border border-amber-200">
+              <CardContent className="pt-6">
+                <WaiverSigningPanel
+                  waivers={unsignedWaivers}
+                  venueName={selectedVenue.name}
+                  onAllSigned={async () => {
+                    if (selectedVenueId) {
+                      const result = await getUnsignedWaivers(selectedVenueId);
+                      if ("unsignedWaivers" in result) {
+                        setUnsignedWaivers(result.unsignedWaivers);
+                      }
+                    }
+                  }}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* My Signed Waivers */}
+          <Card className="mb-8 border border-gray-100">
+            <CardContent className="pt-6">
+              <SignedWaiversView />
+            </CardContent>
+          </Card>
 
           {/* Concerts Tabs */}
           <Tabs defaultValue="upcoming" className="space-y-6">

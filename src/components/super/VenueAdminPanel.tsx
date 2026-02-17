@@ -37,8 +37,9 @@ import {
   removeVenueContact,
 } from "@/lib/super/actions";
 import { uploadVenuePhoto } from "@/lib/venues/actions";
-import { Search, UserPlus, Trash2, Shield, Building2, MapPin, Mail, Camera, Upload, Loader2 } from "lucide-react";
-import type { Venue, Profile } from "@/types/db";
+import { uploadVenueWaiver, deactivateWaiver, getVenueWaivers, getWaiverSignatures } from "@/lib/waivers/actions";
+import { Search, UserPlus, Trash2, Shield, Building2, MapPin, Mail, Camera, Upload, Loader2, FileText, Eye, X, Users } from "lucide-react";
+import type { Venue, Profile, VenueWaiver } from "@/types/db";
 
 interface VenueAdminPanelProps {
   venue: Venue;
@@ -69,9 +70,19 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
   const exteriorInputRef = useRef<HTMLInputElement>(null);
   const interiorInputRef = useRef<HTMLInputElement>(null);
 
+  // Waiver state
+  const [waivers, setWaivers] = useState<VenueWaiver[]>([]);
+  const [loadingWaivers, setLoadingWaivers] = useState(true);
+  const [uploadingWaiver, setUploadingWaiver] = useState(false);
+  const [waiverTitle, setWaiverTitle] = useState("");
+  const [waiverSignatures, setWaiverSignatures] = useState<Record<string, any[]>>({});
+  const [expandedWaiver, setExpandedWaiver] = useState<string | null>(null);
+  const waiverInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     loadAdmins();
     loadVenueContacts();
+    loadWaivers();
     setExteriorPhotoUrl(venue.exterior_photo_url || "");
     setInteriorPhotoUrl(venue.interior_photo_url || "");
   }, [venue.id, venue.exterior_photo_url, venue.interior_photo_url]);
@@ -85,6 +96,22 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
       toast.error(result.error);
     }
     setLoadingAdmins(false);
+  };
+
+  const loadWaivers = async () => {
+    setLoadingWaivers(true);
+    const result = await getVenueWaivers(venue.id);
+    if ("waivers" in result && result.waivers) {
+      setWaivers(result.waivers);
+    }
+    setLoadingWaivers(false);
+  };
+
+  const loadSignatures = async (waiverId: string) => {
+    const result = await getWaiverSignatures(waiverId);
+    if ("signatures" in result && result.signatures) {
+      setWaiverSignatures((prev) => ({ ...prev, [waiverId]: result.signatures }));
+    }
   };
 
   const handleSearch = async () => {
@@ -384,6 +411,201 @@ export function VenueAdminPanel({ venue }: VenueAdminPanelProps) {
                 )}
               </button>
             )}
+          </div>
+        </div>
+      </Card>
+
+      {/* Venue Waivers */}
+      <Card className="p-6 border border-gray-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+            <FileText className="w-4 h-4 text-amber-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">Venue Waivers</h3>
+            <p className="text-sm text-gray-500">Upload PDF waivers that performers and hosts must sign before participating.</p>
+          </div>
+        </div>
+
+        {/* Existing Waivers */}
+        {loadingWaivers ? (
+          <div className="space-y-3 mb-4">
+            <div className="h-14 skeleton rounded-lg" />
+          </div>
+        ) : waivers.length > 0 ? (
+          <div className="space-y-3 mb-6">
+            {waivers.map((waiver) => (
+              <div key={waiver.id} className="border border-gray-200 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between gap-3 p-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{waiver.title}</p>
+                      <p className="text-xs text-gray-500">
+                        Added {new Date(waiver.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(waiver.waiver_url, "_blank")}
+                    >
+                      <Eye className="w-3.5 h-3.5 mr-1" />
+                      View
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (expandedWaiver === waiver.id) {
+                          setExpandedWaiver(null);
+                        } else {
+                          setExpandedWaiver(waiver.id);
+                          if (!waiverSignatures[waiver.id]) {
+                            loadSignatures(waiver.id);
+                          }
+                        }
+                      }}
+                    >
+                      <Users className="w-3.5 h-3.5 mr-1" />
+                      Signatures
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={async () => {
+                        const result = await deactivateWaiver(waiver.id);
+                        if ("success" in result) {
+                          toast.success("Waiver deactivated");
+                          loadWaivers();
+                        } else if ("error" in result) {
+                          toast.error(result.error);
+                        }
+                      }}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Signatures Expandable */}
+                {expandedWaiver === waiver.id && (
+                  <div className="border-t border-gray-100 bg-gray-50/50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Signed By</p>
+                    {!waiverSignatures[waiver.id] ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Loading...
+                      </div>
+                    ) : waiverSignatures[waiver.id].length === 0 ? (
+                      <p className="text-sm text-gray-500">No signatures yet.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {waiverSignatures[waiver.id].map((sig: any) => (
+                          <div key={sig.id} className="flex items-center justify-between gap-3 bg-white rounded-lg p-3 border border-gray-100">
+                            <div>
+                              <p className="text-sm font-medium">{sig.profile?.full_name || "Unknown"}</p>
+                              <p className="text-xs text-gray-500">{sig.profile?.email} - {sig.profile?.role}</p>
+                              <p className="text-xs text-gray-400">Signed {new Date(sig.signed_at).toLocaleDateString()}</p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.open(sig.signed_pdf_url, "_blank")}
+                            >
+                              <Eye className="w-3.5 h-3.5 mr-1" />
+                              PDF
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-gray-500 mb-4 bg-gray-50 rounded-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <FileText className="w-8 h-8 text-gray-400" />
+            </div>
+            <p>No waivers for this venue.</p>
+            <p className="text-sm mt-1">Upload a PDF waiver below.</p>
+          </div>
+        )}
+
+        {/* Upload New Waiver */}
+        <div className="space-y-4 border-t pt-4">
+          <h4 className="font-medium flex items-center gap-2">
+            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+              <Upload className="w-4 h-4 text-amber-600" />
+            </div>
+            Upload New Waiver
+          </h4>
+          <div className="flex gap-2">
+            <Input
+              className="h-10 border-gray-200 bg-white flex-1"
+              placeholder="Waiver title (e.g., Photo Release Form)..."
+              value={waiverTitle}
+              onChange={(e) => setWaiverTitle(e.target.value)}
+            />
+            <input
+              ref={waiverInputRef}
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (!waiverTitle.trim()) {
+                  toast.error("Please enter a waiver title first");
+                  if (waiverInputRef.current) waiverInputRef.current.value = "";
+                  return;
+                }
+                setUploadingWaiver(true);
+                const fd = new FormData();
+                fd.append("venue_id", venue.id);
+                fd.append("title", waiverTitle.trim());
+                fd.append("file", file);
+                const result = await uploadVenueWaiver(fd);
+                if ("error" in result && result.error) {
+                  toast.error(result.error);
+                } else if ("success" in result) {
+                  toast.success("Waiver uploaded successfully");
+                  setWaiverTitle("");
+                  loadWaivers();
+                }
+                setUploadingWaiver(false);
+                if (waiverInputRef.current) waiverInputRef.current.value = "";
+              }}
+            />
+            <Button
+              onClick={() => {
+                if (!waiverTitle.trim()) {
+                  toast.error("Please enter a waiver title first");
+                  return;
+                }
+                waiverInputRef.current?.click();
+              }}
+              disabled={uploadingWaiver}
+            >
+              {uploadingWaiver ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+              {uploadingWaiver ? "Uploading..." : "Upload PDF"}
+            </Button>
+          </div>
+          <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-sm text-amber-800">
+            <p className="font-medium mb-1">About Venue Waivers:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Performers must sign all active waivers before they can book at this venue</li>
+              <li>Hosts assigned to this venue must also sign all active waivers</li>
+              <li>Signed waivers are visible to the signer, venue hosts, and super admins</li>
+              <li>Deactivating a waiver removes the signing requirement but keeps existing signatures</li>
+            </ul>
           </div>
         </div>
       </Card>

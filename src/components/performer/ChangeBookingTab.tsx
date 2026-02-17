@@ -35,6 +35,7 @@ import { cancelBooking, updateBooking } from "@/lib/bookings/actions";
 import { getPieceStageSignedUrl } from "@/lib/storage/actions";
 import { Download, Music, Edit, MapPin, Calendar, Clock, Loader2 } from "lucide-react";
 import { booking as copy, emptyStates } from "@/lib/copy";
+import { SignedWaiversView } from "@/components/SignedWaiversView";
 
 export function ChangeBookingTab() {
   const { data: bookings, loading, refetch } = useMyUpcomingBookings();
@@ -297,6 +298,11 @@ export function ChangeBookingTab() {
           </Card>
         );
       })}
+
+      {/* Signed Waivers */}
+      <div className="mt-6 border-t pt-6">
+        <SignedWaiversView />
+      </div>
 
       {/* Edit Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
