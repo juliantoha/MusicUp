@@ -27,6 +27,9 @@ import {
   Heart,
   Star,
   MessageCircle,
+  Video,
+  Link,
+  Image as ImageIcon,
 } from "lucide-react";
 
 // ============================================================================
@@ -81,6 +84,8 @@ interface Performer {
   notes: string;
   waiverSigned: boolean;
   hasScoreUrl: boolean;
+  streamVideoUrl: string;
+  performancePhoto: { name: string; time: string } | null;
 }
 
 const MOCK_PERFORMERS: Performer[] = [
@@ -100,6 +105,8 @@ const MOCK_PERFORMERS: Performer[] = [
     notes: "First time performing at this venue",
     waiverSigned: true,
     hasScoreUrl: true,
+    streamVideoUrl: "",
+    performancePhoto: null,
   },
   {
     id: "p2",
@@ -117,6 +124,8 @@ const MOCK_PERFORMERS: Performer[] = [
     notes: "",
     waiverSigned: true,
     hasScoreUrl: true,
+    streamVideoUrl: "",
+    performancePhoto: null,
   },
   {
     id: "p3",
@@ -134,6 +143,8 @@ const MOCK_PERFORMERS: Performer[] = [
     notes: "Parent (Maria) will accompany — has been briefed",
     waiverSigned: true,
     hasScoreUrl: true,
+    streamVideoUrl: "",
+    performancePhoto: null,
   },
   {
     id: "p4",
@@ -151,6 +162,8 @@ const MOCK_PERFORMERS: Performer[] = [
     notes: "",
     waiverSigned: false,
     hasScoreUrl: true,
+    streamVideoUrl: "",
+    performancePhoto: null,
   },
   {
     id: "p5",
@@ -168,6 +181,8 @@ const MOCK_PERFORMERS: Performer[] = [
     notes: "Returning performer — performed here last month",
     waiverSigned: true,
     hasScoreUrl: true,
+    streamVideoUrl: "",
+    performancePhoto: null,
   },
 ];
 
@@ -182,6 +197,8 @@ export default function HostEventDayPage() {
   const [showNotes, setShowNotes] = useState(false);
   const [eventNotes, setEventNotes] = useState("");
   const [, setConcertStarted] = useState(false);
+  const [eventStreamUrl, setEventStreamUrl] = useState("");
+  const [streamUrlSaved, setStreamUrlSaved] = useState(false);
 
   const checkedInCount = performers.filter(
     (p) => p.checkedIn === "checked_in" || p.checkedIn === "performed"
@@ -192,6 +209,32 @@ export default function HostEventDayPage() {
 
   const handleCheckIn = (id: string, status: CheckInStatus) => {
     setPerformers((prev) => prev.map((p) => (p.id === id ? { ...p, checkedIn: status } : p)));
+  };
+
+  const handlePerformerStreamUrl = (id: string, url: string) => {
+    setPerformers((prev) => prev.map((p) => (p.id === id ? { ...p, streamVideoUrl: url } : p)));
+  };
+
+  const handlePerformerPhotoUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setPerformers((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              performancePhoto: {
+                name: file.name,
+                time: new Date().toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                }),
+              },
+            }
+          : p
+      )
+    );
+    event.target.value = "";
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -308,6 +351,63 @@ export default function HostEventDayPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* ================================================================
+            LIVESTREAM LINK — Optional, can paste now or later
+            ================================================================ */}
+        <div className="mb-6 animate-fade-in-up stagger-1">
+          <Card className="overflow-hidden border border-gray-100">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
+                <Video className="w-4 h-4 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 heading-montserrat text-sm">
+                  Livestream / Recording Link
+                </h3>
+                <p className="text-xs text-gray-500">
+                  Optional — paste a YouTube, Facebook Live, or other stream URL
+                </p>
+              </div>
+              {streamUrlSaved && (
+                <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">
+                  Saved
+                </Badge>
+              )}
+            </div>
+            <div className="p-6 space-y-3">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Link className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Input
+                    type="url"
+                    placeholder="https://youtube.com/live/..."
+                    value={eventStreamUrl}
+                    onChange={(e) => {
+                      setEventStreamUrl(e.target.value);
+                      setStreamUrlSaved(false);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  className="border-gray-200"
+                  disabled={!eventStreamUrl.trim()}
+                  onClick={() => {
+                    setStreamUrlSaved(true);
+                  }}
+                >
+                  Save
+                </Button>
+              </div>
+              <p className="text-xs text-gray-400">
+                You can add or update this link at any time — before, during, or after the event. It
+                will be linked to each performer&apos;s profile.
+              </p>
             </div>
           </Card>
         </div>
@@ -471,9 +571,13 @@ export default function HostEventDayPage() {
                               <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                             )}
                           </div>
-                          <p className="text-xs text-gray-500">
-                            #{p.performanceOrder} &middot; {p.piece} &middot; {p.stageLabel}
-                          </p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="text-xs text-gray-500">
+                              #{p.performanceOrder} &middot; {p.piece} &middot; {p.stageLabel}
+                            </p>
+                            {p.performancePhoto && <ImageIcon className="w-3 h-3 text-blue-400" />}
+                            {p.streamVideoUrl && <Video className="w-3 h-3 text-red-400" />}
+                          </div>
                           {p.notes && (
                             <p className="text-xs text-gray-400 mt-1 italic">{p.notes}</p>
                           )}
@@ -547,45 +651,155 @@ export default function HostEventDayPage() {
                       </div>
                     </div>
 
-                    {/* Expandable contact info */}
+                    {/* Expandable details: contact + media */}
                     {isExpanded && (
-                      <div className="px-4 pb-4 pt-1 border-t border-gray-100 mt-1 space-y-2">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
-                          Contact Info
-                        </p>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Mail className="w-3.5 h-3.5 text-gray-400" />
-                          <a href={`mailto:${p.email}`} className="text-blue-600 hover:underline">
-                            {p.email}
-                          </a>
+                      <div className="px-4 pb-4 pt-1 border-t border-gray-100 mt-1 space-y-4">
+                        {/* Contact info */}
+                        <div className="space-y-2">
+                          <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                            Contact Info
+                          </p>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Mail className="w-3.5 h-3.5 text-gray-400" />
+                            <a href={`mailto:${p.email}`} className="text-blue-600 hover:underline">
+                              {p.email}
+                            </a>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Phone className="w-3.5 h-3.5 text-gray-400" />
+                            <a href={`tel:${p.phone}`} className="text-blue-600 hover:underline">
+                              {p.phone}
+                            </a>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <User className="w-3.5 h-3.5 text-gray-400" />
+                            Age {p.age} &middot; {p.instrument}
+                          </div>
+                          {!p.waiverSigned && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2 text-amber-700 border-amber-300 hover:bg-amber-50"
+                              onClick={() => {
+                                setPerformers((prev) =>
+                                  prev.map((perf) =>
+                                    perf.id === p.id ? { ...perf, waiverSigned: true } : perf
+                                  )
+                                );
+                              }}
+                            >
+                              <FileText className="w-3.5 h-3.5 mr-1" />
+                              Mark Waiver as Signed
+                            </Button>
+                          )}
                         </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Phone className="w-3.5 h-3.5 text-gray-400" />
-                          <a href={`tel:${p.phone}`} className="text-blue-600 hover:underline">
-                            {p.phone}
-                          </a>
+
+                        {/* Performance media — photo + video link */}
+                        <div className="space-y-3 pt-2 border-t border-gray-100">
+                          <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                            Performance Media
+                            <span className="normal-case font-normal text-gray-400 ml-1">
+                              — linked to {p.name.split(" ")[0]}&apos;s profile
+                            </span>
+                          </p>
+
+                          {/* Per-performer photo upload */}
+                          <div className="space-y-2">
+                            {p.performancePhoto ? (
+                              <div className="flex items-center gap-3 p-2.5 bg-green-50 border border-green-200 rounded-lg">
+                                <ImageIcon className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-medium text-green-800 truncate">
+                                    {p.performancePhoto.name}
+                                  </p>
+                                  <p className="text-[10px] text-green-600">
+                                    Uploaded at {p.performancePhoto.time}
+                                  </p>
+                                </div>
+                                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                              </div>
+                            ) : (
+                              <div>
+                                <label htmlFor={`performer-photo-${p.id}`}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    asChild
+                                    className="border-gray-200 text-xs"
+                                  >
+                                    <span className="cursor-pointer">
+                                      <Camera className="w-3.5 h-3.5 mr-1" />
+                                      Upload Performance Photo
+                                    </span>
+                                  </Button>
+                                </label>
+                                <Input
+                                  id={`performer-photo-${p.id}`}
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handlePerformerPhotoUpload(p.id, e)}
+                                  className="hidden"
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Per-performer stream/video link */}
+                          <div className="space-y-1.5">
+                            <div className="flex gap-2">
+                              <div className="relative flex-1">
+                                <Video className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                                <Input
+                                  type="url"
+                                  placeholder="Paste video link for this performer..."
+                                  value={p.streamVideoUrl}
+                                  onChange={(e) => handlePerformerStreamUrl(p.id, e.target.value)}
+                                  className="pl-8 h-8 text-xs"
+                                />
+                              </div>
+                              {p.streamVideoUrl && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-gray-200 text-xs h-8 px-2"
+                                  onClick={() => window.open(p.streamVideoUrl, "_blank")}
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                            {eventStreamUrl && !p.streamVideoUrl && (
+                              <button
+                                className="text-[11px] text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
+                                onClick={() => handlePerformerStreamUrl(p.id, eventStreamUrl)}
+                              >
+                                <Link className="w-3 h-3" />
+                                Use event stream link
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Saved media summary */}
+                          {(p.performancePhoto || p.streamVideoUrl) && (
+                            <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg">
+                              <p className="text-[10px] text-blue-700 font-medium mb-1">
+                                Linked to {p.name}&apos;s profile:
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {p.performancePhoto && (
+                                  <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">
+                                    <ImageIcon className="w-3 h-3 mr-1" /> Photo
+                                  </Badge>
+                                )}
+                                {p.streamVideoUrl && (
+                                  <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-[10px]">
+                                    <Video className="w-3 h-3 mr-1" /> Video
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <User className="w-3.5 h-3.5 text-gray-400" />
-                          Age {p.age} &middot; {p.instrument}
-                        </div>
-                        {!p.waiverSigned && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mt-2 text-amber-700 border-amber-300 hover:bg-amber-50"
-                            onClick={() => {
-                              setPerformers((prev) =>
-                                prev.map((perf) =>
-                                  perf.id === p.id ? { ...perf, waiverSigned: true } : perf
-                                )
-                              );
-                            }}
-                          >
-                            <FileText className="w-3.5 h-3.5 mr-1" />
-                            Mark Waiver as Signed
-                          </Button>
-                        )}
                       </div>
                     )}
                   </div>
