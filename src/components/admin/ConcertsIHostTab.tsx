@@ -105,7 +105,7 @@ export function ConcertsIHostTab() {
                   <Clock className="w-3 h-3" /> 2:00 – 3:00 PM
                 </span>
                 <span className="flex items-center gap-1">
-                  <Users className="w-3 h-3" /> 5 performers
+                  <Users className="w-3 h-3" /> 6 performers
                 </span>
               </div>
             </div>

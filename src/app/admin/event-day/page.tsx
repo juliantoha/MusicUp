@@ -193,6 +193,25 @@ const MOCK_PERFORMERS: Performer[] = [
     hasScoreUrl: true,
     performancePhoto: null,
   },
+  {
+    id: "p6",
+    name: "Julian Toha",
+    email: "julian@Oclef.com",
+    phone: "(925) 555-0199",
+    age: 28,
+    instrument: "Piano",
+    piece: "My Funny Valentine",
+    composer: "Rodgers / Hart",
+    stage: 3,
+    stageLabel: "Stage 3",
+    performanceOrder: 6,
+    checkedIn: "pending",
+    checkedInTime: null,
+    notes: "Host & performer",
+    waiverSigned: true,
+    hasScoreUrl: true,
+    performancePhoto: null,
+  },
 ];
 
 /** Strip formatting from phone number for tel: href */
