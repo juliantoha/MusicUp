@@ -31,6 +31,8 @@ import {
   Image as ImageIcon,
   Info,
   PhoneCall,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 
 // ============================================================================
@@ -305,6 +307,24 @@ export default function HostEventDayPage() {
     } catch {
       // Fallback — URL is already visible in the input
     }
+  };
+
+  const handleReorder = (performerId: string, direction: "up" | "down") => {
+    setPerformers((prev) => {
+      const sorted = [...prev].sort((a, b) => a.performanceOrder - b.performanceOrder);
+      const idx = sorted.findIndex((p) => p.id === performerId);
+      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= sorted.length) return prev;
+
+      const currentOrder = sorted[idx].performanceOrder;
+      const swapOrder = sorted[swapIdx].performanceOrder;
+
+      return prev.map((p) => {
+        if (p.id === sorted[idx].id) return { ...p, performanceOrder: swapOrder };
+        if (p.id === sorted[swapIdx].id) return { ...p, performanceOrder: currentOrder };
+        return p;
+      });
+    });
   };
 
   const canComplete = performedCount > 0 && photos.length > 0;
@@ -616,11 +636,13 @@ export default function HostEventDayPage() {
             </div>
 
             <div className="p-4 space-y-3">
-              {sortedPerformers.map((p) => {
+              {sortedPerformers.map((p, sortedIdx) => {
                 const isExpanded = expandedPerformer === p.id;
                 const badge = statusBadge(p.checkedIn);
                 const isAbsent = p.checkedIn === "absent";
                 const isNextUp = p.id === nextUpId;
+                const isFirst = sortedIdx === 0;
+                const isLast = sortedIdx === sortedPerformers.length - 1;
 
                 return (
                   <div
@@ -633,21 +655,50 @@ export default function HostEventDayPage() {
                   >
                     {/* Main content */}
                     <div className={`p-4 ${isAbsent ? "opacity-50" : ""}`}>
-                      {/* Header: order number, name, badges, chevron */}
+                      {/* Header: order number, reorder arrows, name, badges, chevron */}
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span
-                              className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 ${
-                                isAbsent
-                                  ? "bg-gray-300"
-                                  : p.checkedIn === "performed"
-                                    ? "bg-green-500"
-                                    : "bg-gradient-to-br from-blue-500 to-cyan-500"
-                              }`}
-                            >
-                              {isAbsent ? <XCircle className="w-3.5 h-3.5" /> : p.performanceOrder}
-                            </span>
+                            {/* Reorder arrows + order number */}
+                            <div className="flex items-center gap-0.5 flex-shrink-0">
+                              <div className="flex flex-col -space-y-0.5">
+                                <button
+                                  onClick={() => handleReorder(p.id, "up")}
+                                  disabled={isFirst}
+                                  className={`w-5 h-4 flex items-center justify-center rounded-t transition-colors ${
+                                    isFirst
+                                      ? "text-gray-200 cursor-not-allowed"
+                                      : "text-gray-400 hover:text-blue-600 hover:bg-blue-50 active:scale-90"
+                                  }`}
+                                  aria-label={`Move ${p.name} up`}
+                                >
+                                  <ArrowUp className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={() => handleReorder(p.id, "down")}
+                                  disabled={isLast}
+                                  className={`w-5 h-4 flex items-center justify-center rounded-b transition-colors ${
+                                    isLast
+                                      ? "text-gray-200 cursor-not-allowed"
+                                      : "text-gray-400 hover:text-blue-600 hover:bg-blue-50 active:scale-90"
+                                  }`}
+                                  aria-label={`Move ${p.name} down`}
+                                >
+                                  <ArrowDown className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <span
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold ${
+                                  isAbsent
+                                    ? "bg-gray-300"
+                                    : p.checkedIn === "performed"
+                                      ? "bg-green-500"
+                                      : "bg-gradient-to-br from-blue-500 to-cyan-500"
+                                }`}
+                              >
+                                {isAbsent ? <XCircle className="w-3.5 h-3.5" /> : p.performanceOrder}
+                              </span>
+                            </div>
                             <p
                               className={`font-semibold text-base text-gray-900 truncate ${isAbsent ? "line-through" : ""}`}
                             >
@@ -672,7 +723,7 @@ export default function HostEventDayPage() {
                           </div>
 
                           {/* Piece + composer */}
-                          <div className="ml-8">
+                          <div className="ml-[3.25rem]">
                             <p
                               className={`text-sm text-gray-700 font-medium ${isAbsent ? "line-through" : ""}`}
                             >
@@ -716,7 +767,7 @@ export default function HostEventDayPage() {
                       </div>
 
                       {/* Timestamp + notes + photo indicator */}
-                      <div className="ml-8 space-y-0.5">
+                      <div className="ml-[3.25rem] space-y-0.5">
                         {p.checkedInTime && p.checkedIn !== "pending" && (
                           <p className="text-[10px] text-gray-400">
                             <Clock className="w-2.5 h-2.5 inline mr-0.5" />
