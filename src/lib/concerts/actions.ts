@@ -3,6 +3,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { sendCompletionThankYouEmail } from "@/lib/email/actions";
 import { logConcertCompleted, logHoursGranted } from "@/lib/logging/actions";
+import { z } from "zod";
+
+const uuidSchema = z.string().uuid();
+
+const updateBookingStatusSchema = z.object({
+  booking_id: z.string().uuid(),
+  status: z.enum(["confirmed", "cancelled", "performed", "absent"]),
+});
+
+const completeConcertSchema = z.object({
+  concert_id: z.string().uuid(),
+  performed_booking_ids: z.array(z.string().uuid()).min(1),
+});
 
 export interface UpdateBookingStatusData {
   booking_id: string;
@@ -10,6 +23,11 @@ export interface UpdateBookingStatusData {
 }
 
 export async function updateBookingStatus(data: UpdateBookingStatusData) {
+  const parsed = updateBookingStatusSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: "Invalid input" };
+  }
+  data = parsed.data;
   const supabase = await createClient();
 
   // Get current user
@@ -22,10 +40,20 @@ export async function updateBookingStatus(data: UpdateBookingStatusData) {
     return { error: "You must be logged in" };
   }
 
+  // Valid status transitions
+  const VALID_TRANSITIONS: Record<string, string[]> = {
+    booked: ["confirmed", "cancelled"],
+    confirmed: ["performed", "absent", "cancelled"],
+    cancelled: [], // terminal state
+    performed: [], // terminal state
+    absent: [], // terminal state
+  };
+
   // Verify user is admin for the venue
   const { data: booking } = await supabase
     .from("bookings")
     .select(`
+      status,
       concert:concert_id (
         venue_id
       )
@@ -37,12 +65,20 @@ export async function updateBookingStatus(data: UpdateBookingStatusData) {
     return { error: "Booking not found" };
   }
 
+  // Validate status transition
+  const allowedNextStatuses = VALID_TRANSITIONS[booking.status] || [];
+  if (!allowedNextStatuses.includes(data.status)) {
+    return {
+      error: `Cannot transition from '${booking.status}' to '${data.status}'`,
+    };
+  }
+
   // Check if user manages this venue
   const venueId = (booking.concert as any)?.venue_id;
   const { data: adminVenue } = await supabase
     .from("admins_venues")
     .select("id")
-    .eq("admin_id", user.id)
+    .eq("profile_id", user.id)
     .eq("venue_id", venueId)
     .maybeSingle();
 
@@ -90,6 +126,29 @@ export async function uploadConcertPhoto(formData: FormData) {
     return { error: "Missing concert_id or photo_file" };
   }
 
+  // Validate file type — MIME and extension whitelist
+  const ALLOWED_IMAGE_TYPES = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+  ]);
+  const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+
+  if (!ALLOWED_IMAGE_TYPES.has(photoFile.type)) {
+    return { error: "File must be an image (JPEG, PNG, WebP, or GIF)" };
+  }
+
+  const photoExt = photoFile.name.split(".").pop()?.toLowerCase();
+  if (!photoExt || !ALLOWED_IMAGE_EXTS.has(photoExt)) {
+    return { error: "File must have a valid image extension (.jpg, .png, .webp, .gif)" };
+  }
+
+  // Validate file size (max 10MB)
+  if (photoFile.size > 10 * 1024 * 1024) {
+    return { error: "Photo must be less than 10MB" };
+  }
+
   // Verify user is admin for the venue
   const { data: concert } = await supabase
     .from("concerts")
@@ -104,7 +163,7 @@ export async function uploadConcertPhoto(formData: FormData) {
   const { data: adminVenue } = await supabase
     .from("admins_venues")
     .select("id")
-    .eq("admin_id", user.id)
+    .eq("profile_id", user.id)
     .eq("venue_id", concert.venue_id)
     .maybeSingle();
 
@@ -139,8 +198,7 @@ export async function uploadConcertPhoto(formData: FormData) {
     .from("concert_photos")
     .insert({
       concert_id: concertId,
-      photo_url: publicUrl,
-      caption: caption || null,
+      photo_path: filePath,
       uploaded_by: user.id,
     })
     .select()
@@ -160,6 +218,11 @@ export interface CompleteConcertData {
 }
 
 export async function completeConcert(data: CompleteConcertData) {
+  const parsed = completeConcertSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: "Invalid input" };
+  }
+  data = parsed.data;
   const supabase = await createClient();
 
   // Get current user
@@ -190,7 +253,7 @@ export async function completeConcert(data: CompleteConcertData) {
   const { data: adminVenue } = await supabase
     .from("admins_venues")
     .select("id")
-    .eq("admin_id", user.id)
+    .eq("profile_id", user.id)
     .eq("venue_id", concert.venue_id)
     .maybeSingle();
 
@@ -217,7 +280,7 @@ export async function completeConcert(data: CompleteConcertData) {
   // Get performer IDs for the performed bookings
   const { data: performedBookings, error: bookingsError } = await supabase
     .from("bookings")
-    .select("performer_id, id")
+    .select("profile_id, id")
     .in("id", data.performed_booking_ids);
 
   if (bookingsError) {
@@ -226,23 +289,24 @@ export async function completeConcert(data: CompleteConcertData) {
   }
 
   // Start transaction-like operations
+  // Order: bookings → service_hours → concert status
+  // This ensures if service_hours fails, we haven't yet marked
+  // the concert as completed (which is harder to undo).
   try {
-    // 1. Update concert status to completed
-    const { error: concertError } = await supabase
-      .from("concerts")
-      .update({ status: "completed" })
-      .eq("id", data.concert_id);
+    // 1. Update performed bookings to status='performed'
+    const { error: updateError } = await supabase
+      .from("bookings")
+      .update({ status: "performed" })
+      .in("id", data.performed_booking_ids);
 
-    if (concertError) throw concertError;
+    if (updateError) throw updateError;
 
     // 2. Create service_hours for each performed booking (3 hours each)
     const serviceHoursInserts = performedBookings.map((booking) => ({
-      performer_id: booking.performer_id,
+      profile_id: booking.profile_id,
       concert_id: data.concert_id,
       hours: 3.0,
-      status: "approved" as const,
-      approved_by: user.id,
-      approved_at: new Date().toISOString(),
+      granted_by: user.id,
     }));
 
     const { error: hoursError } = await supabase
@@ -257,17 +321,17 @@ export async function completeConcert(data: CompleteConcertData) {
       throw hoursError;
     }
 
-    // 3. Update performed bookings to status='performed'
-    const { error: updateError } = await supabase
-      .from("bookings")
-      .update({ status: "performed" })
-      .in("id", data.performed_booking_ids);
+    // 3. Update concert status to completed (last, as it's the hardest to undo)
+    const { error: concertError } = await supabase
+      .from("concerts")
+      .update({ status: "completed" })
+      .eq("id", data.concert_id);
 
-    if (updateError) throw updateError;
+    if (concertError) throw concertError;
 
     // 4. Send thank you emails to performed performers (don't block on email send)
     performedBookings.forEach((booking) => {
-      sendCompletionThankYouEmail(booking.performer_id, data.concert_id).catch((error) => {
+      sendCompletionThankYouEmail(booking.profile_id, data.concert_id).catch((error) => {
         console.error("Error sending completion thank you email:", error);
         // Don't fail the concert completion if email fails
       });
@@ -283,7 +347,7 @@ export async function completeConcert(data: CompleteConcertData) {
 
     // 6. Log individual service hour grants
     performedBookings.forEach((booking) => {
-      logHoursGranted(user.id, booking.performer_id, data.concert_id, 3.0).catch((error) => {
+      logHoursGranted(user.id, booking.profile_id, data.concert_id, 3.0).catch((error) => {
         console.error("Error logging hours granted:", error);
       });
     });
@@ -297,6 +361,66 @@ export async function completeConcert(data: CompleteConcertData) {
 
 export async function getConcertPhotos(concertId: string) {
   const supabase = await createClient();
+
+  // Verify the caller is authenticated
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { error: "You must be logged in" };
+  }
+
+  // Verify user has a relationship to this concert (admin for venue, or has a booking)
+  const { data: concert } = await supabase
+    .from("concerts")
+    .select("venue_id")
+    .eq("id", concertId)
+    .single();
+
+  if (!concert) {
+    return { error: "Concert not found" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "super_admin") {
+    const { data: adminVenue } = await supabase
+      .from("admins_venues")
+      .select("id")
+      .eq("profile_id", user.id)
+      .eq("venue_id", concert.venue_id)
+      .maybeSingle();
+
+    if (!adminVenue) {
+      // Check if user has a booking for this concert
+      const { data: booking } = await supabase
+        .from("bookings")
+        .select("id")
+        .eq("concert_id", concertId)
+        .eq("profile_id", user.id)
+        .neq("status", "cancelled")
+        .maybeSingle();
+
+      // Also allow venue contacts
+      const { data: venueContact } = await supabase
+        .from("venue_contacts")
+        .select("id")
+        .eq("profile_id", user.id)
+        .eq("venue_id", concert.venue_id)
+        .eq("status", "active")
+        .maybeSingle();
+
+      if (!booking && !venueContact) {
+        return { error: "You do not have permission to view photos for this concert" };
+      }
+    }
+  }
 
   const { data: photos, error } = await supabase
     .from("concert_photos")

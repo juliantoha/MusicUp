@@ -225,6 +225,20 @@ export async function getPieceStageDetails(pieceStageId: string) {
 export async function getSignedUrl(bucket: "scores" | "audio" | "concert_photos", filePath: string) {
   const supabase = await createClient();
 
+  // Require authentication
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "You must be logged in" };
+  }
+
+  // Reject path traversal attempts
+  if (filePath.includes("..") || filePath.startsWith("/")) {
+    return { error: "Invalid file path" };
+  }
+
   // Get signed URL with 10 minute expiry
   const { data, error } = await supabase.storage
     .from(bucket)

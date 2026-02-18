@@ -3,6 +3,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { sendBookingConfirmationEmail } from "@/lib/email/actions";
 import { logBookingCreated, logBookingChanged, logBookingCancelled } from "@/lib/logging/actions";
+import { z } from "zod";
+
+const createBookingSchema = z.object({
+  concert_id: z.string().uuid(),
+  piece_stage_id: z.string().uuid(),
+});
+
+const updateBookingSchema = z.object({
+  piece_stage_id: z.string().uuid(),
+});
+
+const uuidSchema = z.string().uuid();
 
 export interface CreateBookingData {
   concert_id: string;
@@ -10,6 +22,11 @@ export interface CreateBookingData {
 }
 
 export async function createBooking(data: CreateBookingData) {
+  const parsed = createBookingSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: "Invalid input" };
+  }
+  data = parsed.data;
   const supabase = await createClient();
 
   // Get current user
@@ -78,6 +95,18 @@ export async function createBooking(data: CreateBookingData) {
     }
   }
 
+  // Check performer slot limit (max 20 active bookings per concert)
+  const MAX_PERFORMERS_PER_CONCERT = 20;
+  const { count: activeBookings } = await supabase
+    .from("bookings")
+    .select("id", { count: "exact", head: true })
+    .eq("concert_id", data.concert_id)
+    .neq("status", "cancelled");
+
+  if (activeBookings !== null && activeBookings >= MAX_PERFORMERS_PER_CONCERT) {
+    return { error: "This concert has reached its maximum number of performers" };
+  }
+
   // Check if booking already exists for this concert and piece/stage
   const { data: existingBooking } = await supabase
     .from("bookings")
@@ -130,6 +159,14 @@ export interface UpdateBookingData {
 }
 
 export async function updateBooking(bookingId: string, data: UpdateBookingData) {
+  if (!uuidSchema.safeParse(bookingId).success) {
+    return { error: "Invalid booking ID" };
+  }
+  const parsed = updateBookingSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: "Invalid input" };
+  }
+  data = parsed.data;
   const supabase = await createClient();
 
   // Get current user
@@ -159,7 +196,7 @@ export async function updateBooking(bookingId: string, data: UpdateBookingData) 
   }
 
   // Verify booking belongs to user
-  if (booking.performer_id !== user.id) {
+  if (booking.profile_id !== user.id) {
     return { error: "You can only update your own bookings" };
   }
 
@@ -200,6 +237,9 @@ export async function updateBooking(bookingId: string, data: UpdateBookingData) 
 }
 
 export async function cancelBooking(bookingId: string) {
+  if (!uuidSchema.safeParse(bookingId).success) {
+    return { error: "Invalid booking ID" };
+  }
   const supabase = await createClient();
 
   // Get current user
@@ -229,7 +269,7 @@ export async function cancelBooking(bookingId: string) {
   }
 
   // Verify booking belongs to user
-  if (booking.performer_id !== user.id) {
+  if (booking.profile_id !== user.id) {
     return { error: "You can only cancel your own bookings" };
   }
 

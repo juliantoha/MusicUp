@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendConcertReminderEmail } from "@/lib/email/actions";
+import { timingSafeEqual } from "crypto";
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function safeCompare(a: string, b: string): boolean {
+  try {
+    const bufA = Buffer.from(a);
+    const bufB = Buffer.from(b);
+    if (bufA.length !== bufB.length) {
+      // Compare against self to maintain constant time
+      timingSafeEqual(bufA, bufA);
+      return false;
+    }
+    return timingSafeEqual(bufA, bufB);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Vercel Cron endpoint to send 48-hour concert reminders
@@ -17,9 +36,10 @@ import { sendConcertReminderEmail } from "@/lib/email/actions";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authorization header (Vercel Cron secret)
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    // Verify authorization header (Vercel Cron secret) with constant-time comparison
+    const authHeader = request.headers.get("authorization") || "";
+    const expected = `Bearer ${process.env.CRON_SECRET || ""}`;
+    if (!process.env.CRON_SECRET || !safeCompare(authHeader, expected)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -56,7 +76,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error("Error fetching bookings for reminders:", error);
       return NextResponse.json(
-        { error: "Failed to fetch bookings", details: error.message },
+        { error: "Failed to fetch bookings" },
         { status: 500 }
       );
     }
@@ -96,7 +116,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error("Error in concert reminders cron:", error);
     return NextResponse.json(
-      { error: "Internal server error", details: error.message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -105,9 +125,10 @@ export async function GET(request: NextRequest) {
 // For development/testing - allow POST with API key
 export async function POST(request: NextRequest) {
   try {
-    // Verify API key for manual testing
-    const apiKey = request.headers.get("x-api-key");
-    if (apiKey !== process.env.API_KEY) {
+    // Verify API key for manual testing with constant-time comparison
+    const apiKey = request.headers.get("x-api-key") || "";
+    const expectedKey = process.env.API_KEY || "";
+    if (!process.env.API_KEY || !safeCompare(apiKey, expectedKey)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -116,7 +137,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Error in concert reminders POST:", error);
     return NextResponse.json(
-      { error: "Internal server error", details: error.message },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
