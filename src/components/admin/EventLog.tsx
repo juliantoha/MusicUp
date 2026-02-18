@@ -130,7 +130,7 @@ export function EventLog() {
     const result = await getRecentLogs(20);
 
     if ("error" in result) {
-      setError(result.error);
+      setError(result.error ?? "Unknown error");
       setLoading(false);
       return;
     }
