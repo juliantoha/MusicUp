@@ -40,7 +40,7 @@ async function verifyWaiverPermission(venueId: string) {
       .from("admins_venues")
       .select("id")
       .eq("venue_id", venueId)
-      .eq("admin_id", user.id)
+      .eq("profile_id", user.id)
       .maybeSingle();
 
     if (!adminVenue) {
@@ -153,19 +153,13 @@ export async function deactivateWaiver(waiverId: string) {
 }
 
 /**
- * Get all waivers for a venue
+ * Get all waivers for a venue (admin/super_admin for that venue only)
  */
 export async function getVenueWaivers(venueId: string) {
+  const verification = await verifyWaiverPermission(venueId);
+  if ("error" in verification) return verification;
+
   const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return { error: "You must be logged in" };
-  }
 
   const { data: waivers, error } = await supabase
     .from("venue_waivers")
@@ -183,7 +177,8 @@ export async function getVenueWaivers(venueId: string) {
 }
 
 /**
- * Check which waivers the current user has NOT signed for a venue
+ * Check which waivers the current user has NOT signed for a venue.
+ * Accessible to performers with an active booking at this venue, and venue admins.
  */
 export async function getUnsignedWaivers(venueId: string) {
   const supabase = await createClient();
@@ -195,6 +190,41 @@ export async function getUnsignedWaivers(venueId: string) {
 
   if (userError || !user) {
     return { error: "You must be logged in" };
+  }
+
+  // Verify the caller has a reason to access this venue's waivers:
+  // either they're an admin for the venue, or they have an active booking there.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "super_admin") {
+    const { data: adminLink } = await supabase
+      .from("admins_venues")
+      .select("id")
+      .eq("profile_id", user.id)
+      .eq("venue_id", venueId)
+      .maybeSingle();
+
+    if (!adminLink) {
+      // Check for an active booking at this venue
+      const { data: booking } = await supabase
+        .from("bookings")
+        .select("id, concert:concert_id (venue_id)")
+        .eq("profile_id", user.id)
+        .neq("status", "cancelled")
+        .limit(1);
+
+      const hasBooking = booking?.some(
+        (b: any) => b.concert?.venue_id === venueId
+      );
+
+      if (!hasBooking) {
+        return { error: "You do not have access to waivers for this venue" };
+      }
+    }
   }
 
   // Get all active waivers for this venue
@@ -289,9 +319,12 @@ export async function uploadSignedWaiver(formData: FormData) {
     return { error: "You have already signed this waiver" };
   }
 
-  // Upload the signed PDF
-  const ext = file.name.split(".").pop()?.toLowerCase() || "pdf";
-  const storagePath = `venue_${waiver.venue_id}/${waiverId}/${user.id}.${ext}`;
+  // Upload the signed PDF — enforce .pdf extension only
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  if (ext !== "pdf") {
+    return { error: "File must have a .pdf extension" };
+  }
+  const storagePath = `venue_${waiver.venue_id}/${waiverId}/${user.id}.pdf`;
 
   const { error: uploadError } = await supabase.storage
     .from(SIGNED_WAIVERS_BUCKET)
@@ -342,6 +375,20 @@ export async function getWaiverSignatures(waiverId: string) {
   if (userError || !user) {
     return { error: "You must be logged in" };
   }
+
+  // Verify the caller is an admin for the waiver's venue
+  const { data: waiver, error: waiverError } = await supabase
+    .from("venue_waivers")
+    .select("venue_id")
+    .eq("id", waiverId)
+    .single();
+
+  if (waiverError || !waiver) {
+    return { error: "Waiver not found" };
+  }
+
+  const verification = await verifyWaiverPermission(waiver.venue_id);
+  if ("error" in verification) return verification;
 
   const { data: signatures, error } = await supabase
     .from("signed_waivers")

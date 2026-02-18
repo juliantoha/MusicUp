@@ -23,6 +23,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { withRole } from "@/lib/auth/withRole";
 import { createClient } from "@/lib/supabase/client";
 import { format } from "date-fns";
 import { Logo } from "@/components/Logo";
@@ -77,7 +78,7 @@ type HostContact = {
   };
 };
 
-export default function VenueContactDashboard() {
+function VenueContactDashboard() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const [venues, setVenues] = useState<any[]>([]);
@@ -92,24 +93,9 @@ export default function VenueContactDashboard() {
   const [unsignedWaivers, setUnsignedWaivers] = useState<VenueWaiver[]>([]);
   const [loadingWaivers, setLoadingWaivers] = useState(false);
 
-  useEffect(() => {
-    if (!loading && (!user || !profile)) {
-      router.push("/login");
-    } else if (profile && profile.role !== "venue_contact") {
-      // Redirect non-venue contacts
-      if (profile.role === "super_admin") {
-        router.push("/super");
-      } else if (profile.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/performer");
-      }
-    }
-  }, [user, profile, loading, router]);
-
   // Fetch venues for this venue contact
   useEffect(() => {
-    if (!profile || profile.role !== "venue_contact") return;
+    if (!profile) return;
 
     const fetchVenues = async () => {
       const supabase = createClient();
@@ -271,7 +257,7 @@ export default function VenueContactDashboard() {
     fetchConcertDetails();
   }, [selectedConcert]);
 
-  if (loading || !profile || profile.role !== "venue_contact") {
+  if (loading || !profile) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -626,3 +612,5 @@ export default function VenueContactDashboard() {
     </div>
   );
 }
+
+export default withRole(VenueContactDashboard, ["venue_contact", "super_admin"]);
