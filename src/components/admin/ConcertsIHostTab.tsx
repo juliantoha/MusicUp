@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -11,9 +12,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useMyManagedConcerts } from "@/lib/hooks";
 import { ConcertDetailView } from "./ConcertDetailView";
-import { ArrowLeft, Calendar, ChevronRight } from "lucide-react";
+import { ArrowLeft, Calendar, ChevronRight, MapPin, Clock, Users, Heart } from "lucide-react";
 import type { ConcertWithDetails } from "@/types/db";
 
 export function ConcertsIHostTab() {
@@ -80,6 +82,40 @@ export function ConcertsIHostTab() {
           Click on a concert to manage performers and complete the event.
         </p>
       </div>
+
+      {/* Event Day Demo — click to open the live event dashboard */}
+      <Link href="/admin/event-day" className="block group">
+        <Card className="overflow-hidden border-2 border-cyan-200 hover:border-cyan-400 bg-gradient-to-r from-cyan-50/60 to-blue-50/40 hover:shadow-lg transition-all duration-200">
+          <div className="p-4 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2563EB] via-[#06B6D4] to-[#0891b2] flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-105 transition-transform">
+              <Heart className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                <p className="font-semibold text-gray-900">Empathy Concert</p>
+                <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200 text-[10px]">
+                  Today
+                </Badge>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> Ivy Park Pleasanton
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> 2:00 – 3:00 PM
+                </span>
+                <span className="flex items-center gap-1">
+                  <Users className="w-3 h-3" /> 6 performers
+                </span>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="border-cyan-300 text-cyan-700 hover:bg-cyan-100 flex-shrink-0 group-hover:bg-cyan-100">
+              Open Event Day
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        </Card>
+      </Link>
 
       <Card className="overflow-hidden border border-gray-100">
         <div className="overflow-x-auto">

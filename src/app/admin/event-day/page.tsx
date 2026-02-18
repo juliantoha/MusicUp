@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,8 @@ import {
   Image as ImageIcon,
   Info,
   PhoneCall,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 
 // ============================================================================
@@ -190,6 +193,25 @@ const MOCK_PERFORMERS: Performer[] = [
     hasScoreUrl: true,
     performancePhoto: null,
   },
+  {
+    id: "p6",
+    name: "Julian Toha",
+    email: "julian@Oclef.com",
+    phone: "(925) 555-0199",
+    age: 28,
+    instrument: "Piano",
+    piece: "My Funny Valentine",
+    composer: "Rodgers / Hart",
+    stage: 3,
+    stageLabel: "Stage 3",
+    performanceOrder: 6,
+    checkedIn: "pending",
+    checkedInTime: null,
+    notes: "Host & performer",
+    waiverSigned: true,
+    hasScoreUrl: true,
+    performancePhoto: null,
+  },
 ];
 
 /** Strip formatting from phone number for tel: href */
@@ -200,6 +222,7 @@ const cleanPhone = (phone: string) => phone.replace(/[^\d+]/g, "");
 // ============================================================================
 
 export default function HostEventDayPage() {
+  const router = useRouter();
   const [performers, setPerformers] = useState<Performer[]>(MOCK_PERFORMERS);
   const [expandedPerformer, setExpandedPerformer] = useState<string | null>(null);
   const [photos, setPhotos] = useState<{ id: string; name: string; time: string }[]>([]);
@@ -210,6 +233,7 @@ export default function HostEventDayPage() {
   const [streamCopied, setStreamCopied] = useState(false);
   const [signingWaiverId, setSigningWaiverId] = useState<string | null>(null);
   const [concertConcluded, setConcertConcluded] = useState(false);
+  const [completionConfirmed, setCompletionConfirmed] = useState(false);
   const [showStickyProgress, setShowStickyProgress] = useState(false);
   const cardProgressRef = useRef<HTMLDivElement>(null);
 
@@ -305,6 +329,24 @@ export default function HostEventDayPage() {
     } catch {
       // Fallback — URL is already visible in the input
     }
+  };
+
+  const handleReorder = (performerId: string, direction: "up" | "down") => {
+    setPerformers((prev) => {
+      const sorted = [...prev].sort((a, b) => a.performanceOrder - b.performanceOrder);
+      const idx = sorted.findIndex((p) => p.id === performerId);
+      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+      if (swapIdx < 0 || swapIdx >= sorted.length) return prev;
+
+      const currentOrder = sorted[idx].performanceOrder;
+      const swapOrder = sorted[swapIdx].performanceOrder;
+
+      return prev.map((p) => {
+        if (p.id === sorted[idx].id) return { ...p, performanceOrder: swapOrder };
+        if (p.id === sorted[swapIdx].id) return { ...p, performanceOrder: currentOrder };
+        return p;
+      });
+    });
   };
 
   const canComplete = performedCount > 0 && photos.length > 0;
@@ -616,11 +658,13 @@ export default function HostEventDayPage() {
             </div>
 
             <div className="p-4 space-y-3">
-              {sortedPerformers.map((p) => {
+              {sortedPerformers.map((p, sortedIdx) => {
                 const isExpanded = expandedPerformer === p.id;
                 const badge = statusBadge(p.checkedIn);
                 const isAbsent = p.checkedIn === "absent";
                 const isNextUp = p.id === nextUpId;
+                const isFirst = sortedIdx === 0;
+                const isLast = sortedIdx === sortedPerformers.length - 1;
 
                 return (
                   <div
@@ -633,21 +677,50 @@ export default function HostEventDayPage() {
                   >
                     {/* Main content */}
                     <div className={`p-4 ${isAbsent ? "opacity-50" : ""}`}>
-                      {/* Header: order number, name, badges, chevron */}
+                      {/* Header: order number, reorder arrows, name, badges, chevron */}
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span
-                              className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 ${
-                                isAbsent
-                                  ? "bg-gray-300"
-                                  : p.checkedIn === "performed"
-                                    ? "bg-green-500"
-                                    : "bg-gradient-to-br from-blue-500 to-cyan-500"
-                              }`}
-                            >
-                              {isAbsent ? <XCircle className="w-3.5 h-3.5" /> : p.performanceOrder}
-                            </span>
+                            {/* Reorder arrows + order number */}
+                            <div className="flex items-center gap-0.5 flex-shrink-0">
+                              <div className="flex flex-col -space-y-0.5">
+                                <button
+                                  onClick={() => handleReorder(p.id, "up")}
+                                  disabled={isFirst}
+                                  className={`w-5 h-4 flex items-center justify-center rounded-t transition-colors ${
+                                    isFirst
+                                      ? "text-gray-200 cursor-not-allowed"
+                                      : "text-gray-400 hover:text-blue-600 hover:bg-blue-50 active:scale-90"
+                                  }`}
+                                  aria-label={`Move ${p.name} up`}
+                                >
+                                  <ArrowUp className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={() => handleReorder(p.id, "down")}
+                                  disabled={isLast}
+                                  className={`w-5 h-4 flex items-center justify-center rounded-b transition-colors ${
+                                    isLast
+                                      ? "text-gray-200 cursor-not-allowed"
+                                      : "text-gray-400 hover:text-blue-600 hover:bg-blue-50 active:scale-90"
+                                  }`}
+                                  aria-label={`Move ${p.name} down`}
+                                >
+                                  <ArrowDown className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <span
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold ${
+                                  isAbsent
+                                    ? "bg-gray-300"
+                                    : p.checkedIn === "performed"
+                                      ? "bg-green-500"
+                                      : "bg-gradient-to-br from-blue-500 to-cyan-500"
+                                }`}
+                              >
+                                {isAbsent ? <XCircle className="w-3.5 h-3.5" /> : p.performanceOrder}
+                              </span>
+                            </div>
                             <p
                               className={`font-semibold text-base text-gray-900 truncate ${isAbsent ? "line-through" : ""}`}
                             >
@@ -672,7 +745,7 @@ export default function HostEventDayPage() {
                           </div>
 
                           {/* Piece + composer */}
-                          <div className="ml-8">
+                          <div className="ml-[3.25rem]">
                             <p
                               className={`text-sm text-gray-700 font-medium ${isAbsent ? "line-through" : ""}`}
                             >
@@ -690,7 +763,7 @@ export default function HostEventDayPage() {
                               size="sm"
                               className="border-gray-200 text-xs h-8 px-2.5"
                               onClick={() =>
-                                alert('Demo: Would open sheet music PDF for "' + p.piece + '"')
+                                alert('Opening sheet music for "' + p.piece + '"')
                               }
                             >
                               <FileText className="w-3.5 h-3.5 mr-1" />
@@ -716,7 +789,7 @@ export default function HostEventDayPage() {
                       </div>
 
                       {/* Timestamp + notes + photo indicator */}
-                      <div className="ml-8 space-y-0.5">
+                      <div className="ml-[3.25rem] space-y-0.5">
                         {p.checkedInTime && p.checkedIn !== "pending" && (
                           <p className="text-[10px] text-gray-400">
                             <Clock className="w-2.5 h-2.5 inline mr-0.5" />
@@ -1292,10 +1365,8 @@ export default function HostEventDayPage() {
                       size="lg"
                       className="bg-green-600 hover:bg-green-700 active:scale-[0.98] transition-all"
                       onClick={() => {
-                        alert(
-                          `Demo: Concert completed! ${MOCK_EVENT.serviceHours} service hours granted to ${performedCount} performer${performedCount !== 1 ? "s" : ""}.`
-                        );
                         setConfirmingComplete(false);
+                        setCompletionConfirmed(true);
                       }}
                     >
                       <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -1431,6 +1502,51 @@ export default function HostEventDayPage() {
             </div>
           );
         })()}
+
+      {/* ================================================================
+          COMPLETION CONFIRMATION — Full-screen overlay after completing
+          ================================================================ */}
+      {completionConfirmed && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-fade-in-up">
+            {/* Success banner */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Concert Completed!</h3>
+            </div>
+
+            {/* Details */}
+            <div className="px-6 py-5 space-y-3">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg space-y-1.5">
+                <p className="text-sm text-green-800">
+                  <strong>{MOCK_EVENT.serviceHours} service hours</strong> granted to{" "}
+                  {performedCount} performer{performedCount !== 1 ? "s" : ""}.
+                </p>
+                <p className="text-xs text-green-600">
+                  {MOCK_EVENT.venue.name} &middot; {MOCK_EVENT.date}
+                </p>
+              </div>
+              <p className="text-xs text-gray-500 text-center">
+                The concert status has been set to completed. Performers will see their service
+                hours on their profiles.
+              </p>
+            </div>
+
+            {/* Action */}
+            <div className="px-6 pb-6">
+              <Button
+                size="lg"
+                className="w-full shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
+                onClick={() => router.push("/admin")}
+              >
+                Back to Host Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

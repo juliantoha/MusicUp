@@ -7,7 +7,6 @@ import { ConcertsIHostTab } from "@/components/admin/ConcertsIHostTab";
 import { MyPerformancesTab } from "@/components/admin/MyPerformancesTab";
 import { VenueContactTab } from "@/components/admin/VenueContactTab";
 import { AdminMetrics } from "@/components/admin/AdminMetrics";
-import { EventLog } from "@/components/admin/EventLog";
 import { Shield, Calendar, Users, Building2 } from "lucide-react";
 
 function AdminPage() {
@@ -90,9 +89,8 @@ function AdminPage() {
                   Upload photos. Mark attendance. Complete concerts to verify hours.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pt-6 space-y-6">
+              <CardContent className="pt-6">
                 <ConcertsIHostTab />
-                <EventLog />
               </CardContent>
             </Card>
           </TabsContent>
