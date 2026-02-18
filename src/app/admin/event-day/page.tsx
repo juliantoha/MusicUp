@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -202,6 +203,7 @@ const cleanPhone = (phone: string) => phone.replace(/[^\d+]/g, "");
 // ============================================================================
 
 export default function HostEventDayPage() {
+  const router = useRouter();
   const [performers, setPerformers] = useState<Performer[]>(MOCK_PERFORMERS);
   const [expandedPerformer, setExpandedPerformer] = useState<string | null>(null);
   const [photos, setPhotos] = useState<{ id: string; name: string; time: string }[]>([]);
@@ -212,6 +214,7 @@ export default function HostEventDayPage() {
   const [streamCopied, setStreamCopied] = useState(false);
   const [signingWaiverId, setSigningWaiverId] = useState<string | null>(null);
   const [concertConcluded, setConcertConcluded] = useState(false);
+  const [completionConfirmed, setCompletionConfirmed] = useState(false);
   const [showStickyProgress, setShowStickyProgress] = useState(false);
   const cardProgressRef = useRef<HTMLDivElement>(null);
 
@@ -741,7 +744,7 @@ export default function HostEventDayPage() {
                               size="sm"
                               className="border-gray-200 text-xs h-8 px-2.5"
                               onClick={() =>
-                                alert('Demo: Would open sheet music PDF for "' + p.piece + '"')
+                                alert('Opening sheet music for "' + p.piece + '"')
                               }
                             >
                               <FileText className="w-3.5 h-3.5 mr-1" />
@@ -1343,10 +1346,8 @@ export default function HostEventDayPage() {
                       size="lg"
                       className="bg-green-600 hover:bg-green-700 active:scale-[0.98] transition-all"
                       onClick={() => {
-                        alert(
-                          `Demo: Concert completed! ${MOCK_EVENT.serviceHours} service hours granted to ${performedCount} performer${performedCount !== 1 ? "s" : ""}.`
-                        );
                         setConfirmingComplete(false);
+                        setCompletionConfirmed(true);
                       }}
                     >
                       <CheckCircle2 className="w-4 h-4 mr-2" />
@@ -1482,6 +1483,51 @@ export default function HostEventDayPage() {
             </div>
           );
         })()}
+
+      {/* ================================================================
+          COMPLETION CONFIRMATION — Full-screen overlay after completing
+          ================================================================ */}
+      {completionConfirmed && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-fade-in-up">
+            {/* Success banner */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Concert Completed!</h3>
+            </div>
+
+            {/* Details */}
+            <div className="px-6 py-5 space-y-3">
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg space-y-1.5">
+                <p className="text-sm text-green-800">
+                  <strong>{MOCK_EVENT.serviceHours} service hours</strong> granted to{" "}
+                  {performedCount} performer{performedCount !== 1 ? "s" : ""}.
+                </p>
+                <p className="text-xs text-green-600">
+                  {MOCK_EVENT.venue.name} &middot; {MOCK_EVENT.date}
+                </p>
+              </div>
+              <p className="text-xs text-gray-500 text-center">
+                The concert status has been set to completed. Performers will see their service
+                hours on their profiles.
+              </p>
+            </div>
+
+            {/* Action */}
+            <div className="px-6 pb-6">
+              <Button
+                size="lg"
+                className="w-full shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
+                onClick={() => router.push("/admin")}
+              >
+                Back to Host Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
