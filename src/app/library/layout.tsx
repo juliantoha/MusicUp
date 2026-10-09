@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Music Library - Browse Repertoire & Sheet Music",
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Music Library - Browse Curated Concert Repertoire | MusicUp",
     description: "Complete collection of concert pieces organized by series and difficulty. PDFs and audio included for every stage.",
-    url: "https://www.musicup.co/library",
+    url: `${SITE_URL}/library`,
     type: "website",
   },
   twitter: {
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     description: "Curated concert pieces with sheet music PDFs and audio references. Filter by difficulty stage.",
   },
   alternates: {
-    canonical: "https://www.musicup.co/library",
+    canonical: `${SITE_URL}/library`,
   },
 };
 

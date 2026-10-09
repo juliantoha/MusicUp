@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Concert Series - 9 Ready-to-Run Concert Formats",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Concert Series - Play the right set in the right room | MusicUp",
     description: "9 ready-to-run concert series for libraries, senior homes, markets, schools, and community spaces. Each with curated repertoire and clear format guidelines.",
-    url: "https://www.musicup.co/series",
+    url: `${SITE_URL}/series`,
     type: "website",
   },
   twitter: {
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description: "9 ready-to-run concert formats: Empathy Concerts, PianoTales, Markets & more. Sheet music and format guides included.",
   },
   alternates: {
-    canonical: "https://www.musicup.co/series",
+    canonical: `${SITE_URL}/series`,
   },
 };
 

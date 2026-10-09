@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site-url";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -23,7 +24,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.musicup.co'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "MusicUp - Music Every Day | Concerts for Libraries, Senior Homes & Community Spaces",
     template: "%s | MusicUp"
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.musicup.co",
+    url: SITE_URL,
     siteName: "MusicUp",
     title: "MusicUp - Music Every Day | Concert Series for Community Spaces",
     description: "Short, ready-to-run concerts that fit real places. Pick a series, pick a set, show up. MusicUp handles the rest.",

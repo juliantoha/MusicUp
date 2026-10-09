@@ -1,11 +1,13 @@
+import { SITE_URL } from "@/lib/site-url";
+
 export function OrganizationStructuredData() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "MusicUp",
     "alternateName": "MusicUp by Oclef",
-    "url": "https://www.musicup.co",
-    "logo": "https://www.musicup.co/logo.png",
+    "url": SITE_URL,
+    "logo": `${SITE_URL}/logo.png`,
     "description": "Ready-to-run concert series for real places. Connect performers with libraries, senior homes, markets, and community spaces.",
     "foundingDate": "2024",
     "founder": {
